@@ -1,0 +1,106 @@
+// Fonts
+=register-font($family, $filename, $weight, $style)
+	@font-face
+		font-family: $family
+		src: url('/font/#{$filename}.eot')
+		src: url('/font/#{$filename}.eot?#iefix') format('embedded-opentype'), url('/font/#{$filename}.woff') format('woff'), url('/font/#{$filename}.ttf') format('truetype'), url('/font/#{$filename}.svg##{$family}') format('svg')
+		font-weight: $weight
+		font-style: $style
+
++register-font(Futura, 'futuratot-med-webfont', 300, normal)
++register-font(LedSimulator, 'ledsimulator-webfont', 300, normal)
+
+@import 'lib/settings'
+@import 'lib/normalize'
+@import 'lib/font-awesome/font-awesome'
+
+$graph-color: #9f0
+
+html
+	height: 100%
+	margin: 0
+
+body
+	font: 300 1em/1.5 Futura
+	background: #000
+	color: $color-theme
+	height: 100%
+	margin: 0
+
+#wrap
+	background: #333
+	border-radius: 1em
+	min-height: 100%
+	min-width: 100%
+	position: absolute
+	top: 0
+	left: 0
+
+section
+	$screw-margin: .15em
+	$screw-size: 1em
+
+	border-radius: .6em
+	margin: $quarter-gutter
+	padding: $half-gutter
+	background: no-repeat url('/img/screw.svg') $screw-margin $screw-margin, no-repeat url('/img/screw.svg') $screw-margin calc(100% - #{$screw-margin}), no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) $screw-margin, no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) calc(100% - #{$screw-margin}), #ddd url('/img/noise.png')
+	background-size: $screw-size, $screw-size, $screw-size, $screw-size, auto
+	box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #000, 0 .05em .4em rgba(#000, .5)
+	text-shadow: 0 1px 0 rgba(#fff, .4)
+	header
+		display: flex
+		align-items: flex-end
+		height: 1em
+		font-size: 1.2em
+		&::before, &::after
+			flex: 1 0 0
+			height: .8em
+			display: block
+			content: ''
+			border-color: rgba(#000, .5)
+			border-width: 1px
+		&::before
+			border-style: solid none none solid
+			border-top-left-radius: .5em
+			margin-right: $quarter-gutter
+		&::after
+			border-style: solid solid none none
+			border-top-right-radius: .5em
+			margin-left: $quarter-gutter
+	.content
+		padding: $quarter-gutter $half-gutter $half-gutter $half-gutter
+
+.graph
+	background: radial-gradient(circle at 0 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 100% 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 50% 0, rgba(#fff, .1), transparent), linear-gradient(180deg, rgba(#fff, .1), transparent 60%), #000
+	padding: $quarter-gutter
+	border-radius: .3em
+	box-shadow: inset 0 .2em 1.4em rgba(#000, .6)
+	border-top: 1px solid #000
+	border-bottom: 1px solid #fff
+	font: 1.2em LedSimulator
+	text-shadow: 0 0 .5em rgba($graph-color, 1)
+	color: $graph-color
+	&.alert-red
+		animation: graph-alert-red 1s infinite linear
+
+@keyframes graph-alert-red
+	$color: #a10
+	0%
+		background-color: #000
+		color: $graph-color
+		text-shadow: 0 0 .5em rgba($graph-color, 1)
+	30%
+		background-color: #000
+		color: $graph-color
+		text-shadow: 0 0 .5em rgba($graph-color, 1)
+	40%
+		background-color: $color
+		color: lighten($color, 50)
+		text-shadow: 0 0 .5em rgba(lighten($color, 40), 1)
+	70%
+		background-color: $color
+		color: lighten($color, 50)
+		text-shadow: 0 0 .5em rgba(lighten($color, 40), 1)
+	100%
+		background-color: #000
+		text-shadow: 0 0 .5em rgba($graph-color, 1)

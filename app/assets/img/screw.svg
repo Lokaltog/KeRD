@@ -1,0 +1,26 @@
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" height="40" width="40" version="1.0" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<defs>
+<linearGradient id="b" y2="19" gradientUnits="userSpaceOnUse" x2="6" y1="19" x1="34">
+<stop stop-color="#e8e8e8" offset="0"/>
+<stop stop-color="#313131" offset="1"/>
+</linearGradient>
+<linearGradient id="a" y2="40" gradientUnits="userSpaceOnUse" x2="20" gradientTransform="matrix(.95 0 0 .95 1 1)" x1="20">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#1b1b1b" offset="1"/>
+</linearGradient>
+</defs>
+<metadata>
+<rdf:RDF>
+<cc:Work rdf:about="">
+<dc:format>image/svg+xml</dc:format>
+<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+<dc:title/>
+</cc:Work>
+</rdf:RDF>
+</metadata>
+<g>
+<circle cx="20" stroke="url(#a)" cy="20" r="19" stroke-width="2.035" fill="#202020"/>
+<path fill="#494949" transform="matrix(0 .85738 -.85738 0 37.148 2.8525)" stroke="url(#b)" stroke-linecap="square" stroke-width="3.1" d="m20 5 12.99 7.5v15l-12.99 7.5-12.99-7.5 4e-7 -15z"/>
+</g>
+</svg>

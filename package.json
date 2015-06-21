@@ -1,0 +1,48 @@
+{
+	"name": "KeRD",
+	"version": "0.0.1a1",
+	"description": "Kerbal Remote Display.",
+	"homepage": "https://kerd.space/",
+	"maintainers": [{
+		"name": "Kim Silkebækken",
+		"email": "kim@silkebaekken.no",
+		"web": "https://github.com/Lokaltog"
+	}],
+	"devDependencies" : {
+		"browser-sync": "*",
+		"del": "*",
+		"gulp": "*",
+		"jade": "*",
+		"marked": "*",
+		"uglify-js": "*",
+		"webpack": "*",
+
+		"autoprefixer-loader": "*",
+		"babel-loader": "*",
+		"css-loader": "*",
+		"exports-loader": "*",
+		"extract-text-webpack-plugin": "*",
+		"file-loader": "*",
+		"html-loader": "*",
+		"image-webpack-loader": "*",
+		"imports-loader": "*",
+		"jade-loader": "*",
+		"json-loader": "*",
+		"raw-loader": "*",
+		"node-sass": "*",
+		"sass-loader": "0.4.2",
+		"style-loader": "*",
+		"url-loader": "*",
+
+		"gulp-htmlmin": "*",
+		"gulp-imagemin": "*",
+		"gulp-jade": "*",
+		"gulp-rename": "*",
+		"gulp-selectors": "*",
+		"gulp-util": "*",
+		"gulp-watch": "*"
+	},
+	"engines": {
+		"node": ">=0.10"
+	}
+}

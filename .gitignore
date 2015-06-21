@@ -1,0 +1,6 @@
+static/
+dist/
+build/
+venv/
+node_modules/
+*.egg-info

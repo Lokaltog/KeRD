@@ -1,0 +1,25 @@
+doctype html
+html(lang='en')
+	head
+		meta(charset='utf-8')
+		meta(http-equiv='Content-Type', content='text/html;charset=utf-8')
+		meta(name='viewport', content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no')
+
+		title KeRD
+
+	body
+		#wrap
+			section
+				header ORBIT
+				.content
+					.graph
+						| AP 12345 km
+						br
+						| PE 12345 km
+						br
+						| Spd 1234 m/s
+
+	script(async, type='text/javascript', src='/assets/js/#{MAIN_JS_FILE}')
+	if DEBUG
+		script#__bs_script__
+			| document.write("<script async src='//HOST:3000/browser-sync/browser-sync-client.js'><\/script>".replace("HOST", location.hostname));
