@@ -79,6 +79,9 @@ gulp.task('webpack', function(callback) {
 })
 
 gulp.task('imagemin', ['webpack'], function() {
+	if (config.ENV == 'dev') {
+		return
+	}
 	return gulp.src('static/assets/img/**/*')
 		.pipe(imagemin())
 		.pipe(gulp.dest('static/assets/img/'))
@@ -215,7 +218,7 @@ gulp.task('development', ['set-env-dev', 'entrypoint'], function() {
 		port: 3000,
 	})
 
-	gulp.watch('app/components/**/*', ['entrypoint'])
+	gulp.watch('app/**/*', ['entrypoint'])
 
 	watch('static/**/*.css').pipe(bs.reload({stream: true}))
 })

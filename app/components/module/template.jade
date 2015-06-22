@@ -1,0 +1,5 @@
+template(v-repeat='layout')
+	module(v-if='type == "row" || type == "col"', layout='{{content}}', v-attr='class: "node-" + (type || "col")')
+	section(v-if='type == "section"')
+		module(layout='{{content}}')
+	component(v-if='type == "module"', is='{{id}}', config='{{config}}', v-attr='class: "mod-" + id')

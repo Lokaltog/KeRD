@@ -16,7 +16,6 @@ export default class WS {
 
 			this.conn.onopen = () => {
 				console.info('WS connection opened')
-				this.ping()
 				this.connDeferred.resolve()
 			}
 
@@ -73,7 +72,7 @@ export default class WS {
 	}
 
 	ping() {
-		this.send({type: 'ping'}).done(() => {
+		this.send({}).done(() => {
 			setTimeout(this.ping.bind(this), this.pingTimeout)
 		})
 	}

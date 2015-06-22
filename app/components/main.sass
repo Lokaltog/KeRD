@@ -28,7 +28,7 @@ body
 	margin: 0
 
 #wrap
-	background: #333 url('/img/logo-bg.svg') no-repeat 50% 50%
+	background: #333
 	background-size: 20em
 	border-radius: 1em
 	min-height: 100%
@@ -36,46 +36,118 @@ body
 	position: absolute
 	top: 0
 	left: 0
+	padding: $quarter-gutter 0 0 $quarter-gutter
+	box-sizing: border-box
+	display: flex
+	flex-flow: column nowrap
+	& > *
+		flex: 1 1 auto
+
+.row, .col,
+.node-row, .node-col
+	display: flex
+	& > *
+		display: flex
+		flex-flow: column nowrap
+		flex: 1 1 auto
+
+.row,
+.node-row
+	flex-flow: row nowrap
+	flex: 1 1 auto
+	&.distribute > *
+		width: 0
+		flex: 1 0 auto
+
+.row
+	& > *:not(:last-child)
+		margin: 0 $half-gutter 0 0
+
+.col,
+.node-col
+	flex-flow: column nowrap
+	flex: 1 1 auto
+
+.col
+	& > *:not(:last-child)
+		margin: 0 0 $half-gutter 0
 
 section
 	$screw-margin: .15em
-	$screw-size: 1em
+	$screw-size: .9em
 
-	border-radius: .6em
-	margin: $quarter-gutter
+	border-radius: .5em
 	padding: $half-gutter
 	background: no-repeat url('/img/screw.svg') $screw-margin $screw-margin, no-repeat url('/img/screw.svg') $screw-margin calc(100% - #{$screw-margin}), no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) $screw-margin, no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) calc(100% - #{$screw-margin}), #ddd url('/img/noise.png')
 	background-size: $screw-size, $screw-size, $screw-size, $screw-size, auto
-	box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #000, 0 .05em .4em rgba(#000, .5)
+	box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #000, 0 .05em .3em rgba(#000, .8)
 	text-shadow: 0 1px 0 rgba(#fff, .4)
+	margin: 0 $quarter-gutter $quarter-gutter 0 !important
+	flex: 1 1 auto
+	display: flex
+	flex-flow: column nowrap
 	header
+		$border-radius: .3em
 		display: flex
 		align-items: flex-end
 		height: 1em
-		font-size: 1.2em
+		font-size: 1.3em
+		text-transform: uppercase
+		flex: 0 0 auto
 		&::before, &::after
 			flex: 1 0 0
 			height: .8em
 			display: block
 			content: ''
-			border-color: rgba(#000, .5)
+			border-color: rgba(#000, .8)
 			border-width: 1px
 		&::before
 			border-style: solid none none solid
-			border-top-left-radius: .5em
+			border-top-left-radius: $border-radius
 			margin-right: $quarter-gutter
+			padding-right: $quarter-gutter
 		&::after
 			border-style: solid solid none none
-			border-top-right-radius: .5em
+			border-top-right-radius: $border-radius
 			margin-left: $quarter-gutter
+			padding-left: $quarter-gutter
+	& > *
+		flex: 1 1 auto
+		display: flex
+		flex-flow: column nowrap
 	.content
+		flex: 1 0 auto
+		white-space: nowrap
 		padding: $quarter-gutter $half-gutter $half-gutter $half-gutter
+		display: flex
+		flex-flow: column nowrap
+		justify-content: space-around
 
-.graph
-	background: radial-gradient(circle at 0 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 100% 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 50% 0, rgba(#fff, .1), transparent), linear-gradient(180deg, rgba(#fff, .1), transparent 60%), #000
-	padding: $quarter-gutter
+module
+	component
+		flex: 1 1 auto
+		display: flex
+		flex-flow: column nowrap
+
+.control-block
+	display: flex
+	align-items: center
+	label
+		flex: 1 0 auto
+		text-align: right
+		text-transform: uppercase
+		width: 0
+		margin: 0 $half-gutter 0 0
+	.display
+		flex: 2 0 auto
+		text-align: right
+		width: 0
+
+.graph, .display
+	background: radial-gradient(circle at 0 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 100% 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 50% 0, rgba(#fff, .1), transparent), linear-gradient(180deg, rgba(#fff, .1), transparent 60%), repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(#fff, .04) 2px, rgba(#fff, .02) 4px), #000
+	padding: ($quarter-gutter / 2) $quarter-gutter
 	border-radius: .3em
-	box-shadow: inset 0 .2em 1.4em rgba(#000, .6)
+	box-shadow: inset 0 .2em .5em rgba(#000, .7)
 	border-top: 1px solid #000
 	border-bottom: 1px solid #fff
 	font: 1.2em LedSimulator
@@ -105,3 +177,24 @@ section
 	100%
 		background-color: #000
 		text-shadow: 0 0 .5em rgba($graph-color, 1)
+
+button
+	white-space: nowrap
+	font: 300 1em/1.5 Futura
+	padding: $quarter-gutter $half-gutter
+	background: #eee linear-gradient(180deg, rgba(#fff, .5), transparent)
+	text-transform: uppercase
+	text-shadow: 0 1px 0 rgba(#fff, .4)
+	box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .5em 0 #777, 0 .6em .3em rgba(#000, .2)
+	cursor: pointer
+	user-select: none
+	outline: none
+	border-radius: .4em
+	border: none
+	display: flex
+	justify-content: center
+	align-items: center
+	position: relative
+	&:active
+		top: .3em
+		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 #777, 0 .3em .1em rgba(#000, .2)
