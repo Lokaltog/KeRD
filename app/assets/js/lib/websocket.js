@@ -7,6 +7,9 @@ export default class WS {
 		this.connDeferred = $.Deferred()
 		this.pingTimeout = pingTimeout * 1000
 		this.reconnectTimeout = reconnectTimeout * 1000
+
+		this.openHandlers = []
+		this.closeHandlers = []
 		this.messageHandlers = []
 	}
 
@@ -17,6 +20,10 @@ export default class WS {
 			this.conn.onopen = () => {
 				console.info('WS connection opened')
 				this.connDeferred.resolve()
+
+				this.openHandlers.forEach(fn => {
+					fn()
+				})
 			}
 
 			this.conn.onclose = () => {
@@ -25,6 +32,10 @@ export default class WS {
 				this.connDeferred = $.Deferred()
 
 				setTimeout(this.connect.bind(this), this.reconnectTimeout)
+
+				this.closeHandlers.forEach(fn => {
+					fn()
+				})
 			}
 
 			this.conn.onmessage = ev => {
@@ -46,6 +57,14 @@ export default class WS {
 			this.conn.onclose = undefined
 		}
 		this.conn.close()
+	}
+
+	addOpenHandler(fn) {
+		this.openHandlers.push(fn)
+	}
+
+	addCloseHandler(fn) {
+		this.closeHandlers.push(fn)
 	}
 
 	addMessageHandler(fn) {
