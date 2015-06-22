@@ -11,7 +11,6 @@ var webpack = require('webpack')
 var bs = require('browser-sync').create()
 var watch = require('gulp-watch')
 var webpackCompiler
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 var __components_src = __dirname + '/app/components/'
 var __assets_src = __dirname + '/app/assets/'
@@ -45,6 +44,7 @@ var config = {
 		'websocket': '/js/lib/websocket',
 
 		'd3': '/js/lib/ext/d3',
+		'fastclick': '/js/lib/ext/fastclick',
 		'jquery': '/js/lib/ext/jquery',
 		'moment': '/js/lib/ext/moment',
 		'numeral': '/js/lib/ext/numeral',
@@ -79,7 +79,7 @@ gulp.task('webpack', function(callback) {
 })
 
 gulp.task('imagemin', ['webpack'], function() {
-	if (config.ENV == 'dev') {
+	if (config.ENV === 'dev') {
 		return
 	}
 	return gulp.src('static/assets/img/**/*')
@@ -140,7 +140,7 @@ gulp.task('set-env-dev', function() {
 		],
 		module: {
 			loaders: [
-				{ test: /\.sass/, loader: 'style!css?' + JSON.stringify(config.css) + '!autoprefixer?browsers=last 2 version!sass?' + JSON.stringify(config.sass) },
+				{ test: /\.sass/, loader: 'style!css?' + JSON.stringify(config.css) + '!autoprefixer?' + JSON.stringify({browsers: ['last 4 versions']}) + '!sass?' + JSON.stringify(config.sass) },
 				{ test: /\.jade$/, exclude: [/components\/main.jade$/], loader: 'jade' },
 				{ test: /img\/.*\.(jpg|png|gif|svg|ico)$/, loader: 'file?name=img/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
 				{ test: /defs\/.*\.json$/, loader: 'file?name=defs/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
@@ -198,7 +198,7 @@ gulp.task('set-env-prod', function() {
 		],
 		module: {
 			loaders: [
-				{ test: /\.sass/, loader: 'style!css?' + JSON.stringify(config.css) + '!autoprefixer?browsers=last 2 version!sass?' + JSON.stringify(config.sass) },
+				{ test: /\.sass/, loader: 'style!css?' + JSON.stringify(config.css) + '!autoprefixer?' + JSON.stringify({browsers: ['last 4 versions']}) + '!sass?' + JSON.stringify(config.sass) },
 				{ test: /\.jade$/, exclude: [/components\/main.jade$/], loader: 'jade' },
 				{ test: /img\/.*\.(jpg|png|gif|svg|ico)$/, loader: 'file?name=img/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
 				{ test: /defs\/.*\.json$/, loader: 'file?name=defs/[sha512:hash:base64:6].[ext]?v=[hash:6]' },

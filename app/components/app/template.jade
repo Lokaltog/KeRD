@@ -1,6 +1,9 @@
 #wrap
 	module(layout='{{layout}}')
 	footer
-		.screens LAYOUT SWITCHER
-		.logo
-		.host HOST / PORT
+		.contents
+			.layouts
+				button.dark 1
+			.logo
+			.host.connected(v-if='wsConnected') Connected to {{host}}:{{port}}
+			.host.disconnected(v-if='!wsConnected') Not connected
