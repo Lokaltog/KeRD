@@ -1,0 +1,221 @@
+@import 'lib/settings'
+
+button
+	white-space: nowrap
+	font: 300 1em/1.5 Futura
+	padding: $quarter-gutter $half-gutter
+	background: #eee linear-gradient(to bottom, rgba(#fff, .5), rgba(#fff, 0))
+	text-transform: uppercase
+	text-shadow: 0 1px 0 rgba(#fff, .4)
+	box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .5em 0 #777, 0 .6em .3em rgba(#000, .2)
+	cursor: pointer
+	user-select: none
+	outline: none
+	border-radius: .4em
+	border: none
+	display: flex
+	justify-content: center
+	align-items: center
+	position: relative
+	&:active
+		top: .3em
+		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 #777, 0 .3em .1em rgba(#000, .2)
+	&.toggle
+		&.on
+			top: .3em
+			box-shadow: inset 0 0 .4em rgba(#fff, 1), inset 0 0 4em rgba(#fff, .5), inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 darken($color-orange, 20), 0 .3em .1em rgba(#fff, .2), 0 .3em 1em lighten($color-orange, 20), 0 .3em 2em $color-orange
+			background-color: $color-orange
+	&.dark
+		background: #555 linear-gradient(to bottom, rgba(#fff, .3), rgba(#fff, 0))
+		color: #fff
+		text-shadow: 0 -1px 0 rgba(#000, .4)
+		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .5em 0 #333, 0 .6em .3em rgba(#000, .2)
+		&:active
+			box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 #333, 0 .3em .1em rgba(#000, .2)
+
+#wrap
+	background: #333
+	background-size: 20em
+	border-radius: 1em
+	min-height: 100%
+	min-width: 100%
+	position: absolute
+	top: 0
+	left: 0
+	padding: $quarter-gutter 0 0 $quarter-gutter
+	box-sizing: border-box
+	display: flex
+	flex-flow: column nowrap
+
+.row, .col,
+.node-row, .node-col
+	display: flex
+	& > *
+		display: flex
+		flex-flow: column nowrap
+		flex: 1 1 auto
+
+.row,
+.node-row
+	flex-flow: row nowrap
+	flex: 1 1 auto
+	&.distribute > *
+		width: 0
+		flex: 1 1 auto
+
+.row
+	& > *:not(:last-child)
+		margin: 0 $half-gutter 0 0
+
+.col,
+.node-col
+	flex-flow: column nowrap
+	flex: 1 1 auto
+
+.col
+	& > *:not(:last-child)
+		margin: 0 0 $half-gutter 0
+
+section
+	$screw-margin: .15em
+	$screw-size: .9em
+
+	border-radius: .5em
+	padding: $half-gutter
+	background: no-repeat url('/img/screw.svg') $screw-margin $screw-margin, no-repeat url('/img/screw.svg') $screw-margin calc(100% - #{$screw-margin}), no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) $screw-margin, no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) calc(100% - #{$screw-margin}), #ddd url('/img/noise.png')
+	background-size: $screw-size, $screw-size, $screw-size, $screw-size, auto
+	box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #000, 0 .05em .3em rgba(#000, .8)
+	text-shadow: 0 1px 0 rgba(#fff, .4)
+	margin: 0 $quarter-gutter $quarter-gutter 0 !important
+	flex: 1 1 auto
+	display: flex
+	flex-flow: column nowrap
+	header
+		$border-radius: .3em
+		display: flex
+		align-items: flex-end
+		height: 1em
+		font-size: 1.3em
+		text-transform: uppercase
+		flex: 0 0 auto
+		&::before, &::after
+			flex: 1 0 0
+			height: .8em
+			display: block
+			content: ''
+			border-color: rgba(#000, .8)
+			border-width: 1px
+		&::before
+			border-style: solid none none solid
+			border-top-left-radius: $border-radius
+			margin-right: $quarter-gutter
+			padding-right: $quarter-gutter
+		&::after
+			border-style: solid solid none none
+			border-top-right-radius: $border-radius
+			margin-left: $quarter-gutter
+			padding-left: $quarter-gutter
+	& > *
+		flex: 1 1 auto
+		display: flex
+		flex-flow: column nowrap
+	.content
+		flex: 1 1 auto
+		white-space: nowrap
+		padding: $quarter-gutter $half-gutter $half-gutter $half-gutter
+		display: flex
+		flex-flow: column nowrap
+		justify-content: space-around
+
+module
+	component
+		flex: 1 1 auto
+		display: flex
+		flex-flow: column nowrap
+
+footer
+	@extend section
+	background-color: #666
+	box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#000, .4), 0 .05em .3em rgba(#000, .8)
+	color: #fff
+	text-shadow: 0 -1px 0 rgba(#000, .4)
+
+	display: flex
+	flex: 1 0 auto
+	flex-flow: column nowrap
+	align-items: flex-end
+	&::before
+		content: ''
+		width: 100%
+		display: block
+		flex: 1 1 auto
+	.contents
+		width: 100%
+		display: flex
+		flex: 0 0 auto !important
+		flex-flow: row nowrap
+		align-items: stretch
+		& > *
+			flex: 1 0 auto
+			width: 0
+		.screens
+			display: flex
+			align-items: center
+			padding-left: $quarter-gutter
+		.logo
+			background: url('/img/logo-footer.svg') no-repeat 50% 50%
+			background-size: contain
+		.host
+			display: flex
+			align-items: center
+			justify-content: flex-end
+			padding-right: $quarter-gutter
+
+.control-block
+	display: flex
+	align-items: center
+	flex-flow: row nowrap
+	margin: 0 0 $quarter-gutter 0 !important
+	label
+		flex: 1 0 0
+		text-align: right
+		text-transform: uppercase
+		margin: 0 $half-gutter 0 0
+	.display
+		flex: 2 0 0
+		text-align: right
+
+.graph, .display
+	background: radial-gradient(circle at 0 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 100% 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 50% 0, rgba(#fff, .1), transparent), linear-gradient(to bottom, rgba(#fff, .1), transparent 60%), repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(#fff, .04) 2px, rgba(#fff, .02) 4px), #000
+	padding: ($quarter-gutter / 2) $quarter-gutter
+	border-radius: .3em
+	box-shadow: inset 0 .2em .5em rgba(#000, .7)
+	border-top: 1px solid #000
+	border-bottom: 1px solid #fff
+	font: 1.2em LedSimulator
+	text-shadow: 0 0 .5em rgba($color-graph, 1)
+	color: $color-graph
+	&.alert-red
+		animation: graph-alert-red 1s infinite linear
+
+@keyframes graph-alert-red
+	$color: #a10
+	0%
+		background-color: #000
+		color: $color-graph
+		text-shadow: 0 0 .5em rgba($color-graph, 1)
+	30%
+		background-color: #000
+		color: $color-graph
+		text-shadow: 0 0 .5em rgba($color-graph, 1)
+	40%
+		background-color: $color
+		color: lighten($color, 50)
+		text-shadow: 0 0 .5em rgba(lighten($color, 40), 1)
+	70%
+		background-color: $color
+		color: lighten($color, 50)
+		text-shadow: 0 0 .5em rgba(lighten($color, 40), 1)
+	100%
+		background-color: #000
+		text-shadow: 0 0 .5em rgba($color-graph, 1)
