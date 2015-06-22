@@ -124,10 +124,35 @@ section
 		justify-content: space-around
 
 module
+	flex: 1 1 auto
+	display: flex
+	flex-flow: column nowrap
 	component
 		flex: 1 1 auto
 		display: flex
 		flex-flow: column nowrap
+
+footer
+	@extend section
+	background-color: #666
+	box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#000, .4), 0 .05em .3em rgba(#000, .8)
+	color: #fff
+	text-shadow: 0 -1px 0 rgba(#000, .4)
+	flex: 0 1 auto !important
+	display: flex
+	flex-flow: row nowrap
+	align-items: stretch
+	& > *
+		flex: 1 0 auto
+		width: 0
+	.screens
+		padding-left: $quarter-gutter
+	.logo
+		background: url('/img/logo-footer.svg') no-repeat 50% 50%
+		background-size: contain
+	.host
+		text-align: right
+		padding-right: $quarter-gutter
 
 .control-block
 	display: flex
