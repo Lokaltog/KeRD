@@ -20,6 +20,7 @@ export default {
 			port: 8085,
 			refreshRate: 1,
 			ws: null,
+			wsConnected: false,
 
 			data: {},
 
@@ -81,6 +82,9 @@ export default {
 				this.$broadcast(k, msg[k])
 			})
 		})
+
+		this.ws.addOpenHandler(() => this.wsConnected = true)
+		this.ws.addCloseHandler(() => this.wsConnected = false)
 
 		this.ws.connect().fail(msg => console.error(msg))
 
