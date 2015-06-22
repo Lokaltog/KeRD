@@ -94,6 +94,8 @@ export default {
 			'v.lat',
 			'v.altitude',
 			'v.heightFromTerrain',
+			'v.orbitalVelocity',
+			'v.surfaceVelocity',
 			'o.PeA',
 			'o.ApA',
 			'o.timeToAp',
@@ -102,7 +104,10 @@ export default {
 			'o.eccentricity',
 			'o.epoch',
 			'o.period',
-			'o.relativeVelocity',
+			'tar.o.velocity',
+			'o.sma',
+			'o.lan',
+			'o.trueAnomaly',
 		]})
 	},
 	methods: {
