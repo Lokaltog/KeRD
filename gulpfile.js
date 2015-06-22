@@ -47,6 +47,7 @@ var config = {
 		'd3': '/js/lib/ext/d3',
 		'jquery': '/js/lib/ext/jquery',
 		'moment': '/js/lib/ext/moment',
+		'numeral': '/js/lib/ext/numeral',
 		'page': '/js/lib/ext/page',
 		'vex.dialog': '/js/lib/ext/vex.dialog',
 		'vex': '/js/lib/ext/vex',
