@@ -11,6 +11,7 @@ export default {
 		module: require('../module'),
 
 		actiongroups: require('../modules/actiongroups'),
+		history: require('../modules/history'),
 		map: require('../modules/map'),
 		orbit: require('../modules/orbit'),
 	},
@@ -54,12 +55,27 @@ export default {
 							],
 						},
 						{
-							type: 'section',
+							type: 'row',
 							content: [
 								{
-									type: 'module',
-									id: 'map',
-									config: {},
+									type: 'section',
+									content: [
+										{
+											type: 'module',
+											id: 'map',
+											config: {},
+										},
+									],
+								},
+								{
+									type: 'section',
+									content: [
+										{
+											type: 'module',
+											id: 'history',
+											config: {},
+										},
+									],
 								},
 							],
 						},
