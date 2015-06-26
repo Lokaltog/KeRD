@@ -71,6 +71,8 @@ export default {
 	created() {
 		this.ws = new WS(`ws://${this.host}:${this.port}/datalink`)
 
+		this.ws.addOpenHandler(() => this.wsConnected = true)
+		this.ws.addCloseHandler(() => this.wsConnected = false)
 		this.ws.addMessageHandler(ev => {
 			var msg = JSON.parse(ev.data)
 
@@ -79,17 +81,15 @@ export default {
 					this.data.$add(k, null)
 				}
 				this.data[k] = msg[k]
-				this.$broadcast(k, msg[k])
 			})
 		})
 
-		this.ws.addOpenHandler(() => this.wsConnected = true)
-		this.ws.addCloseHandler(() => this.wsConnected = false)
-
 		this.ws.connect().fail(msg => console.error(msg))
 
+		this.refreshInterval = parseInt(1 / this.refreshRate * 1000)
+
 		// Subscribe to data from Telemachus
-		this.ws.send({rate: parseInt(1 / this.refreshRate * 1000), '+': [
+		this.ws.send({rate: this.refreshInterval, '+': [
 			'v.long',
 			'v.lat',
 			'v.altitude',
