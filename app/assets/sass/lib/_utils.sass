@@ -1,14 +1,16 @@
-.tag
-	background-image: linear-gradient(to bottom, rgba(#fff, .2), transparent)
-	box-shadow: inset 0 -1px 0 rgba(#000, .2), inset 0 1px 0 rgba(#fff, .3)
-	text-shadow: 0 -1px 0 rgba(#000, .08)
+@import 'lib/settings'
 
-	color: #fff
-	text-align: center
-	text-transform: uppercase
-	border-radius: $border-radius
-	text-shadow: 0 -1px 0 rgba(#000, .5)
-	padding: $quarter-gutter $half-gutter
-	white-space: nowrap
-	overflow: hidden
-	text-overflow: ellipsis
+.section
+	$screw-margin: .15em
+	$screw-size: .9em
+
+	border-radius: .5em
+	padding: $half-gutter
+	background: no-repeat url('/img/screw.svg') $screw-margin $screw-margin, no-repeat url('/img/screw.svg') $screw-margin calc(100% - #{$screw-margin}), no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) $screw-margin, no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) calc(100% - #{$screw-margin}), #ddd url('/img/noise.png')
+	background-size: $screw-size, $screw-size, $screw-size, $screw-size, auto
+	box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #000, 0 .05em .3em rgba(#000, .8)
+	text-shadow: 0 1px 0 rgba(#fff, .4)
+	margin: 0 $quarter-gutter $quarter-gutter 0 !important
+	flex: 1 1 auto
+	display: flex
+	flex-flow: column nowrap

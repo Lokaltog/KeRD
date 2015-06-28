@@ -12,6 +12,26 @@ export default {
 		orbit: require('../modules/orbit'),
 	},
 	data() {
+		// Layout wrapper functions
+		function wrapper(type) {
+			return function(...contents) {
+				return {
+					type: type,
+					contents: contents
+				}
+			}
+		}
+		var row = wrapper('row')
+		var col = wrapper('col')
+		var section = wrapper('section')
+		var module = function(id, config={}) {
+			return {
+				type: 'module',
+				id: id,
+				config: config,
+			}
+		}
+
 		return {
 			host: '127.0.0.1',
 			port: 8085,
@@ -22,62 +42,25 @@ export default {
 			data: {},
 
 			layout: [
-				{
-					type: 'col',
-					content: [
-						{
-							type: 'row',
-							content: [
-								{
-									type: 'section',
-									content: [
-										{
-											type: 'module',
-											id: 'actiongroups',
-											config: {},
-										},
-									],
-								},
-								{
-									type: 'section',
-									content: [
-										{
-											type: 'module',
-											id: 'orbit',
-											config: {},
-										},
-									],
-								},
-							],
-						},
-						{
-							type: 'row',
-							content: [
-								{
-									type: 'section',
-									content: [
-										{
-											type: 'module',
-											id: 'map',
-											config: {},
-										},
-									],
-								},
-								{
-									type: 'section',
-									content: [
-										{
-											type: 'module',
-											id: 'history',
-											config: {},
-										},
-									],
-								},
-							],
-						},
-					],
-				},
-			],
+			    col(
+				    row(
+					    section(
+						    row(
+							    col(
+								    module('actiongroups')
+							    ) 
+						    )
+					    )
+				    ),
+				    row(
+					    section(module('orbit'))
+				    ),
+				    row(
+					    section(module('map')),
+					    section(module('history'))
+				    )
+			    )
+		],
 		}
 	},
 	created() {
