@@ -12,6 +12,8 @@ export default {
 		orbit: require('../modules/orbit'),
 	},
 	data() {
+		var refreshRate = 1
+
 		// Layout wrapper functions
 		function wrapper(type) {
 			return function(...contents) {
@@ -35,7 +37,8 @@ export default {
 		return {
 			host: '127.0.0.1',
 			port: 8085,
-			refreshRate: 1,
+			refreshRate: refreshRate,
+			refreshInterval: parseInt(1 / refreshRate * 1000),
 			ws: null,
 			wsConnected: false,
 
@@ -80,8 +83,6 @@ export default {
 		})
 
 		this.ws.connect().fail(msg => console.error(msg))
-
-		this.refreshInterval = parseInt(1 / this.refreshRate * 1000)
 
 		// Subscribe to data from Telemachus
 		this.ws.send({rate: this.refreshInterval, '+': [
