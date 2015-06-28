@@ -4,6 +4,8 @@ require('./main.sass')
 import Vue from 'vue'
 import $ from 'jquery'
 
+Vue.config.debug = DEBUG
+
 new Vue(require('./app')).$mount('#app')
 
 $(document).bind('touchmove', false)
