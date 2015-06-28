@@ -1,5 +1,3 @@
-import Vue from 'vue'
-import $ from 'jquery'
 import d3 from 'd3'
 
 export default {
