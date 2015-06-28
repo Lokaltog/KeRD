@@ -56,13 +56,9 @@ export default {
 			    .range([height - 20, 0])
 
 		var line = d3.svg.line()
-			    .interpolate('basis')
-			    .x(function(d, i) {
-				    return x(now - (limit - 1 - i) * 1000)
-			    })
-			    .y(function(d) {
-				    return y(d)
-			    })
+			    .interpolate('monotone')
+			    .x((d, i) => x(now - (limit - 1 - i) * 1000))
+			    .y((d) => y(d))
 
 		var svg = d3.select('.orbit-graph').append('svg')
 			    .attr('viewBox', `0 0 ${width} ${height}`)
@@ -88,19 +84,19 @@ export default {
 		}
 
 		function tick(data) {
-			now = new Date()
 			var key
+			now = new Date()
 
 			for (key in groups) {
 				if (groups.hasOwnProperty(key)) {
 					// Add new values
-					groups[key].data.push(data[key])
+					groups[key].data.push(data[key] || 0)
 					groups[key].path.attr('d', line)
 				}
 			}
 
 			x.domain([now - (limit - 2) * 1000, now - 1000])
-			y.domain([0, d3.max(Object.keys(data).map(key => data[key]))])
+			y.domain([0, d3.max(Object.keys(data).map((key) => data[key]))])
 
 			// Slide x-axis left
 			axis.transition()
