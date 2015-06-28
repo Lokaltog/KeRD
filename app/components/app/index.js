@@ -10,6 +10,7 @@ export default {
 		actiongroups: require('../modules/actiongroups'),
 		history: require('../modules/history'),
 		map: require('../modules/map'),
+		navigation: require('../modules/navigation'),
 		orbit: require('../modules/orbit'),
 	},
 	data() {
@@ -62,7 +63,8 @@ export default {
 				    row(
 					    section(module('map')),
 					    section(module('history'))
-				    )
+				    ),
+				    section(module('navigation'))
 			    )
 		],
 		}
