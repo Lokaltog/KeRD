@@ -49,6 +49,8 @@ var config = {
 		'moment': '/js/lib/ext/moment',
 		'numeral': '/js/lib/ext/numeral',
 		'page': '/js/lib/ext/page',
+		'three': '/js/lib/ext/three',
+		'tween': '/js/lib/ext/tween',
 		'vex.dialog': '/js/lib/ext/vex.dialog',
 		'vex': '/js/lib/ext/vex',
 		'vue': '/js/lib/ext/vue',
