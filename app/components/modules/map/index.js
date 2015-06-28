@@ -55,7 +55,7 @@ export default {
 		scene.add(new THREE.AmbientLight(0x888888))
 
 		var light = new THREE.DirectionalLight(0xffeecc, 1)
-		light.position.set(5, 0, 5)
+		light.position.set(0, 0, 500)
 		scene.add(light)
 
 		// Init body geometry and materials
@@ -64,6 +64,7 @@ export default {
 			map: THREE.ImageUtils.loadTexture(require('../../../assets/img/maps/kerbin-diffuse.jpg')),
 			specularMap: THREE.ImageUtils.loadTexture(require('../../../assets/img/maps/kerbin-specular.png')),
 			normalMap: THREE.ImageUtils.loadTexture(require('../../../assets/img/maps/kerbin-normal.png')),
+			shininess: 50,
 		})
 		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
 
