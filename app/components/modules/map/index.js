@@ -52,7 +52,7 @@ export default {
 		var scene = new THREE.Scene()
 		var camera = new THREE.PerspectiveCamera(30, 1, 0.01, 1000)
 
-		scene.add(new THREE.AmbientLight(0x444444))
+		scene.add(new THREE.AmbientLight(0x888888))
 
 		var light = new THREE.DirectionalLight(0xffeecc, 1)
 		light.position.set(5, 0, 5)
@@ -60,9 +60,12 @@ export default {
 
 		// Init body geometry and materials
 		var bodyGeometry = new THREE.SphereGeometry(this.displayRadius, 32, 32)
-		var bodyMaterial = new THREE.MeshPhongMaterial()
+		var bodyMaterial = new THREE.MeshPhongMaterial({
+			map: THREE.ImageUtils.loadTexture(require('../../../assets/img/maps/kerbin-diffuse.jpg')),
+			specularMap: THREE.ImageUtils.loadTexture(require('../../../assets/img/maps/kerbin-specular.png')),
+			normalMap: THREE.ImageUtils.loadTexture(require('../../../assets/img/maps/kerbin-normal.png')),
+		})
 		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
-		bodyMaterial.map = THREE.ImageUtils.loadTexture(require('../../../assets/img/maps/diffuse/kerbin.jpg'))
 
 		// Init vessel geometry
 		var vesselGeometry = new THREE.SphereGeometry(1, 32, 32)
@@ -85,7 +88,7 @@ export default {
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['v.altitude'], () => {
 			// Animate vessel and camera positions
 			var lat = this.data['v.lat']
-			var long = this.data['v.long']
+			var long = this.data['v.long'] - 270
 			var alt = this.data['v.altitude']
 
 			var latLongTweenCoords = {
