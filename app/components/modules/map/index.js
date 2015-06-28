@@ -69,12 +69,21 @@ export default {
 		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
 
 		// Init vessel geometry
-		var vesselGeometry = new THREE.SphereGeometry(1, 32, 32)
+		var vesselGeometry = new THREE.SphereGeometry(2, 8, 8)
 		var vesselMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 		var vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
 
+		// Init vessel line (to body center, indicating altitude)
+		var lineGeometry = new THREE.Geometry()
+		var lineMaterial = new THREE.LineBasicMaterial({ color: 0x770000 })
+		var line = new THREE.Line(lineGeometry, lineMaterial)
+
+		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
+		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
+
 		scene.add(bodyMesh)
 		scene.add(vesselMesh)
+		scene.add(line)
 
 		// Animate callback
 		var animate = () => {
@@ -122,6 +131,11 @@ export default {
 				vesselMesh.position.x = vesselCoords.x
 				vesselMesh.position.y = vesselCoords.y
 				vesselMesh.position.z = vesselCoords.z
+
+				lineGeometry.vertices[1].x = vesselCoords.x
+				lineGeometry.vertices[1].y = vesselCoords.y
+				lineGeometry.vertices[1].z = vesselCoords.z
+				lineGeometry.verticesNeedUpdate = true
 			})
 			latLongTween.start()
 
