@@ -1,5 +1,6 @@
 import numeral from 'numeral'
 import WS from 'websocket'
+import subscriptions from './subscriptions'
 
 export default {
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
@@ -68,11 +69,16 @@ export default {
 	},
 	created() {
 		this.ws = new WS(`ws://${this.host}:${this.port}/datalink`)
+		this.ws.addOpenHandler(() => {
+			this.wsConnected = true
 
-		this.ws.addOpenHandler(() => this.wsConnected = true)
+			// Subscribe to data from Telemachus
+			this.ws.send({rate: this.refreshInterval, '+': subscriptions})
+		})
 		this.ws.addCloseHandler(() => this.wsConnected = false)
 		this.ws.addMessageHandler(ev => {
 			var msg = JSON.parse(ev.data)
+			console.debug('Received message from Telemachus:', msg)
 
 			Object.keys(msg).forEach(k => {
 				if (!this.data[k]) {
@@ -81,30 +87,7 @@ export default {
 				this.data[k] = msg[k]
 			})
 		})
-
 		this.ws.connect().fail(msg => console.error(msg))
-
-		// Subscribe to data from Telemachus
-		this.ws.send({rate: this.refreshInterval, '+': [
-			'v.long',
-			'v.lat',
-			'v.altitude',
-			'v.heightFromTerrain',
-			'v.orbitalVelocity',
-			'v.surfaceVelocity',
-			'o.PeA',
-			'o.ApA',
-			'o.timeToAp',
-			'o.timeToPe',
-			'o.inclination',
-			'o.eccentricity',
-			'o.epoch',
-			'o.period',
-			'tar.o.velocity',
-			'o.sma',
-			'o.lan',
-			'o.trueAnomaly',
-		]})
 	},
 	methods: {
 		numeral: numeral,
