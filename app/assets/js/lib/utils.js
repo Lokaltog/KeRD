@@ -29,3 +29,23 @@ export function wrapDegDelta(delta) {
 	}
 	return delta
 }
+
+export function debounce(func, wait=250, immediate=false) {
+	// From http://davidwalsh.name/javascript-debounce-function
+	var timeout
+	return function() {
+		var args = arguments
+		var later = () => {
+			timeout = null
+			if (!immediate) {
+				func.apply(this, args)
+			}
+		}
+		var callNow = immediate && !timeout
+		clearTimeout(timeout)
+		timeout = setTimeout(later, wait)
+		if (callNow) {
+			func.apply(this, args)
+		}
+	}
+}

@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {deg2rad, wrapDegDelta} from 'utils'
+import {deg2rad, wrapDegDelta, debounce} from 'utils'
 
 export default {
 	inherit: true,
@@ -9,8 +9,6 @@ export default {
 	props: ['config'],
 	data() {
 		return {
-			w: 250,
-			h: 250,
 			displayRadius: 50,
 		}
 	},
@@ -20,8 +18,16 @@ export default {
 			alpha: true,
 			antialias: true,
 		})
-		renderer.setSize(this.w, this.h)
+		renderer.setSize(1, 1)
 		$('.navball').append(renderer.domElement)
+
+		// Resize renderer when window is resized
+		function resize() {
+			var $dim = $('.navball').width()
+			renderer.setSize($dim, $dim)
+		}
+		$(window).on('resize', debounce(resize))
+		resize()
 
 		// Create scene and setup camera and lights
 		var scene = new THREE.Scene()

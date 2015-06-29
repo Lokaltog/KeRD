@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {ll2cartesian, wrapDegDelta} from 'utils'
+import {ll2cartesian, wrapDegDelta, debounce} from 'utils'
 import {bodies} from 'resources/bodies'
 
 export default {
@@ -10,8 +10,6 @@ export default {
 	props: ['config'],
 	data() {
 		return {
-			w: 500,
-			h: 500,
 			displayRadius: 50,
 		}
 	},
@@ -23,8 +21,16 @@ export default {
 			alpha: true,
 			antialias: true,
 		})
-		renderer.setSize(this.w, this.h)
+		renderer.setSize(1, 1)
 		$('.orbital-display').append(renderer.domElement)
+
+		// Resize renderer when window is resized
+		function resize() {
+			var $dim = $('.orbital-display').width()
+			renderer.setSize($dim, $dim)
+		}
+		$(window).on('resize', debounce(resize))
+		resize()
 
 		// Create scene and setup camera and lights
 		var scene = new THREE.Scene()
