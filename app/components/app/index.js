@@ -1,6 +1,6 @@
 import numeral from 'numeral'
 import WS from 'websocket'
-import subscriptions from './subscriptions'
+import subscriptions from 'resources/subscriptions'
 
 export default {
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
