@@ -42,6 +42,7 @@ var config = {
 		'api': '/js/lib/api',
 		'cookie': '/js/lib/cookie',
 		'websocket': '/js/lib/websocket',
+		'utils': '/js/lib/utils',
 
 		'd3': '/js/lib/ext/d3',
 		'fastclick': '/js/lib/ext/fastclick',

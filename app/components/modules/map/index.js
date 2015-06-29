@@ -1,21 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-
-function radians(deg) {
-	return deg * Math.PI / 180
-}
-
-function latLongToCoords(lat, long, radius) {
-	var phi = radians(90 - lat)
-	var theta = radians(long + 180)
-
-	return {
-		x: -(radius * Math.sin(phi) * Math.cos(theta)),
-		y: (radius * Math.cos(phi)),
-		z: (radius * Math.sin(phi) * Math.sin(theta)),
-	}
-}
+import {ll2cartesian} from 'utils'
 
 export default {
 	inherit: true,
@@ -119,8 +105,8 @@ export default {
 
 			latLongTween.onUpdate(() => {
 				// Tween camera and vessel coords
-				var cameraCoords = latLongToCoords(0, latLongTweenCoords.long, 400)
-				var vesselCoords = latLongToCoords(latLongTweenCoords.lat, latLongTweenCoords.long, bodyRatio * (latLongTweenCoords.alt + this.bodyRadius))
+				var cameraCoords = ll2cartesian(0, latLongTweenCoords.long, 400)
+				var vesselCoords = ll2cartesian(latLongTweenCoords.lat, latLongTweenCoords.long, bodyRatio * (latLongTweenCoords.alt + this.bodyRadius))
 
 				camera.position.x = cameraCoords.x
 				camera.position.y = cameraCoords.y

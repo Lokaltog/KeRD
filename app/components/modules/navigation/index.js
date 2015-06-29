@@ -1,21 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-
-function radians(deg) {
-	return deg * Math.PI / 180
-}
-
-function latLongToCoords(lat, long, radius) {
-	var phi = radians(90 - lat)
-	var theta = radians(long + 180)
-
-	return {
-		x: -(radius * Math.sin(phi) * Math.cos(theta)),
-		y: (radius * Math.cos(phi)),
-		z: (radius * Math.sin(phi) * Math.sin(theta)),
-	}
-}
+import {deg2rad} from 'utils'
 
 export default {
 	inherit: true,
@@ -94,9 +80,9 @@ export default {
 
 			navballTween.onUpdate(() => {
 				navballMesh.rotation.order = 'ZXY'
-				navballMesh.rotation.z = radians(navballTweenProperties.roll)
-				navballMesh.rotation.x = radians(navballTweenProperties.pitch)
-				navballMesh.rotation.y = radians(navballTweenProperties.heading)
+				navballMesh.rotation.z = deg2rad(navballTweenProperties.roll)
+				navballMesh.rotation.x = deg2rad(navballTweenProperties.pitch)
+				navballMesh.rotation.y = deg2rad(navballTweenProperties.heading)
 			})
 			navballTween.start()
 		})
