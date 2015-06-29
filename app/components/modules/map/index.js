@@ -13,9 +13,6 @@ export default {
 			long: 0,
 			alt: 0,
 
-			locX: 0,
-			locY: 0,
-
 			w: 500,
 			h: 500,
 			bodyRadius: 600000, // for Kerbin, will be dynamic when body info is stored
@@ -32,7 +29,7 @@ export default {
 			antialias: true,
 		})
 		renderer.setSize(this.w, this.h)
-		$('.threed').append(renderer.domElement)
+		$('.orbital-display').append(renderer.domElement)
 
 		// Create scene and setup camera and lights
 		var scene = new THREE.Scene()
@@ -124,15 +121,6 @@ export default {
 				lineGeometry.verticesNeedUpdate = true
 			})
 			latLongTween.start()
-
-			// Draw icon on map
-			var map = $('.map', this.$el)
-			var w = map.width()
-			var h = map.height()
-			var iconOffset = -$('.target', this.$el).width() / 2
-
-			this.locX = ((w / 2) + ((long / 180) * (w / 2))) + iconOffset + 'px'
-			this.locY = ((h / 2) - ((lat / 90) * (h / 2))) + iconOffset + 'px'
 		})
 
 	},
