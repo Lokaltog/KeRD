@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {deg2rad} from 'utils'
+import {deg2rad, wrapDegDelta} from 'utils'
 
 export default {
 	inherit: true,
@@ -9,9 +9,6 @@ export default {
 	props: ['config'],
 	data() {
 		return {
-			pitch: 0,
-			roll: 0,
-			heading: 0,
 			w: 250,
 			h: 250,
 			displayRadius: 50,
@@ -59,32 +56,36 @@ export default {
 		}
 		requestAnimationFrame(animate)
 
+		// Rotation tweening
+		var pitch = 0
+		var roll = 0
+		var heading = 0
+		var navballTweenProperties
+		var navballTween
+
 		this.$watch(() => this.data['n.pitch'] + this.data['n.roll'] + this.data['n.heading'], () => {
-			var pitch = this.data['n.pitch']
-			var roll = -this.data['n.roll']
-			var heading = 270 - this.data['n.heading']
-
-			var navballTweenProperties = {
-				pitch: this.pitch,
-				roll: this.roll,
-				heading: this.heading,
-			}
-
-			this.pitch = pitch
-			this.roll = roll
-			this.heading = heading
-
-			var navballTween = new TWEEN.Tween(navballTweenProperties).to({
+			navballTweenProperties = {
 				pitch: pitch,
 				roll: roll,
 				heading: heading,
+			}
+			navballTween = new TWEEN.Tween(navballTweenProperties).to({
+				// Add normalized delta values to current values
+				pitch: pitch + wrapDegDelta(this.data['n.pitch'] - pitch),
+				roll: roll + wrapDegDelta(this.data['n.roll'] - roll),
+				heading: heading + wrapDegDelta(this.data['n.heading'] - heading),
 			}, this.refreshInterval)
+
+			pitch = this.data['n.pitch']
+			roll = this.data['n.roll']
+			heading = this.data['n.heading']
 
 			navballTween.onUpdate(() => {
 				navballMesh.rotation.order = 'ZXY'
-				navballMesh.rotation.z = deg2rad(navballTweenProperties.roll)
+				// Fix rotation offsets to work with KSP texture orientation
+				navballMesh.rotation.z = deg2rad(-navballTweenProperties.roll)
 				navballMesh.rotation.x = deg2rad(navballTweenProperties.pitch)
-				navballMesh.rotation.y = deg2rad(navballTweenProperties.heading)
+				navballMesh.rotation.y = deg2rad(270 - navballTweenProperties.heading)
 			})
 			navballTween.start()
 		})

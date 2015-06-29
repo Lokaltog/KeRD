@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {ll2cartesian} from 'utils'
+import {ll2cartesian, wrapDegDelta} from 'utils'
 import {bodies} from 'resources/bodies'
 
 export default {
@@ -10,13 +10,8 @@ export default {
 	props: ['config'],
 	data() {
 		return {
-			lat: 0,
-			long: 0,
-			alt: 0,
-
 			w: 500,
 			h: 500,
-
 			displayRadius: 50,
 		}
 	},
@@ -75,6 +70,13 @@ export default {
 		}
 		requestAnimationFrame(animate)
 
+		// Tweening
+		var lat = 0
+		var lon = 0
+		var alt = 0
+		var latLongTweenProperties
+		var latLongTween
+
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['v.altitude'] + this.data['v.body'], () => {
 			var body = bodies[this.data['v.body']]
 
@@ -93,30 +95,29 @@ export default {
 			}
 
 			// Animate vessel and camera positions
-			var lat = this.data['v.lat']
-			var long = this.data['v.long'] - 270 // Texture offset
-			var alt = this.data['v.altitude']
-
-			var latLongTweenCoords = {
-				lat: this.lat,
-				long: this.long,
-				alt: this.alt,
-			}
-
-			this.lat = lat
-			this.long = long
-			this.alt = alt
-
-			var latLongTween = new TWEEN.Tween(latLongTweenCoords).to({
+			latLongTweenProperties = {
 				lat: lat,
-				long: long,
+				lon: lon,
 				alt: alt,
+			}
+			latLongTween = new TWEEN.Tween(latLongTweenProperties).to({
+				// Add normalized delta values to current values
+				lat: lat + wrapDegDelta(this.data['v.lat'] - lat),
+				lon: lon + wrapDegDelta(this.data['v.long'] - lon),
+				alt: alt + wrapDegDelta(this.data['v.altitude'] - alt),
 			}, this.refreshInterval)
 
+			lat = this.data['v.lat']
+			lon = this.data['v.long']
+			alt = this.data['v.altitude']
+
 			latLongTween.onUpdate(() => {
-				// Tween camera and vessel coords
-				var cameraCoords = ll2cartesian(0, latLongTweenCoords.long, 400)
-				var vesselCoords = ll2cartesian(latLongTweenCoords.lat, latLongTweenCoords.long, (this.displayRadius / body.radius) * (latLongTweenCoords.alt + body.radius))
+				var lat = latLongTweenProperties.lat
+				var lon = latLongTweenProperties.lon - 270 // Texture offset
+				var alt = latLongTweenProperties.alt
+
+				var cameraCoords = ll2cartesian(0, lon, 400)
+				var vesselCoords = ll2cartesian(lat, lon, (this.displayRadius / body.radius) * (alt + body.radius))
 
 				camera.position.x = cameraCoords.x
 				camera.position.y = cameraCoords.y
