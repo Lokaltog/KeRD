@@ -1,4 +1,21 @@
 .mod-navigation
-	.navball
+	.content
 		max-width: 14em
-		max-height: 14em
+	.navball
+		background: #444
+		box-shadow: inset 0 .2em .7em #000, inset 0 1px 0 #000, 0 1px 0 #fff
+		width: 1em
+		height: 1em
+		border-radius: 50%
+		position: relative
+		&::after
+			content: ''
+			display: block
+			position: absolute
+			width: 1em
+			height: 1em
+			top: 50%
+			left: 50%
+			transform: translate(-50%, -50%)
+			border-radius: 50%
+			border: 3px solid #f00

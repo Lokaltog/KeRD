@@ -23,18 +23,22 @@ export default {
 
 		// Resize renderer when window is resized
 		function resize() {
-			var $dim = $('.navball').width()
+			var $dim = $('.mod-navigation .content').width()
 			renderer.setSize($dim, $dim)
+			$('.mod-navigation .navball').css({
+				width: `${$dim}px`,
+				height: `${$dim}px`,
+			})
 		}
 		$(window).on('resize', debounce(resize))
 		resize()
 
 		// Create scene and setup camera and lights
 		var scene = new THREE.Scene()
-		var camera = new THREE.PerspectiveCamera(30, 1, 0.01, 1000)
+		var camera = new THREE.PerspectiveCamera(32, 1, 0.01, 1000)
 		camera.position.z = 200
 
-		scene.add(new THREE.AmbientLight(0x888888))
+		scene.add(new THREE.AmbientLight(0xaaaaaa))
 
 		var light = new THREE.DirectionalLight(0xffffff, 1)
 		light.position.set(500, 500, 500)
