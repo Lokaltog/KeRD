@@ -40,9 +40,14 @@ export default {
 
 		scene.add(new THREE.AmbientLight(0xaaaaaa))
 
-		var light = new THREE.DirectionalLight(0xffffff, 1)
-		light.position.set(500, 500, 500)
-		scene.add(light)
+		var light1 = new THREE.DirectionalLight(0xffffff, 1)
+		light1.position.set(1500, 1500, 500)
+
+		var light2 = new THREE.DirectionalLight(0xffffff, .5)
+		light2.position.set(-1500, -1500, 500)
+
+		scene.add(light1)
+		scene.add(light2)
 
 		// Init body geometry and materials
 		var navballGeometry = new THREE.SphereGeometry(this.displayRadius, 48, 48)
