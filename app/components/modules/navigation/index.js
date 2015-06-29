@@ -38,9 +38,11 @@ export default {
 		scene.add(light)
 
 		// Init body geometry and materials
-		var navballGeometry = new THREE.SphereGeometry(this.displayRadius, 32, 32)
+		var navballGeometry = new THREE.SphereGeometry(this.displayRadius, 48, 48)
+		var navballTexture = THREE.ImageUtils.loadTexture(require('../../../assets/img/textures/navball.png'))
+		navballTexture.anisotropy = renderer.getMaxAnisotropy()
 		var navballMaterial = new THREE.MeshPhongMaterial({
-			map: THREE.ImageUtils.loadTexture(require('../../../assets/img/textures/navball.png')),
+			map: navballTexture,
 			shininess: 80,
 		})
 		var navballMesh = new THREE.Mesh(navballGeometry, navballMaterial)

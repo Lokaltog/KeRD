@@ -44,6 +44,7 @@ var config = {
 		'websocket': '/js/lib/websocket',
 		'utils': '/js/lib/utils',
 
+		'resources/bodies': '/js/resources/bodies',
 		'resources/subscriptions': '/js/resources/subscriptions',
 
 		'd3': '/js/lib/ext/d3',
