@@ -135,14 +135,14 @@ export default {
 			// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
 			var ratio = (this.displayRadius / body.radius)
 
-			var aop = this.data['o.argumentOfPeriapsis']
-			var incl = this.data['o.inclination']
+			var aop = -this.data['o.argumentOfPeriapsis']
+			var incl = 90 - this.data['o.inclination']
 			var sma = this.data['o.sma']
 			var ecc = this.data['o.eccentricity']
 
 			var rx = ratio * sma
 			var ry = ratio * (sma * (Math.sqrt(1 - Math.pow(ecc, 2))))
-			var cx = -Math.sqrt(Math.pow(rx, 2) - Math.pow(ry, 2))
+			var cx = Math.sqrt(Math.pow(rx, 2) - Math.pow(ry, 2))
 			var cy = 0
 
 			orbitPath = new THREE.CurvePath()
@@ -153,9 +153,7 @@ export default {
 			orbitLine.geometry.vertices = orbitGeometry.vertices
 			orbitLine.geometry.verticesNeedUpdate = true
 
-			orbitLine.rotation.order = 'XYZ'
-			orbitLine.rotation.x = deg2rad(90 - incl)
-			orbitLine.rotation.y = deg2rad(0)
+			orbitLine.rotation.x = deg2rad(incl)
 			orbitLine.rotation.z = deg2rad(aop)
 
 			latLongTween.onUpdate(() => {
