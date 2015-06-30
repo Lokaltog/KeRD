@@ -86,11 +86,12 @@ export default {
 		requestAnimationFrame(animate)
 
 		// Tweening
-		var lat = 0
-		var lon = 0
-		var alt = 0
-		var latLongTweenProperties
-		var latLongTween
+		var trueAnomaly = 0
+		var inclination = 0
+		var argumentOfPeriapsis = 0
+
+		var vesselTweenProperties
+		var vesselTween
 
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['v.altitude'] + this.data['v.body'], () => {
 			var body = bodies[this.data['v.body']]
@@ -112,37 +113,37 @@ export default {
 			// Rotate body correctly in relation to Kerbol
 			// I have no idea why this is offset by -45deg, but it works
 			var epoch = this.data['o.epoch']
-			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360) - 45)
+			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360) - 45 - 180)
 
 			// Animate vessel and camera positions
-			latLongTweenProperties = {
-				lat: lat,
-				lon: lon,
-				alt: alt,
+			vesselTweenProperties = {
+				trueAnomaly: trueAnomaly,
+				inclination: inclination,
+				argumentOfPeriapsis: argumentOfPeriapsis,
 			}
-			latLongTween = new TWEEN.Tween(latLongTweenProperties).to({
+			vesselTween = new TWEEN.Tween(vesselTweenProperties).to({
 				// Add normalized delta values to current values
-				lat: lat + wrapDegDelta(this.data['v.lat'] - lat),
-				lon: lon + wrapDegDelta(this.data['v.long'] - lon),
-				alt: alt + wrapDegDelta(this.data['v.altitude'] - alt),
+				trueAnomaly: trueAnomaly + wrapDegDelta(this.data['o.trueAnomaly'] - trueAnomaly),
+				inclination: inclination + wrapDegDelta(this.data['o.inclination'] - inclination),
+				argumentOfPeriapsis: argumentOfPeriapsis + wrapDegDelta(this.data['o.argumentOfPeriapsis'] - argumentOfPeriapsis),
 			}, this.refreshInterval)
 
-			lat = this.data['v.lat']
-			lon = this.data['v.long']
-			alt = this.data['v.altitude']
+			trueAnomaly = this.data['o.trueAnomaly']
+			inclination = this.data['o.inclination']
+			argumentOfPeriapsis = this.data['o.argumentOfPeriapsis']
 
 			// Draw orbit ellipse
 			// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
 			var ratio = (this.displayRadius / body.radius)
 
-			var aop = -this.data['o.argumentOfPeriapsis']
+			var aop = this.data['o.argumentOfPeriapsis']
 			var incl = 90 - this.data['o.inclination']
 			var sma = this.data['o.sma']
 			var ecc = this.data['o.eccentricity']
 
 			var rx = ratio * sma
 			var ry = ratio * (sma * (Math.sqrt(1 - Math.pow(ecc, 2))))
-			var cx = Math.sqrt(Math.pow(rx, 2) - Math.pow(ry, 2))
+			var cx = -Math.sqrt(Math.pow(rx, 2) - Math.pow(ry, 2))
 			var cy = 0
 
 			orbitPath = new THREE.CurvePath()
@@ -153,33 +154,36 @@ export default {
 			orbitLine.geometry.vertices = orbitGeometry.vertices
 			orbitLine.geometry.verticesNeedUpdate = true
 
-			orbitLine.rotation.x = deg2rad(incl)
+			orbitLine.rotation.x = deg2rad(-incl)
 			orbitLine.rotation.z = deg2rad(aop)
 
-			latLongTween.onUpdate(() => {
-				var lat = latLongTweenProperties.lat
-				var lon = latLongTweenProperties.lon - 270 // Texture offset
-				var alt = latLongTweenProperties.alt
+			vesselTween.onUpdate(() => {
+				// Calculate orbital position
+				var sin = Math.sin
+				var cos = Math.cos
 
-				var cameraCoords = ll2cartesian(0, 0, 400)
-				var vesselCoords = ll2cartesian(lat, lon, (this.displayRadius / body.radius) * (alt + body.radius))
+				var ta = deg2rad(vesselTweenProperties.trueAnomaly)
+				var i = deg2rad(vesselTweenProperties.inclination)
+				var w = deg2rad(vesselTweenProperties.argumentOfPeriapsis)
+				var omega = deg2rad(0) // I have no idea why this works, and deg2rad(o.lan) does not
 
-				camera.position.x = cameraCoords.x
-				camera.position.y = cameraCoords.y
-				camera.position.z = cameraCoords.z
+				var r = ratio * sma * (1 - Math.pow(ecc, 2)) / (1 + ecc * cos(ta))
+				var ta_w = ta + w
+				var x = r * (cos(omega) * cos(ta_w) - sin(omega) * sin(ta_w) * cos(i))
+				var y = r * (sin(omega) * cos(ta_w) + cos(omega) * sin(ta_w) * cos(i))
+				var z = r * (sin(ta_w) * sin(i))
+
+				vesselMesh.position.x = x
+				vesselMesh.position.y = z
+				vesselMesh.position.z = -y
+				lineGeometry.vertices[1].x = x
+				lineGeometry.vertices[1].y = z
+				lineGeometry.vertices[1].z = -y
+				lineGeometry.verticesNeedUpdate = true
 
 				camera.lookAt(origo)
-
-				vesselMesh.position.x = vesselCoords.x
-				vesselMesh.position.y = vesselCoords.y
-				vesselMesh.position.z = vesselCoords.z
-
-				lineGeometry.vertices[1].x = vesselCoords.x
-				lineGeometry.vertices[1].y = vesselCoords.y
-				lineGeometry.vertices[1].z = vesselCoords.z
-				lineGeometry.verticesNeedUpdate = true
 			})
-			latLongTween.start()
+			vesselTween.start()
 		})
 
 	},
