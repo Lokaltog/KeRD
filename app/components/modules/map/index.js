@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {ll2cartesian, wrapDegDelta, debounce} from 'utils'
+import {ll2cartesian, wrapDegDelta, debounce, deg2rad} from 'utils'
 import {bodies} from 'resources/bodies'
 
 export default {
@@ -36,16 +36,16 @@ export default {
 		var scene = new THREE.Scene()
 		var camera = new THREE.PerspectiveCamera(30, 1, 0.01, 1000)
 
-		scene.add(new THREE.AmbientLight(0xaaaaaa))
+		scene.add(new THREE.AmbientLight(0x666666))
 
-		var light = new THREE.DirectionalLight(0xffeecc, 1)
-		light.position.set(0, 0, 500)
+		var light = new THREE.DirectionalLight(0xffffff, 2)
+		light.position.set(5000, 0, 0)
 		scene.add(light)
 
 		// Init body geometry and materials
 		var bodyGeometry = new THREE.SphereGeometry(this.displayRadius, 32, 32)
 		var bodyMaterial = new THREE.MeshPhongMaterial({
-			shininess: 50,
+			shininess: 30,
 		})
 		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
 
@@ -100,6 +100,11 @@ export default {
 				bodyMaterial.needsUpdate = true
 			}
 
+			// Rotate body correctly in relation to Kerbol
+			// I have no idea why this is offset by -45deg, but it works
+			var epoch = this.data['o.epoch']
+			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360) - 45)
+
 			// Animate vessel and camera positions
 			latLongTweenProperties = {
 				lat: lat,
@@ -122,7 +127,7 @@ export default {
 				var lon = latLongTweenProperties.lon - 270 // Texture offset
 				var alt = latLongTweenProperties.alt
 
-				var cameraCoords = ll2cartesian(0, lon, 400)
+				var cameraCoords = ll2cartesian(0, 0, 400)
 				var vesselCoords = ll2cartesian(lat, lon, (this.displayRadius / body.radius) * (alt + body.radius))
 
 				camera.position.x = cameraCoords.x
