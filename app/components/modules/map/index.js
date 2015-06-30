@@ -62,9 +62,18 @@ export default {
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 
+		// Init orbit ellipse
+		var orbitMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+		var orbitPath = new THREE.CurvePath()
+		orbitPath.add(new THREE.EllipseCurve(0, 0, 1, 1, 0, 2 * Math.PI, false))
+		var orbitGeometry = orbitPath.createPointsGeometry(64)
+		orbitGeometry.computeTangents()
+		var orbitLine = new THREE.Line(orbitGeometry, orbitMaterial)
+
 		scene.add(bodyMesh)
 		scene.add(vesselMesh)
 		scene.add(line)
+		scene.add(orbitLine)
 
 		// Animate callback
 		var animate = () => {
@@ -121,6 +130,33 @@ export default {
 			lat = this.data['v.lat']
 			lon = this.data['v.long']
 			alt = this.data['v.altitude']
+
+			// Draw orbit ellipse
+			// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
+			var ratio = (this.displayRadius / body.radius)
+
+			var aop = this.data['o.argumentOfPeriapsis']
+			var incl = this.data['o.inclination']
+			var sma = this.data['o.sma']
+			var ecc = this.data['o.eccentricity']
+
+			var rx = ratio * sma
+			var ry = ratio * (sma * (Math.sqrt(1 - Math.pow(ecc, 2))))
+			var cx = -Math.sqrt(Math.pow(rx, 2) - Math.pow(ry, 2))
+			var cy = 0
+
+			orbitPath = new THREE.CurvePath()
+			orbitPath.add(new THREE.EllipseCurve(cx, cy, rx, ry, 0, 2 * Math.PI, false))
+			orbitGeometry = orbitPath.createPointsGeometry(64)
+			orbitGeometry.computeTangents()
+
+			orbitLine.geometry.vertices = orbitGeometry.vertices
+			orbitLine.geometry.verticesNeedUpdate = true
+
+			orbitLine.rotation.order = 'XYZ'
+			orbitLine.rotation.x = deg2rad(90 - incl)
+			orbitLine.rotation.y = deg2rad(0)
+			orbitLine.rotation.z = deg2rad(aop)
 
 			latLongTween.onUpdate(() => {
 				var lat = latLongTweenProperties.lat

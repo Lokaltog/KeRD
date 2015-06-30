@@ -11,6 +11,7 @@ export default [
 	'n.rawpitch',
 	'n.rawroll',
 	'n.roll',
+	'o.argumentOfPeriapsis',
 	'o.ApA',
 	'o.PeA',
 	'o.eccentricity',
