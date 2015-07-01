@@ -4,6 +4,12 @@ import TWEEN from 'tween'
 import {ll2cartesian, wrapDegDelta, debounce, deg2rad} from 'utils'
 import {bodies} from 'resources/bodies'
 
+var sin = Math.sin
+var asin = Math.asin
+var cos = Math.cos
+var sqrt = Math.sqrt
+var pow = Math.pow
+
 export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
@@ -69,6 +75,7 @@ export default {
 		var orbitGeometry = orbitPath.createPointsGeometry(64)
 		orbitGeometry.computeTangents()
 		var orbitLine = new THREE.Line(orbitGeometry, orbitMaterial)
+		orbitLine.rotation.order = 'YXZ'
 
 		scene.add(bodyMesh)
 		scene.add(vesselMesh)
@@ -86,15 +93,23 @@ export default {
 		requestAnimationFrame(animate)
 
 		// Tweening
-		var trueAnomaly = 0
-		var inclination = 0
 		var argumentOfPeriapsis = 0
+		var eccentricity = 0
+		var epoch = 0
+		var inclination = 0
+		var longitudeOfAscendingNode = 0
+		var semimajorAxis = 0
+		var trueAnomaly = 0
+
+		var body = {}
+		var ratio = 0
 
 		var vesselTweenProperties
 		var vesselTween
 
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['v.altitude'] + this.data['v.body'], () => {
-			var body = bodies[this.data['v.body']]
+			body = bodies[this.data['v.body']]
+			ratio = (this.displayRadius / body.radius)
 
 			if (!bodyMaterial.map || bodyMaterial.map.sourceFile !== body.textures.diffuse) {
 				// Update textures based on the current body
@@ -110,9 +125,6 @@ export default {
 				bodyMaterial.needsUpdate = true
 			}
 
-			// FIXME Rotate body correctly in relation to Kerbol
-			var epoch = this.data['o.epoch']
-			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360))
 
 			// Animate vessel and camera positions
 			vesselTweenProperties = {
@@ -127,23 +139,22 @@ export default {
 				argumentOfPeriapsis: argumentOfPeriapsis + wrapDegDelta(this.data['o.argumentOfPeriapsis'] - argumentOfPeriapsis),
 			}, this.refreshInterval)
 
-			trueAnomaly = this.data['o.trueAnomaly']
-			inclination = this.data['o.inclination']
 			argumentOfPeriapsis = this.data['o.argumentOfPeriapsis']
+			eccentricity = this.data['o.eccentricity']
+			epoch = this.data['o.epoch']
+			inclination = this.data['o.inclination']
+			longitudeOfAscendingNode = this.data['o.lan']
+			semimajorAxis = this.data['o.sma']
+			trueAnomaly = this.data['o.trueAnomaly']
+
+			// FIXME Rotate body correctly in relation to Kerbol
+			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360))
 
 			// Draw orbit ellipse
 			// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
-			var ratio = (this.displayRadius / body.radius)
-
-			var aop = this.data['o.argumentOfPeriapsis']
-			var incl = this.data['o.inclination']
-			var sma = this.data['o.sma']
-			var ecc = this.data['o.eccentricity']
-			var lan = this.data['o.lan']
-
-			var rx = ratio * sma
-			var ry = ratio * (sma * (Math.sqrt(1 - Math.pow(ecc, 2))))
-			var cx = Math.sqrt(Math.pow(rx, 2) - Math.pow(ry, 2))
+			var rx = ratio * semimajorAxis
+			var ry = ratio * (semimajorAxis * (sqrt(1 - pow(eccentricity, 2))))
+			var cx = sqrt(pow(rx, 2) - pow(ry, 2))
 			var cy = 0
 
 			orbitPath = new THREE.CurvePath()
@@ -154,22 +165,19 @@ export default {
 			orbitLine.geometry.vertices = orbitGeometry.vertices
 			orbitLine.geometry.verticesNeedUpdate = true
 
-			orbitLine.rotation.order = 'YXZ'
-			orbitLine.rotation.y = deg2rad(lan)
-			orbitLine.rotation.x = -deg2rad(90 -incl)
-			orbitLine.rotation.z = deg2rad(50) // WHAT - something related to aop
+			orbitLine.rotation.y = deg2rad(longitudeOfAscendingNode)
+			orbitLine.rotation.x = -deg2rad(90 - inclination)
+			orbitLine.rotation.z = -asin(sin(deg2rad(argumentOfPeriapsis)))
 
 			vesselTween.onUpdate(() => {
 				// Calculate orbital position
-				var sin = Math.sin
-				var cos = Math.cos
-
 				var ta = deg2rad(vesselTweenProperties.trueAnomaly)
 				var i = deg2rad(vesselTweenProperties.inclination)
 				var w = deg2rad(vesselTweenProperties.argumentOfPeriapsis)
-				var omega = deg2rad(lan)
+				var omega = deg2rad(longitudeOfAscendingNode)
 
-				var r = ratio * sma * (1 - Math.pow(ecc, 2)) / (1 + ecc * cos(ta))
+				// Update vessel position
+				var r = ratio * semimajorAxis * (1 - pow(eccentricity, 2)) / (1 + eccentricity * cos(ta))
 				var ta_w = ta + w
 				var x = r * (cos(omega) * cos(ta_w) - sin(omega) * sin(ta_w) * cos(i))
 				var y = r * (sin(omega) * cos(ta_w) + cos(omega) * sin(ta_w) * cos(i))
@@ -178,6 +186,8 @@ export default {
 				vesselMesh.position.x = x
 				vesselMesh.position.y = z
 				vesselMesh.position.z = -y
+
+				// Update line from center
 				lineGeometry.vertices[1].x = x
 				lineGeometry.vertices[1].y = z
 				lineGeometry.vertices[1].z = -y
