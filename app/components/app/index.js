@@ -2,6 +2,24 @@ import numeral from 'numeral'
 import WS from 'websocket'
 import subscriptions from 'resources/subscriptions'
 
+class LocalStorage {
+	get(key) {
+		var value = localStorage.getItem(key)
+		if (typeof value !== 'undefined') {
+			try {
+				value = JSON.parse(value)
+			}
+			catch (e) {
+				console.error('Invalid storage object')
+				console.error(e)
+			}
+		}
+	}
+	set(key, value) {
+		localStorage.setItem(key, value)
+	}
+}
+
 export default {
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
 	components: {
@@ -51,6 +69,7 @@ export default {
 				},
 			},
 
+			storage: new LocalStorage(),
 			ws: null,
 			wsConnected: false,
 
@@ -71,15 +90,16 @@ export default {
 					    section(module('orbit'))
 				    ),
 				    row(
-					    section(module('map')),
-					    section(module('history'))
-				    ),
-				    section(module('navigation'))
+					    section(module('map'))
+				    )
 			    )
-		],
+			],
 		}
 	},
 	created() {
+		this.loadConfig()
+
+		// Connect to Telemachus socket
 		this.ws = new WS(`ws://${this.config.host}:${this.config.port}/datalink`)
 		this.ws.addOpenHandler(() => {
 			this.wsConnected = true
@@ -103,5 +123,19 @@ export default {
 	},
 	methods: {
 		numeral: numeral,
+		saveConfig: function() {
+			this.storage.set('config', this.config)
+		},
+		loadConfig: function() {
+			var config = this.storage.get('config')
+			if (config) {
+				Object.keys(config).forEach(k => {
+					if (!this.config[k]) {
+						this.config.$add(k, null)
+					}
+					this.config[k] = config[k]
+				})
+			}
+		},
 	},
 }
