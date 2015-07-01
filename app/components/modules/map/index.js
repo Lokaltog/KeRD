@@ -287,7 +287,7 @@ export default {
 				trueAnomaly: trueAnomaly + wrapDegDelta(this.data['o.trueAnomaly'] - trueAnomaly),
 				inclination: inclination + wrapDegDelta(this.data['o.inclination'] - inclination),
 				argumentOfPeriapsis: argumentOfPeriapsis + wrapDegDelta(this.data['o.argumentOfPeriapsis'] - argumentOfPeriapsis),
-			}, this.refreshInterval)
+			}, this.config.telemachus.refreshInterval)
 
 			argumentOfPeriapsis = this.data['o.argumentOfPeriapsis']
 			eccentricity = this.data['o.eccentricity']
@@ -348,14 +348,14 @@ export default {
 		})
 	},
 	methods: {
-		rotateCamera: function(rho, phi, theta) {
+		rotateCamera(rho, phi, theta) {
 			var coords = spherical2cartesian(rho || this.cameraRho, phi || this.cameraPhi, theta || this.cameraTheta)
 			camera.position.x = this.focusPosition.x + coords.x
 			camera.position.y = this.focusPosition.y + coords.y
 			camera.position.z = this.focusPosition.z + coords.z
 			camera.lookAt(this.focusPosition)
 		},
-		toggleFocus: function() {
+		toggleFocus() {
 			if (this.focus === 'vessel') {
 				this.focus = 'body'
 				this.focusPosition = this.origo
@@ -366,7 +366,7 @@ export default {
 			}
 			this.rotateCamera()
 		},
-		toggleAtmosphere: function() {
+		toggleAtmosphere() {
 			this.showAtmosphere = !this.showAtmosphere
 			this.objects.atmosphereMesh.visible = this.showAtmosphere
 		},

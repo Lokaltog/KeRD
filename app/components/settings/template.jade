@@ -1,0 +1,52 @@
+#settings
+	.wrap
+		header
+		.credits By #[a(href='https://github.com/Lokaltog/KeRD') @Lokaltog]
+		form(v-on='submit: submit')
+			.header Telemachus properties
+
+			.input.input-text
+				label(for='config-telemachus-host') Host
+				input#config-telemachus-host(type='text', v-model='config.telemachus.host')
+
+			.input.input-text
+				label(for='config-telemachus-port') Port
+				input#config-telemachus-port(type='text', v-model='config.telemachus.port')
+
+			.input.input-select
+				label(for='config-telemachus-refreshrate') Data refresh rate
+				select#config-telemachus-refreshrate(v-model='config.telemachus.refreshRate')
+					option(value=1) 1hz
+					option(value=2) 2hz
+
+			.header WebGL rendering settings
+
+			.input.input-select
+				label(for='config-rendering-fps') Frame rate limit
+				select#config-rendering-fps(v-model='config.rendering.fps')
+					option(value=15) 15
+					option(value=30) 30
+					option(value=60) 60
+					option(value=120) 120
+
+			.input.input-checkbox
+				input#config-rendering-usenormalmaps(type='checkbox', v-model='config.rendering.useNormalMaps')
+				label(for='config-rendering-usenormalmaps') Use normal maps
+
+			.input.input-checkbox
+				input#config-rendering-usespecularmaps(type='checkbox', v-model='config.rendering.useSpecularMaps')
+				label(for='config-rendering-usespecularmaps') Use specular maps
+
+			.input.input-checkbox
+				input#config-rendering-showskybox(type='checkbox', v-model='config.rendering.showSkybox')
+				label(for='config-rendering-showskybox') Show skybox
+
+			.input.input-checkbox
+				input#config-rendering-showlensflare(type='checkbox', v-model='config.rendering.showLensFlare')
+				label(for='config-rendering-showlensflare') Show lens flare
+
+		.input.input-submit
+			p.disclaimer The page will be reloaded when you save your configuration.
+			button.primary(type='submit', v-on='click: submit') Save configuration
+			//button(v-on='click: reset') Reset configuration
+			button#settings-close(v-on='click: close') Close without saving

@@ -14,52 +14,61 @@ class LocalStorage {
 				console.error(e)
 			}
 		}
+		return value
 	}
 	set(key, value) {
-		localStorage.setItem(key, value)
+		localStorage.setItem(key, JSON.stringify(value))
 	}
 }
+
+// Layout wrapper functions
+function wrapper(type) {
+	return function(...contents) {
+		return {
+			type: type,
+			contents: contents
+		}
+	}
+}
+var row = wrapper('row')
+var col = wrapper('col')
+var section = wrapper('section')
+var module = function(id, config={}) {
+	return {
+		type: 'module',
+		id: id,
+		'module-config': config,
+	}
+}
+
+var storage = new LocalStorage()
 
 export default {
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
 	components: {
 		layout: require('../layout'),
+		settings: require('../settings'),
 
 		actiongroups: require('../modules/actiongroups'),
 		history: require('../modules/history'),
 		map: require('../modules/map'),
 		navigation: require('../modules/navigation'),
 		orbit: require('../modules/orbit'),
+		resources: require('../modules/resources'),
+		vessel: require('../modules/vessel'),
 	},
 	data() {
-		var refreshRate = 1
-
-		// Layout wrapper functions
-		function wrapper(type) {
-			return function(...contents) {
-				return {
-					type: type,
-					contents: contents
-				}
-			}
-		}
-		var row = wrapper('row')
-		var col = wrapper('col')
-		var section = wrapper('section')
-		var module = function(id, config={}) {
-			return {
-				type: 'module',
-				id: id,
-				'module-config': config,
-			}
-		}
+		var config = storage.get('config')
+		var refreshRate = config ? (config.refreshRate || 1) : 1
 
 		return {
-			config: {
-				host: '10.0.0.110',
-				port: 8085,
-				refreshRate: refreshRate,
-				refreshInterval: parseInt(1 / refreshRate * 1000),
+			config: config || {
+				telemachus: {
+					host: '10.0.0.110',
+					port: 8085,
+					refreshRate: refreshRate,
+					refreshInterval: parseInt(1 / refreshRate * 1000),
+				},
 				rendering: {
 					fps: 60,
 					useNormalMaps: true,
@@ -69,9 +78,11 @@ export default {
 				},
 			},
 
-			storage: new LocalStorage(),
+			storage: storage,
 			ws: null,
 			wsConnected: false,
+
+			settingsVisible: false,
 
 			data: {},
 
@@ -97,15 +108,13 @@ export default {
 		}
 	},
 	created() {
-		this.loadConfig()
-
 		// Connect to Telemachus socket
-		this.ws = new WS(`ws://${this.config.host}:${this.config.port}/datalink`)
+		this.ws = new WS(`ws://${this.config.telemachus.host}:${this.config.telemachus.port}/datalink`)
 		this.ws.addOpenHandler(() => {
 			this.wsConnected = true
 
 			// Subscribe to data from Telemachus
-			this.ws.send({rate: this.config.refreshInterval, '+': subscriptions})
+			this.ws.send({rate: this.config.telemachus.refreshInterval, '+': subscriptions})
 		})
 		this.ws.addCloseHandler(() => this.wsConnected = false)
 		this.ws.addMessageHandler(ev => {
@@ -123,19 +132,8 @@ export default {
 	},
 	methods: {
 		numeral: numeral,
-		saveConfig: function() {
+		saveConfig() {
 			this.storage.set('config', this.config)
-		},
-		loadConfig: function() {
-			var config = this.storage.get('config')
-			if (config) {
-				Object.keys(config).forEach(k => {
-					if (!this.config[k]) {
-						this.config.$add(k, null)
-					}
-					this.config[k] = config[k]
-				})
-			}
 		},
 	},
 }

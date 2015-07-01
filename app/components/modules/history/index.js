@@ -23,7 +23,7 @@ export default {
 		})
 
 		var limit = 60 * 5
-		var duration = this.refreshInterval - 100  // Add 100ms margin to account for lag
+		var duration = this.telemachus.refreshInterval - 100  // Add 100ms margin to account for lag
 		var now = new Date(Date.now() - duration)
 
 		var width = 600

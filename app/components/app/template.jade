@@ -1,9 +1,12 @@
-#wrap
+#wrap(v-class='blur: settingsVisible')
 	layout(contents='{{layout}}')
 	footer
 		.contents
 			.layouts
 				button.dark 1
 			.logo
-			.host.connected(v-if='wsConnected') Connected to {{host}}:{{port}}
+			.host.connected(v-if='wsConnected') Connected to {{config.telemachus.host}}:{{config.telemachus.port}}
 			.host.disconnected(v-if='!wsConnected') Not connected
+			button.settings(v-on='click: settingsVisible = !settingsVisible') Settings
+
+settings(v-show='settingsVisible')

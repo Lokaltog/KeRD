@@ -1,0 +1,65 @@
+@import 'lib/settings'
+@import 'lib/utils'
+
+$shrink-width: 40em
+$shrink-height: 50em
+
+#settings
+	position: fixed
+	top: 0
+	left: 0
+	min-width: 100%
+	min-height: 100%
+	background: rgba(#fff, .7)
+	.wrap
+		width: 26em
+		padding: $gutter
+		position: absolute
+		top: 50%
+		left: 50%
+		transform: translate(-50%, -50%)
+		background: rgba(#fff, .8)
+		border-radius: $double-border-radius
+		@media (max-width: $shrink-width), (max-height: $shrink-height)
+			position: static
+			transform: none
+			width: auto
+	.credits
+		text-transform: uppercase
+		text-align: center
+		font-size: 1.2em
+		margin: $quarter-gutter 0
+		display: flex
+		align-items: flex-end
+		a
+			text-decoration: none
+		&::before, &::after
+			flex: 1 0 0
+			height: .8em
+			display: block
+			content: ''
+			border-color: rgba(#000, .8)
+			border-width: 1px
+		&::before
+			border-style: solid none none none
+			margin-right: $quarter-gutter
+			padding-right: $quarter-gutter
+		&::after
+			border-style: solid none none none
+			margin-left: $quarter-gutter
+			padding-left: $quarter-gutter
+	header
+		background: url('/img/logo-header.svg') no-repeat 50% 50%
+		background-size: contain
+		height: 3em
+	.disclaimer
+		margin: $half-gutter 0
+		background: lighten($color-orange, 20)
+		color: darken($color-orange, 40)
+		border-radius: $border-radius
+		padding: $quarter-gutter
+	.input-submit
+		button
+			background-color: #ddd
+			margin: $half-gutter 0 0 0
+			width: 100%

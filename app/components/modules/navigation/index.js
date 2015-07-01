@@ -94,7 +94,7 @@ export default {
 				pitch: pitch + wrapDegDelta(this.data['n.pitch'] - pitch),
 				roll: roll + wrapDegDelta(this.data['n.roll'] - roll),
 				heading: heading + wrapDegDelta(this.data['n.heading'] - heading),
-			}, this.refreshInterval)
+			}, this.config.telemachus.refreshInterval)
 
 			pitch = this.data['n.pitch']
 			roll = this.data['n.roll']
