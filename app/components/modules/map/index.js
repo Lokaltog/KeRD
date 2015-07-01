@@ -114,8 +114,8 @@ export default {
 		var atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial)
 
 		// Init vessel geometry
-		var vesselGeometry = new THREE.SphereGeometry(1.5, 16, 16)
-		var vesselMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+		var vesselGeometry = new THREE.SphereGeometry(2.5, 16, 16)
+		var vesselMaterial = new THREE.MeshPhongMaterial({ color: 0x770000 })
 		var vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
 
 		// Init vessel line (to body center, indicating altitude)
