@@ -45,11 +45,15 @@ export default {
 		// Create scene and setup camera and lights
 		var scene = new THREE.Scene()
 		var camera = new THREE.PerspectiveCamera(30, 1, 0.01, 1000)
+		camera.position.z = 0
+		camera.position.x = 400
+		camera.position.y = 0
+		camera.lookAt(origo)
 
-		scene.add(new THREE.AmbientLight(0x666666))
+		scene.add(new THREE.AmbientLight(0x888888))
 
 		var light = new THREE.DirectionalLight(0xffffff, 2)
-		light.position.set(5000, 0, 0)
+		light.position.set(0, 0, -5000)
 		scene.add(light)
 
 		// Init body geometry and materials
@@ -67,20 +71,20 @@ export default {
 		var atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial)
 
 		// Init vessel geometry
-		var vesselGeometry = new THREE.SphereGeometry(2, 8, 8)
+		var vesselGeometry = new THREE.SphereGeometry(1.5, 16, 16)
 		var vesselMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 		var vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
 
 		// Init vessel line (to body center, indicating altitude)
 		var lineGeometry = new THREE.Geometry()
-		var lineMaterial = new THREE.LineBasicMaterial({ color: 0x770000 })
+		var lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 })
 		var line = new THREE.Line(lineGeometry, lineMaterial)
 
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 
 		// Init orbit ellipse
-		var orbitMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+		var orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff })
 		var orbitPath = new THREE.CurvePath()
 		orbitPath.add(new THREE.EllipseCurve(0, 0, 1, 1, 0, 2 * Math.PI, false))
 		var orbitGeometry = orbitPath.createPointsGeometry(64)
