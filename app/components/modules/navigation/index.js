@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import Vue from 'vue'
 import THREE from 'three'
 import TWEEN from 'tween'
 import {deg2rad, wrapDegDelta, debounce} from 'utils'
@@ -43,7 +44,7 @@ export default {
 		var light1 = new THREE.DirectionalLight(0xffffff, 1)
 		light1.position.set(1500, 1500, 500)
 
-		var light2 = new THREE.DirectionalLight(0xffffff, .5)
+		var light2 = new THREE.DirectionalLight(0xffffff, 0.5)
 		light2.position.set(-1500, -1500, 500)
 
 		scene.add(light1)
@@ -55,6 +56,8 @@ export default {
 		navballTexture.anisotropy = renderer.getMaxAnisotropy()
 		var navballMaterial = new THREE.MeshPhongMaterial({
 			map: navballTexture,
+			bumpMap: this.config.rendering.useNormalMaps ? navballTexture : null,
+			bumpScale: -1,
 			shininess: 80,
 		})
 		var navballMesh = new THREE.Mesh(navballGeometry, navballMaterial)
@@ -63,7 +66,9 @@ export default {
 
 		// Animate callback
 		var animate = () => {
-			requestAnimationFrame(animate)
+			setTimeout(() => {
+				requestAnimationFrame(animate)
+			}, 1000 / this.config.rendering.fps)
 
 			TWEEN.update()
 

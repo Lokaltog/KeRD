@@ -10,22 +10,37 @@ var cos = Math.cos
 var sqrt = Math.sqrt
 var pow = Math.pow
 
+var scene
+var camera
+
 export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
 	props: ['module-config'],
 	data() {
+		var origo = new THREE.Vector3(0, 0, 0)
 		return {
+			// Camera properties
 			displayRadius: 50,
+			cameraRho: 200, // distance
+			cameraPhi: 0, // initial horizontal angle
+			cameraTheta: 90, // initial vertical angle
+			cameraFov: 50,
+			cameraMargin: 220,
+
+			focus: null,
+			showAtmosphere: true,
+
+			objects: {},
+			focusPosition: origo,
+			origo: origo
 		}
 	},
 	ready() {
-		var origo = new THREE.Vector3(0, 0, 0)
-
 		// Init three.js renderer
 		var renderer = new THREE.WebGLRenderer({
-			alpha: true,
 			antialias: true,
+			alpha: true,
 		})
 		renderer.setSize(1, 1)
 		$('.orbital-display').append(renderer.domElement)
@@ -48,18 +63,6 @@ export default {
 		var dragOffsetY = 0
 
 		var dragMultiplier = 0.5 // drag degrees multiplier per px movement
-		var cameraFov = 60
-		var cameraRho = 200 // distance
-		var cameraPhi = 0 // initial horizontal angle
-		var cameraTheta = 90 // initial vertical angle
-
-		function rotateCamera(rho, phi, theta) {
-			var coords = spherical2cartesian(rho, phi, theta)
-			camera.position.x = coords.x
-			camera.position.y = coords.y
-			camera.position.z = coords.z
-			camera.lookAt(origo)
-		}
 
 		$(document).on('mouseup', () => {
 			dragging = false
@@ -72,79 +75,144 @@ export default {
 			dragOffsetY = ev.pageY
 		})
 		$(renderer.domElement).on('mousemove', (ev) => {
-			// TODO add buttons for lock X/lock Y
 			ev.preventDefault()
 
 			if (!dragging) {
 				return
 			}
 
-			cameraPhi += deg2rad((ev.pageX - dragOffsetX) * dragMultiplier)
-			cameraTheta -= deg2rad((ev.pageY - dragOffsetY) * dragMultiplier)
+			this.cameraPhi += deg2rad((ev.pageX - dragOffsetX) * dragMultiplier)
+			this.cameraTheta -= deg2rad((ev.pageY - dragOffsetY) * dragMultiplier)
 
-			rotateCamera(cameraRho, cameraPhi, cameraTheta)
+			this.rotateCamera()
 
 			dragOffsetX = ev.pageX
 			dragOffsetY = ev.pageY
 		})
 
 		// Create scene and setup camera and lights
-		var scene = new THREE.Scene()
-		var camera = new THREE.PerspectiveCamera(cameraFov, 1, 0.01, 1000)
-
-		rotateCamera(cameraRho, cameraPhi, cameraTheta)
+		scene = new THREE.Scene()
+		camera = new THREE.PerspectiveCamera(this.cameraFov, 1, 0.01, 120000)
 
 		scene.add(new THREE.AmbientLight(0x888888))
 
+		// Add sun light
+		var sunPosition = new THREE.Vector3(0, 0, -5000)
 		var light = new THREE.DirectionalLight(0xffffff, 2)
-		light.position.set(0, 0, -5000)
+		light.position.copy(sunPosition)
 		scene.add(light)
 
-		// Init body geometry and materials
+		// Add celestial body
 		var bodyGeometry = new THREE.SphereGeometry(this.displayRadius, 32, 32)
 		var bodyMaterial = new THREE.MeshPhongMaterial({
 			shininess: 30,
 		})
 		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
+		scene.add(bodyMesh)
 
-		// Init atmosphere indicator
+		// Add atmosphere indicator
 		var atmosphereGeometry = new THREE.SphereGeometry(1, 32, 32)
-		var atmosphereMaterial = new THREE.MeshLambertMaterial({ color: 0x0077cc })
+		var atmosphereMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 })
 		atmosphereMaterial.transparent = true
-		atmosphereMaterial.opacity = 0.2
-		var atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial)
+		atmosphereMaterial.opacity = 0
+		this.objects.atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial)
+		scene.add(this.objects.atmosphereMesh)
 
-		// Init vessel geometry
+		// Add vessel geometry
 		var vesselGeometry = new THREE.SphereGeometry(2.5, 16, 16)
 		var vesselMaterial = new THREE.MeshPhongMaterial({ color: 0x770000 })
-		var vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
+		this.objects.vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
+		scene.add(this.objects.vesselMesh)
 
-		// Init vessel line (to body center, indicating altitude)
+		// Add vessel line (from body center, indicating altitude)
 		var lineGeometry = new THREE.Geometry()
 		var lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 })
-		var line = new THREE.Line(lineGeometry, lineMaterial)
+		var lineMesh = new THREE.Line(lineGeometry, lineMaterial)
+		lineMesh.frustumCulled = false
 
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 
-		// Init orbit ellipse
-		var orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff })
-		var orbitPath = new THREE.CurvePath()
-		orbitPath.add(new THREE.EllipseCurve(0, 0, 1, 1, 0, 2 * Math.PI, false))
-		var orbitGeometry = orbitPath.createPointsGeometry(64)
-		orbitGeometry.computeTangents()
-		var orbitLine = new THREE.Line(orbitGeometry, orbitMaterial)
-		orbitLine.rotation.order = 'YXZ'
+		scene.add(lineMesh)
 
-		scene.add(bodyMesh)
-		scene.add(atmosphereMesh)
-		scene.add(vesselMesh)
-		scene.add(line)
-		scene.add(orbitLine)
+		// Add orbit ellipse
+		var orbitLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff })
+		var orbitLinePath = new THREE.CurvePath()
+		orbitLinePath.add(new THREE.EllipseCurve(0, 0, 1, 1, 0, 2 * Math.PI, false))
+		var orbitLineGeometry = orbitLinePath.createPointsGeometry(256)
+		orbitLineGeometry.computeTangents()
+		var orbitLineMesh = new THREE.Line(orbitLineGeometry, orbitLineMaterial)
+		orbitLineMesh.frustumCulled = false
+		orbitLineMesh.rotation.order = 'YXZ'
+
+		scene.add(orbitLineMesh)
+
+		// Add optional lens flare
+		if (this.config.rendering.showLensFlare) {
+			var lensFlareTexture0 = THREE.ImageUtils.loadTexture(require('../../../assets/img/textures/lensflare/lensflare0.png'))
+			var lensFlareTexture2 = THREE.ImageUtils.loadTexture(require('../../../assets/img/textures/lensflare/lensflare2.png'))
+			var lensFlareTexture3 = THREE.ImageUtils.loadTexture(require('../../../assets/img/textures/lensflare/lensflare3.png'))
+
+			var lensFlare = new THREE.LensFlare(lensFlareTexture0, 400, 0.0, THREE.AdditiveBlending, new THREE.Color(0xffffff))
+
+			lensFlare.add(lensFlareTexture2, 512, 0.0, THREE.AdditiveBlending)
+			lensFlare.add(lensFlareTexture2, 512, 0.0, THREE.AdditiveBlending)
+			lensFlare.add(lensFlareTexture2, 512, 0.0, THREE.AdditiveBlending)
+			lensFlare.add(lensFlareTexture3, 60, 0.6, THREE.AdditiveBlending)
+			lensFlare.add(lensFlareTexture3, 70, 0.7, THREE.AdditiveBlending)
+			lensFlare.add(lensFlareTexture3, 120, 0.9, THREE.AdditiveBlending)
+			lensFlare.add(lensFlareTexture3, 70, 1.0, THREE.AdditiveBlending)
+			lensFlare.position.copy(light.position)
+
+			lensFlare.customUpdateCallback = function(object) {
+				var flare
+				var vecX = -object.positionScreen.x * 2
+				var vecY = -object.positionScreen.y * 2
+
+				for (var f = 0; f < object.lensFlares.length; f += 1) {
+					flare = object.lensFlares[ f ]
+
+					flare.x = object.positionScreen.x + vecX * flare.distance
+					flare.y = object.positionScreen.y + vecY * flare.distance
+
+					flare.rotation = 0
+				}
+
+				object.lensFlares[ 2 ].y += 0.025
+				object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 )
+			}
+
+			scene.add(lensFlare)
+		}
+
+		// Add optional skybox
+		if (this.config.rendering.showSkybox) {
+			var skyboxGeometry = new THREE.SphereGeometry(100000, 32, 32)
+			var skyboxMap = THREE.ImageUtils.loadTextureCube([
+				require('../../../assets/img/textures/skybox/posx.jpg'),
+				require('../../../assets/img/textures/skybox/negx.jpg'),
+				require('../../../assets/img/textures/skybox/posy.jpg'),
+				require('../../../assets/img/textures/skybox/negy.jpg'),
+				require('../../../assets/img/textures/skybox/posz.jpg'),
+				require('../../../assets/img/textures/skybox/negz.jpg'),
+			])
+			skyboxMap.format = THREE.RGBFormat
+			var skyboxMaterial = new THREE.MeshBasicMaterial({
+				envMap: skyboxMap,
+			})
+			skyboxMaterial.side = THREE.BackSide
+			var skyboxMesh = new THREE.Mesh(skyboxGeometry, skyboxMaterial)
+
+			scene.add(skyboxMesh)
+		}
+
+		this.rotateCamera()
 
 		// Animate callback
 		var animate = () => {
-			requestAnimationFrame(animate)
+			setTimeout(() => {
+				requestAnimationFrame(animate)
+			}, 1000 / this.config.rendering.fps)
 
 			TWEEN.update()
 
@@ -167,30 +235,45 @@ export default {
 		var vesselTweenProperties
 		var vesselTween
 
-		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['v.altitude'] + this.data['v.body'], () => {
+		this.toggleFocus('vessel')
+
+		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
 			body = bodies[this.data['v.body']]
 			ratio = (this.displayRadius / body.radius)
+
+			//cameraRho = this.data['o.ApA'] * ratio + this.cameraMargin
+
+			this.rotateCamera()
 
 			if (!bodyMaterial.map || bodyMaterial.map.sourceFile !== body.textures.diffuse) {
 				// Update textures based on the current body
 				// Only updates if the current texture source files differs from the current body
 				bodyMaterial.map = THREE.ImageUtils.loadTexture(body.textures.diffuse)
-				bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(body.textures.specular)
-				bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(body.textures.normal)
-
 				bodyMaterial.map.anisotropy = renderer.getMaxAnisotropy()
-				bodyMaterial.normalMap.anisotropy = renderer.getMaxAnisotropy() / 2
-				bodyMaterial.specularMap.anisotropy = renderer.getMaxAnisotropy() / 2
+
+				if (this.config.rendering.useSpecularMaps) {
+					bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(body.textures.specular)
+					bodyMaterial.specularMap.anisotropy = renderer.getMaxAnisotropy() / 2
+				}
+				if (this.config.rendering.useNormalMaps) {
+					bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(body.textures.normal)
+					bodyMaterial.normalMap.anisotropy = renderer.getMaxAnisotropy() / 2
+				}
 
 				bodyMaterial.needsUpdate = true
+
+				// Update atmosphere appearance on the current body
+				atmosphereMaterial.color.setHex(body.atmosphereColor)
+				atmosphereMaterial.opacity = body.atmosphereOpacity
+				atmosphereMaterial.colorsNeedUpdate = true
 			}
 
 			// Resize atmosphere mesh
 			if (body.atmosphere) {
 				var scale = (body.radius + body.atmosphere) * ratio
-				atmosphereMesh.scale.x = scale
-				atmosphereMesh.scale.y = scale
-				atmosphereMesh.scale.z = scale
+				this.objects.atmosphereMesh.scale.x = scale
+				this.objects.atmosphereMesh.scale.y = scale
+				this.objects.atmosphereMesh.scale.z = scale
 			}
 
 			// Animate vessel and camera positions
@@ -214,7 +297,8 @@ export default {
 			semimajorAxis = this.data['o.sma']
 			trueAnomaly = this.data['o.trueAnomaly']
 
-			// FIXME Rotate body correctly in relation to Kerbol
+			// Rotate body correctly in relation to Kerbol
+			// This appears to work correctly even without further calculations
 			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360))
 
 			// Draw orbit ellipse
@@ -224,17 +308,17 @@ export default {
 			var cx = sqrt(pow(rx, 2) - pow(ry, 2))
 			var cy = 0
 
-			orbitPath = new THREE.CurvePath()
-			orbitPath.add(new THREE.EllipseCurve(cx, cy, rx, ry, 0, 2 * Math.PI, false))
-			orbitGeometry = orbitPath.createPointsGeometry(64)
-			orbitGeometry.computeTangents()
+			orbitLinePath = new THREE.CurvePath()
+			orbitLinePath.add(new THREE.EllipseCurve(cx, cy, rx, ry, 0, 2 * Math.PI, false))
+			orbitLineGeometry = orbitLinePath.createPointsGeometry(256)
+			orbitLineGeometry.computeTangents()
 
-			orbitLine.geometry.vertices = orbitGeometry.vertices
-			orbitLine.geometry.verticesNeedUpdate = true
+			orbitLineMesh.geometry.vertices = orbitLineGeometry.vertices
+			orbitLineMesh.geometry.verticesNeedUpdate = true
 
-			orbitLine.rotation.y = deg2rad(longitudeOfAscendingNode)
-			orbitLine.rotation.x = -deg2rad(90 - inclination)
-			orbitLine.rotation.z = -asin(sin(deg2rad(argumentOfPeriapsis)))
+			orbitLineMesh.rotation.y = deg2rad(longitudeOfAscendingNode)
+			orbitLineMesh.rotation.x = -deg2rad(90 - inclination)
+			orbitLineMesh.rotation.z = -asin(sin(deg2rad(argumentOfPeriapsis)))
 
 			vesselTween.onUpdate(() => {
 				// Calculate orbital position
@@ -250,9 +334,9 @@ export default {
 				var y = r * (sin(omega) * cos(ta_w) + cos(omega) * sin(ta_w) * cos(i))
 				var z = r * (sin(ta_w) * sin(i))
 
-				vesselMesh.position.x = x
-				vesselMesh.position.y = z
-				vesselMesh.position.z = -y
+				this.objects.vesselMesh.position.x = x
+				this.objects.vesselMesh.position.y = z
+				this.objects.vesselMesh.position.z = -y
 
 				// Update line from center
 				lineGeometry.vertices[1].x = x
@@ -262,6 +346,29 @@ export default {
 			})
 			vesselTween.start()
 		})
-
+	},
+	methods: {
+		rotateCamera: function(rho, phi, theta) {
+			var coords = spherical2cartesian(rho || this.cameraRho, phi || this.cameraPhi, theta || this.cameraTheta)
+			camera.position.x = this.focusPosition.x + coords.x
+			camera.position.y = this.focusPosition.y + coords.y
+			camera.position.z = this.focusPosition.z + coords.z
+			camera.lookAt(this.focusPosition)
+		},
+		toggleFocus: function() {
+			if (this.focus === 'vessel') {
+				this.focus = 'body'
+				this.focusPosition = this.origo
+			}
+			else {
+				this.focus = 'vessel'
+				this.focusPosition = this.objects.vesselMesh.position
+			}
+			this.rotateCamera()
+		},
+		toggleAtmosphere: function() {
+			this.showAtmosphere = !this.showAtmosphere
+			this.objects.atmosphereMesh.visible = this.showAtmosphere
+		},
 	},
 }
