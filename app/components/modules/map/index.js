@@ -110,10 +110,9 @@ export default {
 				bodyMaterial.needsUpdate = true
 			}
 
-			// Rotate body correctly in relation to Kerbol
-			// I have no idea why this is offset by -45deg, but it works
+			// FIXME Rotate body correctly in relation to Kerbol
 			var epoch = this.data['o.epoch']
-			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360) - 45 - 180)
+			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360))
 
 			// Animate vessel and camera positions
 			vesselTweenProperties = {
@@ -137,13 +136,14 @@ export default {
 			var ratio = (this.displayRadius / body.radius)
 
 			var aop = this.data['o.argumentOfPeriapsis']
-			var incl = 90 - this.data['o.inclination']
+			var incl = this.data['o.inclination']
 			var sma = this.data['o.sma']
 			var ecc = this.data['o.eccentricity']
+			var lan = this.data['o.lan']
 
 			var rx = ratio * sma
 			var ry = ratio * (sma * (Math.sqrt(1 - Math.pow(ecc, 2))))
-			var cx = -Math.sqrt(Math.pow(rx, 2) - Math.pow(ry, 2))
+			var cx = Math.sqrt(Math.pow(rx, 2) - Math.pow(ry, 2))
 			var cy = 0
 
 			orbitPath = new THREE.CurvePath()
@@ -154,9 +154,6 @@ export default {
 			orbitLine.geometry.vertices = orbitGeometry.vertices
 			orbitLine.geometry.verticesNeedUpdate = true
 
-			orbitLine.rotation.x = deg2rad(-incl)
-			orbitLine.rotation.z = deg2rad(aop)
-
 			vesselTween.onUpdate(() => {
 				// Calculate orbital position
 				var sin = Math.sin
@@ -165,7 +162,7 @@ export default {
 				var ta = deg2rad(vesselTweenProperties.trueAnomaly)
 				var i = deg2rad(vesselTweenProperties.inclination)
 				var w = deg2rad(vesselTweenProperties.argumentOfPeriapsis)
-				var omega = deg2rad(0) // I have no idea why this works, and deg2rad(o.lan) does not
+				var omega = deg2rad(lan)
 
 				var r = ratio * sma * (1 - Math.pow(ecc, 2)) / (1 + ecc * cos(ta))
 				var ta_w = ta + w
