@@ -32,15 +32,25 @@ export default {
 			return {
 				type: 'module',
 				id: id,
-				config: config,
+				'module-config': config,
 			}
 		}
 
 		return {
-			host: '127.0.0.1',
-			port: 8085,
-			refreshRate: refreshRate,
-			refreshInterval: parseInt(1 / refreshRate * 1000),
+			config: {
+				host: '10.0.0.110',
+				port: 8085,
+				refreshRate: refreshRate,
+				refreshInterval: parseInt(1 / refreshRate * 1000),
+				rendering: {
+					fps: 60,
+					useNormalMaps: true,
+					useSpecularMaps: true,
+					showSkybox: true,
+					showLensFlare: true,
+				},
+			},
+
 			ws: null,
 			wsConnected: false,
 
@@ -70,12 +80,12 @@ export default {
 		}
 	},
 	created() {
-		this.ws = new WS(`ws://${this.host}:${this.port}/datalink`)
+		this.ws = new WS(`ws://${this.config.host}:${this.config.port}/datalink`)
 		this.ws.addOpenHandler(() => {
 			this.wsConnected = true
 
 			// Subscribe to data from Telemachus
-			this.ws.send({rate: this.refreshInterval, '+': subscriptions})
+			this.ws.send({rate: this.config.refreshInterval, '+': subscriptions})
 		})
 		this.ws.addCloseHandler(() => this.wsConnected = false)
 		this.ws.addMessageHandler(ev => {

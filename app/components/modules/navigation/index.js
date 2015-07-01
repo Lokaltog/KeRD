@@ -6,7 +6,7 @@ import {deg2rad, wrapDegDelta, debounce} from 'utils'
 export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
-	props: ['config'],
+	props: ['module-config'],
 	data() {
 		return {
 			displayRadius: 50,

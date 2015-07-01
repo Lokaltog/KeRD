@@ -3,7 +3,7 @@ import d3 from 'd3'
 export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
-	props: ['config'],
+	props: ['module-config'],
 	ready() {
 		this.$watch(() => this.data['v.altitude'] + this.data['o.PeA'] + this.data['o.ApA'], () => {
 			var alt = this.data['v.altitude']

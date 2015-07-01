@@ -1,7 +1,7 @@
 export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
-	props: ['config'],
+	props: ['module-config'],
 	data() {
 		return {
 			actions: {},
