@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {ll2cartesian, wrapDegDelta, debounce, deg2rad} from 'utils'
+import {wrapDegDelta, debounce, deg2rad} from 'utils'
 import {bodies} from 'resources/bodies'
 
 var sin = Math.sin
@@ -42,13 +42,55 @@ export default {
 		$(window).on('resize', debounce(resize))
 		resize()
 
+		// Camera rotation handlers
+		var dragging
+		var dragOffsetX = 0
+		var dragOffsetY = 0
+
+		var dragMultiplier = 0.5 // drag degrees multiplier per px movement
+		var cameraRho = 400 // distance
+		var cameraPhi = 0 // initial horizontal angle
+		var cameraTheta = 90 // initial vertical angle
+
+		function rotateCamera(rho, phi, theta) {
+			camera.position.x = rho * sin(theta) * cos(phi)
+			camera.position.y = rho * cos(theta)
+			camera.position.z = rho * sin(theta) * sin(phi)
+			camera.lookAt(origo)
+		}
+
+		$(document).on('mouseup', () => {
+			dragging = false
+		})
+		$(renderer.domElement).on('mousedown', (ev) => {
+			ev.preventDefault()
+			dragging = true
+
+			dragOffsetX = ev.pageX
+			dragOffsetY = ev.pageY
+		})
+		$(renderer.domElement).on('mousemove', (ev) => {
+			// TODO add buttons for lock X/lock Y
+			ev.preventDefault()
+
+			if (!dragging) {
+				return
+			}
+
+			cameraPhi += deg2rad((ev.pageX - dragOffsetX) * dragMultiplier)
+			cameraTheta -= deg2rad((ev.pageY - dragOffsetY) * dragMultiplier)
+
+			rotateCamera(cameraRho, cameraPhi, cameraTheta)
+
+			dragOffsetX = ev.pageX
+			dragOffsetY = ev.pageY
+		})
+
 		// Create scene and setup camera and lights
 		var scene = new THREE.Scene()
 		var camera = new THREE.PerspectiveCamera(30, 1, 0.01, 1000)
-		camera.position.z = 0
-		camera.position.x = 400
-		camera.position.y = 0
-		camera.lookAt(origo)
+
+		rotateCamera(cameraRho, cameraPhi, cameraTheta)
 
 		scene.add(new THREE.AmbientLight(0x888888))
 
@@ -215,8 +257,6 @@ export default {
 				lineGeometry.vertices[1].y = z
 				lineGeometry.vertices[1].z = -y
 				lineGeometry.verticesNeedUpdate = true
-
-				camera.lookAt(origo)
 			})
 			vesselTween.start()
 		})
