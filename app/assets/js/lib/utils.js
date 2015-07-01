@@ -1,9 +1,14 @@
+var sin = Math.sin
+var cos = Math.cos
+var sqrt = Math.sqrt
+var pi = Math.PI
+
 export function deg2rad(degrees) {
-	return degrees * Math.PI / 180
+	return degrees * pi / 180
 }
 
 export function rad2deg(radians) {
-	return radians * 180 / Math.PI
+	return radians * 180 / pi
 }
 
 export function ll2cartesian(lat, lon, radius=1) {
@@ -11,9 +16,29 @@ export function ll2cartesian(lat, lon, radius=1) {
 	var theta = deg2rad(lon + 180)
 
 	return {
-		x: -(radius * Math.sin(phi) * Math.cos(theta)),
-		y: (radius * Math.cos(phi)),
-		z: (radius * Math.sin(phi) * Math.sin(theta)),
+		x: -(radius * sin(phi) * cos(theta)),
+		y: (radius * cos(phi)),
+		z: (radius * sin(phi) * sin(theta)),
+	}
+}
+
+export function spherical2cartesian(rho, phi, theta) {
+	return {
+		x: rho * sin(theta) * cos(phi),
+		y: rho * cos(theta),
+		z: rho * sin(theta) * sin(phi),
+	}
+}
+
+export function cartesian2spherical(x, y, z) {
+	var x2 = x * x
+	var y2 = y * y
+	var z2 = z * z
+
+	return {
+		rho: sqrt(x2 + y2 + z2),
+		theta: Math.acos(z / sqrt(x2 + y2 + z2)),
+		phi: Math.atan(y / x),
 	}
 }
 
