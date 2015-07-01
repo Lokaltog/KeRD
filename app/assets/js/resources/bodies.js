@@ -2,6 +2,7 @@ export var bodies = {
 	Kerbin: {
 		name: 'Kerbin',
 		radius: 600000,
+		atmosphere: 70000,
 		rotPeriod: 21600,
 		textures: {
 			diffuse: require('../../../assets/img/maps/kerbin-diffuse.jpg'),

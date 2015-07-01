@@ -55,6 +55,13 @@ export default {
 		})
 		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
 
+		// Init atmosphere indicator
+		var atmosphereGeometry = new THREE.SphereGeometry(1, 32, 32)
+		var atmosphereMaterial = new THREE.MeshLambertMaterial({ color: 0x0077cc })
+		atmosphereMaterial.transparent = true
+		atmosphereMaterial.opacity = 0.2
+		var atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial)
+
 		// Init vessel geometry
 		var vesselGeometry = new THREE.SphereGeometry(2, 8, 8)
 		var vesselMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
@@ -78,6 +85,7 @@ export default {
 		orbitLine.rotation.order = 'YXZ'
 
 		scene.add(bodyMesh)
+		scene.add(atmosphereMesh)
 		scene.add(vesselMesh)
 		scene.add(line)
 		scene.add(orbitLine)
@@ -125,6 +133,13 @@ export default {
 				bodyMaterial.needsUpdate = true
 			}
 
+			// Resize atmosphere mesh
+			if (body.atmosphere) {
+				var scale = (body.radius + body.atmosphere) * ratio
+				atmosphereMesh.scale.x = scale
+				atmosphereMesh.scale.y = scale
+				atmosphereMesh.scale.z = scale
+			}
 
 			// Animate vessel and camera positions
 			vesselTweenProperties = {
