@@ -154,6 +154,11 @@ export default {
 			orbitLine.geometry.vertices = orbitGeometry.vertices
 			orbitLine.geometry.verticesNeedUpdate = true
 
+			orbitLine.rotation.order = 'YXZ'
+			orbitLine.rotation.y = deg2rad(lan)
+			orbitLine.rotation.x = -deg2rad(90 -incl)
+			orbitLine.rotation.z = deg2rad(50) // WHAT - something related to aop
+
 			vesselTween.onUpdate(() => {
 				// Calculate orbital position
 				var sin = Math.sin
