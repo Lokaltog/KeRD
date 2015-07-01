@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {wrapDegDelta, debounce, deg2rad} from 'utils'
+import {wrapDegDelta, debounce, deg2rad, spherical2cartesian} from 'utils'
 import {bodies} from 'resources/bodies'
 
 var sin = Math.sin
@@ -53,9 +53,10 @@ export default {
 		var cameraTheta = 90 // initial vertical angle
 
 		function rotateCamera(rho, phi, theta) {
-			camera.position.x = rho * sin(theta) * cos(phi)
-			camera.position.y = rho * cos(theta)
-			camera.position.z = rho * sin(theta) * sin(phi)
+			var coords = spherical2cartesian(rho, phi, theta)
+			camera.position.x = coords.x
+			camera.position.y = coords.y
+			camera.position.z = coords.z
 			camera.lookAt(origo)
 		}
 
