@@ -32,8 +32,12 @@ export default {
 
 		// Resize renderer when window is resized
 		function resize() {
-			var $dim = $('.orbital-display').width()
+			var $dim = $('.mod-map .content').width()
 			renderer.setSize($dim, $dim)
+			$('.mod-map .orbital-display').css({
+				width: `${$dim}px`,
+				height: `${$dim}px`,
+			})
 		}
 		$(window).on('resize', debounce(resize))
 		resize()
