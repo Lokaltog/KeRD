@@ -48,7 +48,8 @@ export default {
 		var dragOffsetY = 0
 
 		var dragMultiplier = 0.5 // drag degrees multiplier per px movement
-		var cameraRho = 400 // distance
+		var cameraFov = 60
+		var cameraRho = 200 // distance
 		var cameraPhi = 0 // initial horizontal angle
 		var cameraTheta = 90 // initial vertical angle
 
@@ -89,7 +90,7 @@ export default {
 
 		// Create scene and setup camera and lights
 		var scene = new THREE.Scene()
-		var camera = new THREE.PerspectiveCamera(30, 1, 0.01, 1000)
+		var camera = new THREE.PerspectiveCamera(cameraFov, 1, 0.01, 1000)
 
 		rotateCamera(cameraRho, cameraPhi, cameraTheta)
 
