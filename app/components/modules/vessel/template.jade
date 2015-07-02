@@ -1,2 +1,23 @@
 header {{data['v.name']}}
 .content
+	.row
+		.gauge-wrap
+			.label Throttle
+			.gauge
+				.needle(v-style='transform: "rotate(" + throttleRotation + "deg)"')
+
+		.gauge-wrap
+			.label G Force
+			.gauge
+				.needle(v-style='transform: "rotate(" + gForceRotation + "deg)"')
+
+	div Pressure: {{data['v.atmosphericDensity']}}
+	div Gears: {{data['v.gearValue']}}
+	div Lights: {{data['v.lightValue']}}
+	div Brakes: {{data['v.brakeValue']}}
+	div RCS: {{data['v.rcsValue']}}
+	div SAS: {{data['v.sasValue']}}
+	div Mission time: {{numeral(data['v.missionTime']).format('00:00:00')}}
+	div UTC: {{numeral(data['t.universalTime']).format('00:00:00')}}
+	div Epoch: {{numeral(data['o.epoch']).format('00:00:00')}}
+	div Paused: {{data['p.paused']}}
