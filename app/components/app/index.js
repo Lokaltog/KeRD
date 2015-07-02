@@ -57,7 +57,6 @@ export default {
 		settings: require('../settings'),
 
 		actiongroups: require('../modules/actiongroups'),
-		history: require('../modules/history'),
 		map: require('../modules/map'),
 		navigation: require('../modules/navigation'),
 		orbit: require('../modules/orbit'),
