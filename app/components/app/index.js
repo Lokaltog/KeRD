@@ -75,7 +75,7 @@ export default {
 		return {
 			config: config || {
 				telemachus: {
-					host: '10.0.0.110',
+					host: 'localhost',
 					port: 8085,
 					refreshRate: telemachusRefreshRate,
 					refreshInterval: telemachusRefreshInterval,
