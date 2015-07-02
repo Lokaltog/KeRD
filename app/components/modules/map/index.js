@@ -70,6 +70,7 @@ export default {
 		var dragOffsetY = 0
 
 		var dragMultiplier = 0.5 // drag degrees multiplier per px movement
+		var zoomMultiplier = 40 // zoom distance multiplier per mouse scroll
 
 		$(document).on('mouseup', () => {
 			dragging = false
@@ -95,6 +96,22 @@ export default {
 
 			dragOffsetX = ev.pageX
 			dragOffsetY = ev.pageY
+		})
+		$(renderer.domElement).on('mousewheel', (ev) => {
+			ev.preventDefault()
+			var delta = ev.originalEvent.wheelDelta / 120
+			delta = delta >= 1 ? 1 : -1
+			var rho = -delta * zoomMultiplier
+
+			this.cameraRho += rho
+			if (this.cameraRho < 20) {
+				this.cameraRho = 20
+			}
+			if (this.cameraRho > 800) {
+				this.cameraRho = 800
+			}
+
+			this.rotateCamera()
 		})
 
 		// Create scene and setup camera and lights
@@ -268,8 +285,6 @@ export default {
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
 			body = bodies[this.data['v.body']]
 			ratio = (this.displayRadius / body.radius)
-
-			//cameraRho = this.data['o.ApA'] * ratio + this.cameraMargin
 
 			this.rotateCamera()
 
