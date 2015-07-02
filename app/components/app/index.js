@@ -62,15 +62,19 @@ export default {
 	},
 	data() {
 		var config = storage.get('config')
-		var refreshRate = config ? (config.refreshRate || 1) : 1
+		var telemachusRefreshRate = config ? (config.telemachus.refreshRate || 1) : 1
+		var telemachusRefreshInterval = parseInt(1 / telemachusRefreshRate * 1000)
+		if (config) {
+			config.telemachus.refreshInterval = telemachusRefreshInterval
+		}
 
 		return {
 			config: config || {
 				telemachus: {
 					host: '10.0.0.110',
 					port: 8085,
-					refreshRate: refreshRate,
-					refreshInterval: parseInt(1 / refreshRate * 1000),
+					refreshRate: telemachusRefreshRate,
+					refreshInterval: telemachusRefreshInterval,
 				},
 				rendering: {
 					fps: 60,
