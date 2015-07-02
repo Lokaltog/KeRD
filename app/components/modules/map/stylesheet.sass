@@ -1,8 +1,26 @@
+@import 'lib/settings'
+
 .mod-map
-	.content
-		max-width: 30em
+	$dim: 32em
 	.orbital-display
 		background: #000
-		width: 1em
-		height: 1em
+		box-sizing: border-box
+		width: $dim
+		height: $dim
+		position: relative
 		border-radius: .5em
+		overflow: hidden
+		box-shadow: 0 1px 0 rgba(#fff, .5), 0 -1px rgba(#000, 1)
+	.monitor
+		background: #444
+		border-radius: .5em
+		width: $dim
+		padding: $quarter-gutter
+		box-shadow: 0 -1px 0 rgba(#fff, .5), 0 1px rgba(#000, 1)
+		.actions
+			display: flex
+			padding: $quarter-gutter 0
+			button
+				flex: 1 0 auto
+				width: 0
+				background-color: #555

@@ -1,6 +1,7 @@
 header {{data['v.body']}}
 .content
-	.orbital-display
-	.actions
-		button.toggle.focus(v-on='click: toggleFocus', v-text='focus')
-		button.toggle.atmosphere(v-on='click: toggleAtmosphere') Atmosphere
+	.monitor
+		.orbital-display
+		.actions
+			button.toggle.focus(v-on='click: toggleFocus', v-text='focus')
+			button.toggle.atmosphere(v-on='click: toggleAtmosphere') Atmosphere

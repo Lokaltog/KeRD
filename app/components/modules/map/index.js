@@ -50,11 +50,11 @@ export default {
 			alpha: true,
 		})
 		renderer.setSize(1, 1)
-		$('.orbital-display').append(renderer.domElement)
+		$('.mod-map .orbital-display').append(renderer.domElement)
 
 		// Resize renderer when window is resized
 		function resize() {
-			var $dim = $('.mod-map .content').width()
+			var $dim = $('.mod-map .orbital-display').width()
 			renderer.setSize($dim, $dim)
 			$('.mod-map .orbital-display').css({
 				width: `${$dim}px`,
@@ -121,7 +121,7 @@ export default {
 		scene.add(new THREE.AmbientLight(0x888888))
 
 		// Add sun light
-		var sunPosition = new THREE.Vector3(0, 0, -5000)
+		var sunPosition = new THREE.Vector3(0, 0, -40000)
 		var light = new THREE.DirectionalLight(0xffffff, 2)
 		light.position.copy(sunPosition)
 		scene.add(light)
