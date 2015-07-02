@@ -3,12 +3,12 @@ header {{data['v.name']}}
 	.row
 		.gauge-wrap
 			.label Throttle
-			.gauge
+			.gauge.throttle
 				.needle(v-style='transform: "rotate(" + throttleRotation + "deg)"')
 
 		.gauge-wrap
-			.label G Force
-			.gauge
+			.label G-Force
+			.gauge.gforce
 				.needle(v-style='transform: "rotate(" + gForceRotation + "deg)"')
 
 	div Pressure: {{data['v.atmosphericDensity']}}

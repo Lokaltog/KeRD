@@ -1,20 +1,24 @@
+import {bodies} from 'resources/bodies'
+
 export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
 	props: ['module-config'],
 	data() {
 		return {
-			throttleRotation: 0,
-			gForceRotation: 0,
+			throttleRotation: null,
+			gForceRotation: null,
 		}
 	},
 	created() {
 		this.$watch(() => this.data['f.throttle'], () => {
 			var percent = parseInt(this.data['f.throttle'] / 1 * 100) / 100
-			var rotation = percent * 180 - 90
-			if (rotation !== this.gForceRotation) {
+			var margin = 2
+			var rotation = percent * (180 - margin * 2) - 90
+			console.log(rotation)
+			if (rotation !== this.throttleRotation) {
 				// Avoids redrawing the SVG if nothing has changed
-				this.throttleRotation = rotation
+				this.throttleRotation = margin + rotation
 			}
 		})
 		this.$watch(() => this.data['v.geeForce'], () => {
@@ -35,7 +39,7 @@ export default {
 
 			var percent = parseInt(val / range * 100) / 100
 			var rotation = percent * 180 - 90
-			if (rotation !== this.throttleRotation) {
+			if (rotation !== this.gForceRotation) {
 				// Avoids redrawing the SVG if nothing has changed
 				this.gForceRotation = rotation
 			}
