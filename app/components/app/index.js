@@ -78,6 +78,7 @@ export default {
 					useSpecularMaps: true,
 					showSkybox: true,
 					showLensFlare: true,
+					postProcessing: true,
 				},
 			},
 

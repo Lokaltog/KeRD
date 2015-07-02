@@ -45,6 +45,10 @@
 				input#config-rendering-showlensflare(type='checkbox', v-model='config.rendering.showLensFlare')
 				label(for='config-rendering-showlensflare') Show lens flare
 
+			.input.input-checkbox
+				input#config-rendering-postprocessing(type='checkbox', v-model='config.rendering.postProcessing')
+				label(for='config-rendering-postprocessing') Post processing
+
 		.input.input-submit
 			p.disclaimer The page will be reloaded when you save your configuration.
 			button.primary(type='submit', v-on='click: submit') Save configuration

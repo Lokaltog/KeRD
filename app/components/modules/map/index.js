@@ -4,6 +4,13 @@ import TWEEN from 'tween'
 import {wrapDegDelta, debounce, deg2rad, spherical2cartesian} from 'utils'
 import {bodies} from 'resources/bodies'
 
+require('imports?THREE=three!three.maskpass')
+require('imports?THREE=three!three.copyshader')
+require('imports?THREE=three!three.effectcomposer')
+require('imports?THREE=three!three.renderpass')
+require('imports?THREE=three!three.shaderpass')
+require('babel!imports?THREE=three!three.crtshader')
+
 var sin = Math.sin
 var asin = Math.asin
 var cos = Math.cos
@@ -208,6 +215,21 @@ export default {
 
 		this.rotateCamera()
 
+		// Optional post-processing
+		if (this.config.rendering.postProcessing) {
+			var postprocessClock = new THREE.Clock()
+			var composer = new THREE.EffectComposer(renderer)
+			var copyPass = new THREE.ShaderPass(THREE.CopyShader)
+			composer.addPass(new THREE.RenderPass(scene, camera))
+
+			var crtEffect = new THREE.ShaderPass(THREE.CRTShader)
+			composer.addPass(crtEffect)
+			crtEffect.uniforms.iResolution.value = new THREE.Vector3(500, 500, 0)
+
+			composer.addPass(copyPass)
+			copyPass.renderToScreen = true
+		}
+
 		// Animate callback
 		var animate = () => {
 			setTimeout(() => {
@@ -216,7 +238,13 @@ export default {
 
 			TWEEN.update()
 
-			renderer.render(scene, camera)
+			if (this.config.rendering.postProcessing) {
+				crtEffect.uniforms.iGlobalTime.value += postprocessClock.getDelta()
+				composer.render()
+			}
+			else {
+				renderer.render(scene, camera)
+			}
 		}
 		requestAnimationFrame(animate)
 

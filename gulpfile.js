@@ -53,11 +53,19 @@ var config = {
 		'moment': '/js/lib/ext/moment',
 		'numeral': '/js/lib/ext/numeral',
 		'page': '/js/lib/ext/page',
-		'three': '/js/lib/ext/three',
 		'tween': '/js/lib/ext/tween',
 		'vex.dialog': '/js/lib/ext/vex.dialog',
 		'vex': '/js/lib/ext/vex',
 		'vue': '/js/lib/ext/vue',
+
+
+		'three': '/js/lib/ext/three',
+		'three.copyshader': '/js/lib/ext/three/CopyShader',
+		'three.effectcomposer': '/js/lib/ext/three/EffectComposer',
+		'three.maskpass': '/js/lib/ext/three/MaskPass',
+		'three.renderpass': '/js/lib/ext/three/RenderPass',
+		'three.shaderpass': '/js/lib/ext/three/ShaderPass',
+		'three.crtshader': '/js/lib/ext/three/CRTShader',
 	})
 }
 
