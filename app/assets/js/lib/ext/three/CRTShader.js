@@ -20,7 +20,7 @@ varying vec2 vUv;
 
 vec3 scanline(vec2 coord, vec3 screen)
 {
-	screen.rgb -= sin((coord.y * 1.5 + (iGlobalTime * 20.0))) * 0.01;
+	screen.rgb -= sin((-coord.y * 1.5 + (iGlobalTime * 20.0))) * 0.01;
 	return screen;
 }
 
@@ -47,7 +47,7 @@ void main()
 
 	vec2 screenSpace = uv * iResolution.xy;
 	gl_FragColor.rgb = scanline(screenSpace, gl_FragColor.rgb);
-	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 2.0, 0.05, screenSpace.y / iResolution.y);
+	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 2.0, 0.07, screenSpace.y / iResolution.y);
 	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 40.0, -0.01, (iResolution.y - screenSpace.y) / iResolution.y);
 }
 `,
