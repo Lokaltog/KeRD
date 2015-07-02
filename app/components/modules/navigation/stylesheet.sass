@@ -1,3 +1,5 @@
+@import 'lib/settings'
+
 .mod-navigation
 	.navball
 		background: #555
@@ -27,3 +29,15 @@
 			transform: translate(-50%, -50%)
 			border-radius: 50%
 			border: 3px solid #f00
+	.heading
+		position: absolute
+		bottom: -1px
+		left: 50%
+		transform: translate(-50%, 0)
+		background: #ddd url('/img/noise.png')
+		padding: ($quarter-gutter / 2) 0 0 0
+		width: 5em
+		text-align: center
+		border-top-left-radius: 2em
+		border-top-right-radius: 2em
+		box-shadow: 0 -1px 0 rgba(#fff, 1)
