@@ -53,6 +53,9 @@ footer
 			align-items: center
 			justify-content: flex-end
 			padding-right: $quarter-gutter
+		.settings
+			display: flex
+
 
 // Global block styles
 .control-block
@@ -61,7 +64,7 @@ footer
 	flex-flow: row nowrap !important
 	margin: 0 0 $quarter-gutter 0 !important
 	label
-		flex: 1 0 auto
+		flex: 1 1 auto
 		text-align: right
 		text-transform: uppercase
 		margin: 0 $half-gutter 0 0
@@ -70,11 +73,19 @@ footer
 		flex: 1 0 auto
 		text-align: right
 		width: 10em
+	label,
+	.display
+		&.lg
+			width: 10em
+		&.sm
+			width: 6em
+		&.xs
+			width: 4em
 
 .graph, .display
 	background: radial-gradient(circle at 0 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 100% 100%, rgba(#fff, .1) 50%, transparent), radial-gradient(circle at 50% 0, rgba(#fff, .1), transparent), linear-gradient(to bottom, rgba(#fff, .1), transparent 60%), repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(#fff, .04) 2px, rgba(#fff, .02) 4px), #000
 	padding: ($quarter-gutter / 4) $quarter-gutter
-	border-radius: .3em
+	border-radius: $border-radius
 	box-shadow: inset 0 .2em .5em rgba(#000, .7)
 	border-top: 1px solid #000
 	border-bottom: 1px solid #fff

@@ -105,14 +105,14 @@ export default {
 						section(module('resources')),
 						rowExpand(
 							col(
-								rowExpand(
-									sectionExpand(module('vessel'))
-								),
 								section(
 									row(
 										module('navigation'),
 										module('orbit')
 									)
+								),
+								rowExpand(
+									section(module('vessel'))
 								)
 							)
 						)

@@ -49,8 +49,8 @@
 		height: 2em
 		position: relative
 		overflow: hidden
-		margin: $quarter-gutter 0
-		border-radius: $double-border-radius
+		margin: 0
+		border-radius: $border-radius
 		.label
 			position: absolute
 			left: 50%
@@ -68,3 +68,41 @@
 			border-top-right-radius: 50%
 			transform: translate(-50%, 0)
 			box-shadow: 0 0 .3em rgba(#000, .2)
+	.lamps
+		flex: 1 1 auto
+		.row
+			margin: $half-gutter 0 0 0
+		.lamp
+			border-radius: $border-radius
+			background-color: #000
+			background-image: linear-gradient(to bottom, rgba(#000, 0), rgba(#000, .2)), radial-gradient(ellipse at 50% 50%, rgba(#fff, .4), rgba(#fff, .1))
+			box-shadow: inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(#000, .8), 0 3px 0 #666, 0 .2em .3em rgba(#000, .5)
+			flex: 1 0 auto
+			width: 0
+			text-transform: uppercase
+			text-align: center
+			padding: $quarter-gutter
+			text-shadow: 0 -1px 1px rgba(#000, .4)
+			color: #888
+			&.on
+				color: #fff
+				&.gears
+					$color: $color-green
+					background-color: $color
+					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
+				&.lights
+					$color: $color-orange
+					background-color: $color
+					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
+				&.brakes
+					$color: #d00
+					background-color: $color
+					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
+				&.rcs
+					$color: #4fa
+					background-color: $color
+					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
+				&.sas
+					$color: #7cf
+					background-color: $color
+					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)

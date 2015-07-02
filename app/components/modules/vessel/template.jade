@@ -15,12 +15,15 @@ header {{data['v.name']}}
 		.label Atmosphere
 		.needle(v-style='left: pressurePosition + "%"')
 
-	div Gears: {{data['v.gearValue']}}
-	div Lights: {{data['v.lightValue']}}
-	div Brakes: {{data['v.brakeValue']}}
-	div RCS: {{data['v.rcsValue']}}
-	div SAS: {{data['v.sasValue']}}
-	div Mission time: {{numeral(data['v.missionTime']).format('00:00:00')}}
-	div UTC: {{numeral(data['t.universalTime']).format('00:00:00')}}
-	div Epoch: {{numeral(data['o.epoch']).format('00:00:00')}}
-	div Paused: {{data['p.paused']}}
+	.lamps
+		.row
+			.lamp.gears(v-class='on: gears') Gears
+			.lamp.lights(v-class='on: lights') Lights
+			.lamp.brakes(v-class='on: brakes') Brakes
+		.row
+			.lamp.rcs(v-class='on: rcs') RCS
+			.lamp.sas(v-class='on: sas') SAS
+
+	.control-block
+		.display
+			| {{missionTime}}

@@ -9,9 +9,22 @@ export default {
 			throttleRotation: null,
 			gForceRotation: null,
 			pressurePosition: null,
+
+			gears: false,
+			lights: false,
+			brakes: false,
+			rcs: false,
+			sas: false,
+			missionTime: null,
 		}
 	},
 	created() {
+		this.$watch(() => this.data['v.missionTime'], () => {
+			var m = this.numeral(this.data['v.missionTime']).format('00:00:00')
+			var utc = this.numeral(this.data['t.universalTime']).format('00:00:00')
+			this.missionTime = `${utc} UTC T+${m}`
+		})
+
 		this.$watch(() => this.data['f.throttle'], () => {
 			var percent = parseInt(this.data['f.throttle'] / 1 * 100) / 100
 			var margin = 2
@@ -55,5 +68,19 @@ export default {
 			}
 			this.pressurePosition = pressure * 100
 		})
+
+		var watchBool = (key, vmKey) => {
+			this.$watch(() => this.data[key], () => {
+				try {
+					this[vmKey] = this.data[key].toLowerCase() === 'true'
+				}
+				catch (e) {}
+			})
+		}
+		watchBool('v.gearValue', 'gears')
+		watchBool('v.lightValue', 'lights')
+		watchBool('v.brakeValue', 'brakes')
+		watchBool('v.rcsValue', 'rcs')
+		watchBool('v.sasValue', 'sas')
 	},
 }

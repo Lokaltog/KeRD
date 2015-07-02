@@ -3,10 +3,10 @@
 	footer
 		.contents
 			.layouts
-				button.dark 1
+				//button.dark 1
+				button.dark(v-on='click: settingsVisible = !settingsVisible') Settings
 			.logo
 			.host.connected(v-if='wsConnected') Connected to {{config.telemachus.host}}:{{config.telemachus.port}}
 			.host.disconnected(v-if='!wsConnected') Not connected
-			button.settings(v-on='click: settingsVisible = !settingsVisible') Settings
 
 settings(v-show='settingsVisible')
