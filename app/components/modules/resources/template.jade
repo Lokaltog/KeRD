@@ -24,21 +24,21 @@ header Resources
 				.bar.green(v-class='orange: intakeAir.percent <= orangeThreshold, red: intakeAir.percent <= redThreshold', data-percentage='intakeAir.percent', v-style='height: intakeAir.percent + "%"')
 	.row
 		.resource
-			.label LIQ
+			.label LIQF
 			.bar-display
 				.overlay
 					.current {{numeral(liquidFuel.current).format('0.0')}}
 					.max {{numeral(liquidFuel.max).format('0.0')}}
 				.bar.green(v-class='orange: liquidFuel.percent <= orangeThreshold, red: liquidFuel.percent <= redThreshold', data-percentage='liquidFuel.percent', v-style='height: liquidFuel.percent + "%"')
 		.resource
-			.label OXI
+			.label OXID
 			.bar-display
 				.overlay
 					.current {{numeral(oxidizer.current).format('0.0')}}
 					.max {{numeral(oxidizer.max).format('0.0')}}
 				.bar.green(v-class='orange: oxidizer.percent <= orangeThreshold, red: oxidizer.percent <= redThreshold', data-percentage='oxidizer.percent', v-style='height: oxidizer.percent + "%"')
 		.resource
-			.label XEN
+			.label XENON
 			.bar-display
 				.overlay
 					.current {{numeral(xenonGas.current).format('0.0')}}

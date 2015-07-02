@@ -57,6 +57,6 @@
 
 		.input.input-submit
 			p.disclaimer The page will be reloaded when you save your configuration.
-			button.primary(type='submit', v-on='click: submit') Save configuration
-			//button(v-on='click: reset') Reset configuration
-			button#settings-close(v-on='click: close') Close without saving
+			.row
+				button.primary(type='submit', v-on='click: submit') Save configuration
+				button#settings-close(v-on='click: close') Close without saving

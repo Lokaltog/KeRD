@@ -2,7 +2,7 @@
 @import 'lib/utils'
 
 $shrink-width: 40em
-$shrink-height: 50em
+$shrink-height: 55em
 
 #settings
 	position: fixed
@@ -53,7 +53,7 @@ $shrink-height: 50em
 		background-size: contain
 		height: 3em
 	.disclaimer
-		margin: $half-gutter 0
+		margin: $half-gutter 0 0 0
 		background: lighten($color-orange, 20)
 		color: darken($color-orange, 40)
 		border-radius: $border-radius
@@ -63,3 +63,5 @@ $shrink-height: 50em
 			background-color: #ddd
 			margin: $half-gutter 0 0 0
 			width: 100%
+			&:not(:last-child)
+				margin-right: $half-gutter

@@ -9,6 +9,8 @@
 			text-transform: uppercase
 			order: 2
 			text-align: center
+			font-weight: $bold
+			margin: $quarter-gutter 0 0 0
 	.gauge
 		$dim: 10em
 		width: $dim
@@ -44,7 +46,7 @@
 	.pressure
 		width: 100%
 		background: #fff
-		background-image: linear-gradient(to right, #fff, $color-blue)
+		background-image: linear-gradient(to right, #fff, desaturate($color-blue, 40))
 		box-shadow: inset 0 1px 0 rgba(#000, .3), inset 0 .3em .4em rgba(#000, .3)
 		height: 2em
 		position: relative
@@ -57,7 +59,7 @@
 			top: 50%
 			transform: translate(-50%, -50%)
 			text-transform: uppercase
-			color: rgba(darken($color-blue, 20), .7)
+			color: rgba(darken($color-blue, 30), .5)
 		.needle
 			position: absolute
 			bottom: 0
@@ -73,6 +75,7 @@
 		.row
 			margin: $half-gutter 0 0 0
 		.lamp
+			font-weight: $bold
 			border-radius: $border-radius
 			background-color: #000
 			background-image: linear-gradient(to bottom, rgba(#000, 0), rgba(#000, .2)), radial-gradient(ellipse at 50% 50%, rgba(#fff, .4), rgba(#fff, .1))
