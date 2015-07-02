@@ -99,23 +99,25 @@ export default {
 			data: {},
 
 			layout: [
-			    col(
-				    row(
-					    section(module('map')),
-					    sectionExpand(
-						    row(
-							    col(
-								    rowExpand(
-									    module('navigation'),
-									    module('vessel')
-								    ),
-								    module('orbit')
-							    ),
-							    module('resources')
-						    )
-					    )
-				    )
-			    )
+				col(
+					row(
+						section(module('map')),
+						section(module('resources')),
+						rowExpand(
+							col(
+								rowExpand(
+									sectionExpand(module('vessel'))
+								),
+								section(
+									row(
+										module('navigation'),
+										module('orbit')
+									)
+								)
+							)
+						)
+					)
+				)
 			],
 		}
 	},
