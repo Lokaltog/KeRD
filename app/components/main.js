@@ -15,7 +15,7 @@ require('fastclick').attach(document.body)
 $('head').append(
 	$('<link>').attr({
 		rel: 'shortcut icon',
-		href: '',
+		href: require('../assets/img/favicon.png'),
 	}),
 	$('<link>').attr({
 		rel: 'apple-touch-icon',
