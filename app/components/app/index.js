@@ -138,7 +138,6 @@ export default {
 		this.ws.addCloseHandler(() => this.wsConnected = false)
 		this.ws.addMessageHandler(ev => {
 			var msg = JSON.parse(ev.data)
-			console.debug('Received message from Telemachus:', msg)
 
 			Object.keys(msg).forEach(k => {
 				if (!this.data[k]) {
