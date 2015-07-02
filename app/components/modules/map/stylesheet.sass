@@ -4,7 +4,6 @@
 	$dim: 32em
 	.orbital-display
 		background: #000
-		box-sizing: border-box
 		width: $dim
 		height: $dim
 		position: relative
@@ -12,15 +11,16 @@
 		overflow: hidden
 		box-shadow: 0 1px 0 rgba(#fff, .5), 0 -1px rgba(#000, 1)
 	.monitor
-		background: #444
+		background: #555
 		border-radius: .5em
 		width: $dim
-		padding: $quarter-gutter
-		box-shadow: 0 -1px 0 rgba(#fff, .5), 0 1px rgba(#000, 1)
+		padding: $half-gutter
+		box-shadow: 0 -1px 0 rgba(#fff, .5), 0 1px rgba(#000, 1), 0 .3em .4em rgba(#000, .3)
 		.actions
 			display: flex
-			padding: $quarter-gutter 0
+			padding: $quarter-gutter 0 0 0
 			button
 				flex: 1 0 auto
 				width: 0
-				background-color: #555
+				&:not(:last-child)
+					margin: 0 $quarter-gutter 0 0

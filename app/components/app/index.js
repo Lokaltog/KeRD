@@ -97,25 +97,25 @@ export default {
 			layout: [
 			    col(
 				    row(
+					    section(module('map')),
 					    section(
 						    row(
 							    col(
-								    module('actiongroups')
-							    ) 
+								    row(
+									    module('navigation'),
+									    module('vessel')
+								    ),
+								    module('orbit')
+							    ),
+							    module('resources')
 						    )
 					    )
-				    ),
-				    row(
-					    section(module('orbit'))
-				    ),
-				    row(
-					    section(module('map'))
 				    )
 			    )
 			],
 		}
 	},
-	created() {
+	ready() {
 		// Connect to Telemachus socket
 		this.ws = new WS(`ws://${this.config.telemachus.host}:${this.config.telemachus.port}/datalink`)
 		this.ws.addOpenHandler(() => {
