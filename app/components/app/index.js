@@ -19,6 +19,9 @@ class LocalStorage {
 	set(key, value) {
 		localStorage.setItem(key, JSON.stringify(value))
 	}
+	remove(key) {
+		localStorage.removeItem(key)
+	}
 }
 
 // Layout wrapper functions
