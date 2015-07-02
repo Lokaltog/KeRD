@@ -1,4 +1,5 @@
 export var bodies = {
+	_atmDensity: 1.2230948554874,
 	Kerbin: {
 		name: 'Kerbin',
 		radius: 600000,

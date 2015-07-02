@@ -8,6 +8,7 @@ export default {
 		return {
 			throttleRotation: null,
 			gForceRotation: null,
+			pressurePosition: null,
 		}
 	},
 	created() {
@@ -43,6 +44,16 @@ export default {
 				// Avoids redrawing the SVG if nothing has changed
 				this.gForceRotation = rotation
 			}
+		})
+		this.$watch(() => this.data['v.atmosphericDensity'], () => {
+			var pressure = this.data['v.atmosphericDensity'] / bodies._atmDensity
+			if (pressure <= 0) {
+				pressure = 0
+			}
+			if (pressure >= 1) {
+				pressure = 1
+			}
+			this.pressurePosition = pressure * 100
 		})
 	},
 }

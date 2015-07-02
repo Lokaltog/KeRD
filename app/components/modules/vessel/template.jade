@@ -11,7 +11,10 @@ header {{data['v.name']}}
 			.gauge.gforce
 				.needle(v-style='transform: "rotate(" + gForceRotation + "deg)"')
 
-	div Pressure: {{data['v.atmosphericDensity']}}
+	.pressure
+		.label Atmosphere
+		.needle(v-style='left: pressurePosition + "%"')
+
 	div Gears: {{data['v.gearValue']}}
 	div Lights: {{data['v.lightValue']}}
 	div Brakes: {{data['v.brakeValue']}}
