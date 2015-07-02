@@ -1,15 +1,3 @@
-// Fonts
-=register-font($family, $filename, $weight, $style)
-	@font-face
-		font-family: $family
-		src: url('/font/#{$filename}.eot')
-		src: url('/font/#{$filename}.eot?#iefix') format('embedded-opentype'), url('/font/#{$filename}.woff') format('woff'), url('/font/#{$filename}.ttf') format('truetype'), url('/font/#{$filename}.svg##{$family}') format('svg')
-		font-weight: $weight
-		font-style: $style
-
-+register-font(Futura, 'futuratot-med-webfont', 300, normal)
-+register-font(LedSimulator, 'ledsimulator-webfont', 300, normal)
-
 @import 'lib/settings'
 @import 'lib/normalize'
 @import 'lib/font-awesome/font-awesome'
@@ -25,9 +13,6 @@ body
 	height: 100%
 	margin: 0
 	user-select: none
-
-.led
-	font-family: $font-lcd
 
 a
 	color: #444
