@@ -29,7 +29,6 @@ export default {
 			var percent = parseInt(this.data['f.throttle'] / 1 * 100) / 100
 			var margin = 2
 			var rotation = percent * (180 - margin * 2) - 90
-			console.log(rotation)
 			if (rotation !== this.throttleRotation) {
 				// Avoids redrawing the SVG if nothing has changed
 				this.throttleRotation = margin + rotation
