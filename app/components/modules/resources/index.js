@@ -41,7 +41,7 @@ export default {
 	},
 	created() {
 		var watchResource = (key, dataObj) => {
-			this.$watch(() => this.data[`r.resourceMax[${key}]`] + this.data[`r.resourceCurrent[${key}]`], () => {
+			this.$watch(() => this.data[`r.resourceMax[${key}]`] + this.data[`r.resource[${key}]`], () => {
 				dataObj.max = this.data[`r.resourceMax[${key}]`]
 				if (dataObj.max <= 0) {
 					dataObj.max = 0
@@ -49,7 +49,7 @@ export default {
 					dataObj.percent = 0
 					return
 				}
-				dataObj.current = this.data[`r.resourceCurrent[${key}]`]
+				dataObj.current = this.data[`r.resource[${key}]`]
 				dataObj.percent = Math.ceil(dataObj.current / dataObj.max * 100)
 			})
 		}
