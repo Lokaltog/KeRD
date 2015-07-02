@@ -24,6 +24,12 @@ vec3 scanline(vec2 coord, vec3 screen)
 	return screen;
 }
 
+vec3 flicker(vec2 coord, vec3 screen, float speedFactor, float intensity, float posBrightnessFactor)
+{
+	screen.rgb += abs(sin(speedFactor * iGlobalTime) * intensity * posBrightnessFactor);
+	return screen;
+}
+
 vec3 sampleSplit(sampler2D tex, vec2 coord)
 {
 	vec3 frag;
@@ -32,6 +38,7 @@ vec3 sampleSplit(sampler2D tex, vec2 coord)
 	frag.b = texture2D(tex, vec2(coord.x + 0.002 * sin(iGlobalTime), coord.y)).b;
 	return frag;
 }
+
 void main()
 {
 	vec2 uv = vUv;
@@ -41,6 +48,8 @@ void main()
 
 	vec2 screenSpace = uv * iResolution.xy;
 	gl_FragColor.rgb = scanline(screenSpace, gl_FragColor.rgb);
+	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 2.0, 0.05, (iResolution.y - screenSpace.y) / iResolution.y);
+	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 40.0, -0.01, screenSpace.y / iResolution.y);
 }
 `,
 }
