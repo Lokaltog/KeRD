@@ -93,7 +93,8 @@ gulp.task('webpack', function(callback) {
 })
 
 gulp.task('imagemin', ['webpack'], function() {
-	if (config.ENV === 'dev') {
+	if (config.ENV === 'dev' || true) {
+		// Temporarily disabled due to errors
 		return
 	}
 	return gulp.src('static/assets/img/**/*')
