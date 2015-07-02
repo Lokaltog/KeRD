@@ -16,6 +16,7 @@
 		width: $dim
 		padding: $half-gutter
 		box-shadow: 0 -1px 0 rgba(#fff, .5), 0 1px rgba(#000, 1), 0 .3em .4em rgba(#000, .3)
+		position: relative
 		.actions
 			display: flex
 			padding: $quarter-gutter 0 0 0
@@ -24,3 +25,16 @@
 				width: 0
 				&:not(:last-child)
 					margin: 0 $quarter-gutter 0 0
+	.body-header,
+	.body-info
+		background: transparent
+		color: rgba(lighten($color-orange, 20), .7)
+		position: absolute
+		font: 1.3em/1.3 $font-lcd
+		text-shadow: 0 0 .5em rgba($color-orange, 1)
+	.body-header
+		top: 1.6em
+		left: $gutter
+	.body-info
+		bottom: 4em
+		left: $gutter

@@ -88,6 +88,11 @@ export default {
 					showLensFlare: true,
 					postProcessing: true,
 				},
+				modules: {
+					map: {
+						showBodyDetails: true,
+					},
+				},
 			},
 
 			storage: storage,

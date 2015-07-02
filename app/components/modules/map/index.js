@@ -40,7 +40,9 @@ export default {
 
 			objects: {},
 			focusPosition: origo,
-			origo: origo
+			origo: origo,
+
+			body: null,
 		}
 	},
 	ready() {
@@ -285,6 +287,8 @@ export default {
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
 			body = bodies[this.data['v.body']]
 			ratio = (this.displayRadius / body.radius)
+
+			this.body = body
 
 			this.rotateCamera()
 

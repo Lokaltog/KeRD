@@ -49,6 +49,12 @@
 				input#config-rendering-postprocessing(type='checkbox', v-model='config.rendering.postProcessing')
 				label(for='config-rendering-postprocessing') Post processing
 
+			.header Modules
+
+			.input.input-checkbox
+				input#config-modules-map-showbodydetails(type='checkbox', v-model='config.modules.map.showBodyDetails')
+				label(for='config-modules-map-showbodydetails') Display body details in map view
+
 		.input.input-submit
 			p.disclaimer The page will be reloaded when you save your configuration.
 			button.primary(type='submit', v-on='click: submit') Save configuration
