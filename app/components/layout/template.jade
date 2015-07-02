@@ -1,5 +1,5 @@
 template(v-repeat='contents')
-	layout(v-if='type == "row" || type == "col"', contents='{{contents}}', v-attr='class: "node-" + (type || "col")')
-	section(v-if='type == "section"')
+	layout(v-if='type == "row" || type == "col"', contents='{{contents}}', v-attr='class: "node-" + (type || "col") + " " + cls')
+	section(v-if='type == "section"', v-attr='class: cls ? cls : ""')
 		layout(contents='{{contents}}')
 	component(v-if='type == "module"', is='{{id}}', module-config='{{module-config}}', v-attr='class: "mod-" + id')

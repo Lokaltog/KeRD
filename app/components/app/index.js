@@ -25,17 +25,21 @@ class LocalStorage {
 }
 
 // Layout wrapper functions
-function wrapper(type) {
+function wrapper(type, cls='') {
 	return function(...contents) {
 		return {
 			type: type,
-			contents: contents
+			contents: contents,
+			cls: cls,
 		}
 	}
 }
 var row = wrapper('row')
+var rowExpand = wrapper('row', 'expand')
 var col = wrapper('col')
+var colExpand = wrapper('col', 'expand')
 var section = wrapper('section')
+var sectionExpand = wrapper('section', 'expand')
 var module = function(id, config={}) {
 	return {
 		type: 'module',
@@ -98,10 +102,10 @@ export default {
 			    col(
 				    row(
 					    section(module('map')),
-					    section(
+					    sectionExpand(
 						    row(
 							    col(
-								    row(
+								    rowExpand(
 									    module('navigation'),
 									    module('vessel')
 								    ),
