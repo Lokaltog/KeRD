@@ -42,14 +42,13 @@ vec3 sampleSplit(sampler2D tex, vec2 coord)
 void main()
 {
 	vec2 uv = vUv;
-	uv.y = 1.0 - uv.y; // flip tex
 
 	gl_FragColor.rgb = sampleSplit(tDiffuse, uv);
 
 	vec2 screenSpace = uv * iResolution.xy;
 	gl_FragColor.rgb = scanline(screenSpace, gl_FragColor.rgb);
-	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 2.0, 0.05, (iResolution.y - screenSpace.y) / iResolution.y);
-	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 40.0, -0.01, screenSpace.y / iResolution.y);
+	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 2.0, 0.05, screenSpace.y / iResolution.y);
+	gl_FragColor.rgb = flicker(screenSpace, gl_FragColor.rgb, 40.0, -0.01, (iResolution.y - screenSpace.y) / iResolution.y);
 }
 `,
 }
