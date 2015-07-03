@@ -207,11 +207,22 @@ export default {
 
 		// Resize renderer when window is resized
 		function resize() {
-			var $dim = $('.mod-map .orbital-display').width()
-			renderer.setSize($dim, $dim)
+			var $displayWidth = $('.mod-map .orbital-display').width()
+			var $displayHeight = $('.mod-map .orbital-display').height()
+
+			var $contentHeight = $('.mod-map .content').height()
+			var $monitorHeight = $('.mod-map .monitor').outerHeight()
+
+			var remainingSpace = $contentHeight - $monitorHeight
+			var newHeight = $displayHeight + remainingSpace
+
+			camera.aspect = $displayWidth / newHeight
+			camera.updateProjectionMatrix()
+
+			renderer.setSize($displayWidth, newHeight)
+
 			$('.mod-map .orbital-display').css({
-				width: `${$dim}px`,
-				height: `${$dim}px`,
+				height: `${newHeight}px`,
 			})
 		}
 		$(window).on('resize', debounce(resize))
