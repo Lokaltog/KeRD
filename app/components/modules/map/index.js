@@ -16,6 +16,7 @@ var asin = Math.asin
 var sqrt = Math.sqrt
 var pow = Math.pow
 
+var composer
 var renderer
 var scene
 var camera
@@ -209,16 +210,22 @@ export default {
 		function resize() {
 			var $displayWidth = $('.mod-map .orbital-display').width()
 			var $displayHeight = $('.mod-map .orbital-display').height()
-
 			var $contentHeight = $('.mod-map .content').height()
 			var $monitorHeight = $('.mod-map .monitor').outerHeight()
 
+			var overflow = $('#wrap').outerHeight(true) - $('body').outerHeight(true)
+			var footerRemainingSpace = $('footer').height() - $('footer .contents').outerHeight(true)
 			var remainingSpace = $contentHeight - $monitorHeight
-			var newHeight = $displayHeight + remainingSpace
+
+			// This calculates the max height the map view can have based on the remaining space in the container and above the footer
+			var newHeight = $displayHeight + remainingSpace + footerRemainingSpace - overflow
 
 			camera.aspect = $displayWidth / newHeight
 			camera.updateProjectionMatrix()
 
+			if (composer) {
+				composer.setSize($displayWidth, newHeight)
+			}
 			renderer.setSize($displayWidth, newHeight)
 
 			$('.mod-map .orbital-display').css({
@@ -286,7 +293,7 @@ export default {
 		// Optional post-processing
 		if (this.config.rendering.postProcessing) {
 			var postprocessClock = new THREE.Clock()
-			var composer = new THREE.EffectComposer(renderer)
+			composer = new THREE.EffectComposer(renderer)
 			var copyPass = new THREE.ShaderPass(THREE.CopyShader)
 			composer.addPass(new THREE.RenderPass(scene, camera))
 
