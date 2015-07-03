@@ -287,7 +287,9 @@ export default {
 
 		this.$watch(() => this.loading, () => {
 			// Show noise when loading
-			crtEffect.uniforms.noise.value = this.loading ? 1 : 0
+			if (this.config.rendering.postProcessing) {
+				crtEffect.uniforms.noise.value = this.loading ? 1 : 0
+			}
 		}, { immediate: true })
 
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
