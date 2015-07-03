@@ -417,7 +417,7 @@ export default {
 			var bodyMaterial = this.objects.bodyMesh.material
 			var atmosphereMaterial = this.objects.atmosphereMesh.material
 
-			if (!bodyMaterial.map || bodyMaterial.map.sourceFile !== this.body.textures.diffuse || force) {
+			if (!bodyMaterial.map || (bodyMaterial.map.sourceFile !== this.body.textures.diffuse && !this.showBiome) || force) {
 				// Update textures based on the current body
 				// Only updates if the current texture source files differs from the current body
 				bodyMaterial.map = THREE.ImageUtils.loadTexture(this.body.textures.diffuse, undefined, () => {
