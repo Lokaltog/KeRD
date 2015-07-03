@@ -2,6 +2,9 @@ header {{data['v.body']}}
 .content
 	.monitor
 		.orbital-display
+			.nodes
+				.apoapsis
+				.periapsis
 		.body-header(v-if='body && config.modules.map.showBodyDetails')
 			.name {{data['v.name']}} orbiting {{body.name}}
 		.body-info(v-if='body && config.modules.map.showBodyDetails && focus === "body"')

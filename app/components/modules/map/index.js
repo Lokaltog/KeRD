@@ -16,8 +16,12 @@ var asin = Math.asin
 var sqrt = Math.sqrt
 var pow = Math.pow
 
+var renderer
 var scene
 var camera
+
+var apoapsisNode
+var periapsisNode
 
 export default {
 	inherit: true,
@@ -46,6 +50,9 @@ export default {
 		}
 	},
 	ready() {
+		apoapsisNode = $('.nodes .apoapsis')
+		periapsisNode = $('.nodes .periapsis')
+
 		// Create scene and setup camera and lights
 		scene = new THREE.Scene()
 		camera = new THREE.PerspectiveCamera(this.cameraFov, 1, 0.01, 120000)
@@ -95,6 +102,12 @@ export default {
 		this.objects.vesselMesh.castShadow = true
 		this.objects.vesselMesh.receiveShadow = true
 		scene.add(this.objects.vesselMesh)
+
+		// Add apoapsis/periapsis geometry
+		this.objects.apoapsisMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00aa00, visible: false }))
+		this.objects.periapsisMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00aa00, visible: false }))
+		scene.add(this.objects.apoapsisMesh)
+		scene.add(this.objects.periapsisMesh)
 
 		// Add vessel line (from body center, indicating altitude)
 		var lineGeometry = new THREE.Geometry()
@@ -181,7 +194,7 @@ export default {
 		}
 
 		// Init renderer
-		var renderer = new THREE.WebGLRenderer({
+		renderer = new THREE.WebGLRenderer({
 			alpha: true,
 		})
 		renderer.setSize(1, 1)
@@ -189,6 +202,7 @@ export default {
 
 		renderer.shadowMapEnabled = true
 		renderer.shadowMapType = THREE.PCFShadowMap
+		renderer.setPixelRatio(window.devicePixelRatio)
 
 		// Resize renderer when window is resized
 		function resize() {
@@ -398,6 +412,16 @@ export default {
 
 			vesselTween.onUpdate(() => {
 				// Calculate orbital position
+				var apoapsisPosition = orbitalElements2Cartesian(ratio, 180, eccentricity, semimajorAxis, vesselTweenProperties.inclination, longitudeOfAscendingNode, vesselTweenProperties.argumentOfPeriapsis)
+				var periapsisPosition = orbitalElements2Cartesian(ratio, 0, eccentricity, semimajorAxis, vesselTweenProperties.inclination, longitudeOfAscendingNode, vesselTweenProperties.argumentOfPeriapsis)
+
+				this.objects.apoapsisMesh.position.x = apoapsisPosition.x
+				this.objects.apoapsisMesh.position.y = apoapsisPosition.z
+				this.objects.apoapsisMesh.position.z = -apoapsisPosition.y
+
+				this.objects.periapsisMesh.position.x = periapsisPosition.x
+				this.objects.periapsisMesh.position.y = periapsisPosition.z
+				this.objects.periapsisMesh.position.z = -periapsisPosition.y
 
 				// Update vessel position
 				var vesselPosition = orbitalElements2Cartesian(
@@ -428,6 +452,19 @@ export default {
 			camera.position.y = this.focusPosition.y + coords.y
 			camera.position.z = this.focusPosition.z + coords.z
 			camera.lookAt(this.focusPosition)
+			camera.updateMatrixWorld()
+
+			var apoapsis2DCoords = objScreenPosition(this.objects.apoapsisMesh, camera, renderer)
+			var periapsis2DCoords = objScreenPosition(this.objects.periapsisMesh, camera, renderer)
+
+			apoapsisNode.css({
+				left: `${apoapsis2DCoords.x}px`,
+				top: `${apoapsis2DCoords.y}px`,
+			})
+			periapsisNode.css({
+				left: `${periapsis2DCoords.x}px`,
+				top: `${periapsis2DCoords.y}px`,
+			})
 		},
 		toggleFocus() {
 			if (this.focus === 'vessel') {

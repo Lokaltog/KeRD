@@ -8,8 +8,24 @@
 		height: $dim
 		position: relative
 		border-radius: .5em
+		position: relative
 		overflow: hidden
 		box-shadow: 0 1px 0 rgba(#fff, .5), 0 -1px rgba(#000, 1)
+	.nodes
+		.apoapsis,
+		.periapsis
+			$box-dim: 1em
+			position: absolute
+			width: $box-dim
+			height: $box-dim
+			background: transparent 50% 100% no-repeat
+			transform: translate(-50%, -100%)
+			background-size: contain
+		.apoapsis
+			background-image: url('/img/arrow-ap.svg')
+		.periapsis
+			background-image: url('/img/arrow-pe.svg')
+
 	.monitor
 		background: #555
 		border-radius: .5em
@@ -17,6 +33,7 @@
 		padding: $half-gutter
 		box-shadow: 0 -1px 0 rgba(#fff, .5), 0 1px rgba(#000, 1), 0 .3em .4em rgba(#000, .3)
 		position: relative
+		overflow: hidden
 		.actions
 			display: flex
 			padding: $quarter-gutter 0 0 0
