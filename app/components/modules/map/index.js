@@ -327,6 +327,11 @@ export default {
 
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
 			body = bodies[this.data['v.body']]
+			if (!body) {
+				// Disable if body is missing
+				this.loading = true
+				return
+			}
 			this.displayRatio = (this.displayRadius / body.radius)
 			this.body = body
 
@@ -464,8 +469,14 @@ export default {
 			camera.lookAt(this.focusPosition)
 			camera.updateMatrixWorld()
 
-			var apoapsis2DCoords = objScreenPosition(this.objects.apoapsisMesh, camera, renderer)
-			var periapsis2DCoords = objScreenPosition(this.objects.periapsisMesh, camera, renderer)
+			if (this.loading) {
+				apoapsis2DCoords = new THREE.Vector2(-100, -100)
+				periapsis2DCoords = new THREE.Vector2(-100, -100)
+			}
+			else {
+				var apoapsis2DCoords = objScreenPosition(this.objects.apoapsisMesh, camera, renderer)
+				var periapsis2DCoords = objScreenPosition(this.objects.periapsisMesh, camera, renderer)
+			}
 
 			apoapsisNode.css({
 				left: `${apoapsis2DCoords.x}px`,
