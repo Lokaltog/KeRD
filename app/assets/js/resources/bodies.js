@@ -8,7 +8,7 @@ export var bodies = {
 		atmosphere: 70000,
 		atmosphereScaleHeight: 5600,
 		atmosphereColor: 0x0077cc,
-		atmosphereOpacity: 0.2,
+		atmosphereOpacity: 0.15,
 		info: {
 			surfaceGravity: 9.81,
 			escapeVelocity: 3431.03,
