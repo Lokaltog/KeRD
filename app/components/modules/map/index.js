@@ -82,6 +82,7 @@ export default {
 		// Add celestial body
 		var bodyGeometry = new THREE.SphereGeometry(this.displayRadius, 32, 32)
 		var bodyMaterial = new THREE.MeshPhongMaterial()
+		bodyMaterial.normalScale = new THREE.Vector2(1.5, 1.5)
 		this.objects.bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
 		this.objects.bodyMesh.castShadow = true
 		this.objects.bodyMesh.receiveShadow = true
