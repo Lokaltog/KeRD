@@ -59,7 +59,7 @@ export default {
 		light.position.copy(sunPosition)
 		scene.add(light)
 
-		if (this.config.rendering.useShadowMaps) {
+		if (this.config.rendering.shadows) {
 			var shadowLight = new THREE.SpotLight(0xffffff, 1, 1)
 			shadowLight.position.copy(new THREE.Vector3(0, 0, -500))
 			shadowLight.castShadow = true
@@ -123,7 +123,7 @@ export default {
 		scene.add(orbitLineMesh)
 
 		// Add optional lens flare
-		if (this.config.rendering.showLensFlare) {
+		if (this.config.rendering.lensFlare) {
 			var lensFlareTexture0 = THREE.ImageUtils.loadTexture(require('../../../assets/img/textures/lensflare/lensflare0.png'))
 			var lensFlareTexture2 = THREE.ImageUtils.loadTexture(require('../../../assets/img/textures/lensflare/lensflare2.png'))
 			var lensFlareTexture3 = THREE.ImageUtils.loadTexture(require('../../../assets/img/textures/lensflare/lensflare3.png'))
@@ -161,7 +161,7 @@ export default {
 		}
 
 		// Add optional skybox
-		if (this.config.rendering.showSkybox) {
+		if (this.config.rendering.skybox) {
 			var skyboxGeometry = new THREE.SphereGeometry(100000, 32, 32)
 			var skyboxMap = THREE.ImageUtils.loadTextureCube([
 				require('../../../assets/img/textures/skybox/posx.jpg'),
@@ -328,11 +328,11 @@ export default {
 				})
 				bodyMaterial.map.anisotropy = renderer.getMaxAnisotropy()
 
-				if (this.config.rendering.useSpecularMaps) {
+				if (this.config.rendering.specularMaps) {
 					bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(body.textures.specular)
 					bodyMaterial.specularMap.anisotropy = renderer.getMaxAnisotropy() / 2
 				}
-				if (this.config.rendering.useNormalMaps) {
+				if (this.config.rendering.normalMaps) {
 					bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(body.textures.normal)
 					bodyMaterial.normalMap.anisotropy = renderer.getMaxAnisotropy() / 2
 				}

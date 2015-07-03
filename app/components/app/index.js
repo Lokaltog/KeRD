@@ -81,11 +81,11 @@ export default {
 				},
 				rendering: {
 					fps: 60,
-					useNormalMaps: true,
-					useSpecularMaps: true,
-					useShadowMaps: false,
-					showSkybox: true,
-					showLensFlare: true,
+					normalMaps: true,
+					specularMaps: true,
+					shadows: false,
+					skybox: true,
+					lensFlare: true,
 					postProcessing: true,
 				},
 				modules: {

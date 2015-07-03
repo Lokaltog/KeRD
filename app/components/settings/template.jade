@@ -31,17 +31,17 @@
 
 			.input-row
 				.input.input-checkbox
-					input#config-rendering-usenormalmaps(type='checkbox', v-model='config.rendering.useNormalMaps')
-					label(for='config-rendering-usenormalmaps') Use normal maps
+					input#config-rendering-normalmaps(type='checkbox', v-model='config.rendering.normalMaps')
+					label(for='config-rendering-normalmaps') Normal maps
 
 				.input.input-checkbox
-					input#config-rendering-usespecularmaps(type='checkbox', v-model='config.rendering.useSpecularMaps')
-					label(for='config-rendering-usespecularmaps') Use specular maps
+					input#config-rendering-specularmaps(type='checkbox', v-model='config.rendering.specularMaps')
+					label(for='config-rendering-specularmaps') Specular maps
 
 			.input-row
 				.input.input-checkbox
-					input#config-rendering-useshadowmaps(type='checkbox', v-model='config.rendering.useShadowMaps')
-					label(for='config-rendering-useshadowmaps') Use shadow maps
+					input#config-rendering-shadowmaps(type='checkbox', v-model='config.rendering.shadows')
+					label(for='config-rendering-shadowmaps') Shadows
 
 				.input.input-checkbox
 					input#config-rendering-postprocessing(type='checkbox', v-model='config.rendering.postProcessing')
@@ -49,12 +49,12 @@
 
 			.input-row
 				.input.input-checkbox
-					input#config-rendering-showskybox(type='checkbox', v-model='config.rendering.showSkybox')
-					label(for='config-rendering-showskybox') Show skybox
+					input#config-rendering-skybox(type='checkbox', v-model='config.rendering.skybox')
+					label(for='config-rendering-skybox') Show skybox
 
 				.input.input-checkbox
-					input#config-rendering-showlensflare(type='checkbox', v-model='config.rendering.showLensFlare')
-					label(for='config-rendering-showlensflare') Show lens flare
+					input#config-rendering-lensflare(type='checkbox', v-model='config.rendering.lensFlare')
+					label(for='config-rendering-lensflare') Show lens flare
 
 			.header Modules
 
