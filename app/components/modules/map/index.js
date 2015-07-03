@@ -225,30 +225,33 @@ export default {
 		var dragMultiplier = 0.5 // drag degrees multiplier per px movement
 		var zoomMultiplier = 40 // zoom distance multiplier per mouse scroll
 
-		$(document).on('mouseup', () => {
+		$(document).on('mouseup touchend', () => {
 			dragging = false
 		})
-		$(renderer.domElement).on('mousedown', (ev) => {
+		$(renderer.domElement).on('mousedown touchstart', (ev) => {
 			ev.preventDefault()
 			dragging = true
 
-			dragOffsetX = ev.pageX
-			dragOffsetY = ev.pageY
+			dragOffsetX = ev.pageX || ev.originalEvent.touches[0].pageX
+			dragOffsetY = ev.pageY || ev.originalEvent.touches[0].pageY
 		})
-		$(renderer.domElement).on('mousemove', (ev) => {
+		$(renderer.domElement).on('mousemove touchmove', (ev) => {
 			ev.preventDefault()
 
 			if (!dragging) {
 				return
 			}
 
-			this.cameraPhi += deg2rad((ev.pageX - dragOffsetX) * dragMultiplier)
-			this.cameraTheta -= deg2rad((ev.pageY - dragOffsetY) * dragMultiplier)
+			var offsetX = ev.pageX || ev.originalEvent.touches[0].pageX
+			var offsetY = ev.pageY || ev.originalEvent.touches[0].pageY
+
+			this.cameraPhi += deg2rad((offsetX - dragOffsetX) * dragMultiplier)
+			this.cameraTheta -= deg2rad((offsetY - dragOffsetY) * dragMultiplier)
 
 			this.rotateCamera()
 
-			dragOffsetX = ev.pageX
-			dragOffsetY = ev.pageY
+			dragOffsetX = offsetX
+			dragOffsetY = offsetY
 		})
 		$(renderer.domElement).on('mousewheel', (ev) => {
 			ev.preventDefault()
