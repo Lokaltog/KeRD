@@ -32,6 +32,7 @@ export default {
 		return {
 			// Camera properties
 			displayRadius: 50,
+			displayRatio: 0,
 			cameraRho: 200, // distance
 			cameraPhi: 0, // initial horizontal angle
 			cameraTheta: 90, // initial vertical angle
@@ -40,6 +41,7 @@ export default {
 
 			focus: null,
 			showAtmosphere: true,
+			showBiome: false,
 
 			objects: {},
 			focusPosition: origo,
@@ -79,13 +81,11 @@ export default {
 
 		// Add celestial body
 		var bodyGeometry = new THREE.SphereGeometry(this.displayRadius, 32, 32)
-		var bodyMaterial = new THREE.MeshPhongMaterial({
-			shininess: 30,
-		})
-		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
-		bodyMesh.castShadow = true
-		bodyMesh.receiveShadow = true
-		scene.add(bodyMesh)
+		var bodyMaterial = new THREE.MeshPhongMaterial()
+		this.objects.bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
+		this.objects.bodyMesh.castShadow = true
+		this.objects.bodyMesh.receiveShadow = true
+		scene.add(this.objects.bodyMesh)
 
 		// Add atmosphere indicator
 		var atmosphereGeometry = new THREE.SphereGeometry(1, 32, 32)
@@ -311,7 +311,6 @@ export default {
 		var trueAnomaly = 0
 
 		var body = {}
-		var ratio = 0
 
 		var vesselTweenProperties
 		var vesselTween
@@ -327,44 +326,11 @@ export default {
 
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
 			body = bodies[this.data['v.body']]
-			ratio = (this.displayRadius / body.radius)
-
+			this.displayRatio = (this.displayRadius / body.radius)
 			this.body = body
 
+			this.refreshBodyMaterials()
 			this.rotateCamera()
-
-			if (!bodyMaterial.map || bodyMaterial.map.sourceFile !== body.textures.diffuse) {
-				// Update textures based on the current body
-				// Only updates if the current texture source files differs from the current body
-				bodyMaterial.map = THREE.ImageUtils.loadTexture(body.textures.diffuse, undefined, () => {
-					this.loading = false
-				})
-				bodyMaterial.map.anisotropy = renderer.getMaxAnisotropy()
-
-				if (this.config.rendering.specularMaps) {
-					bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(body.textures.specular)
-					bodyMaterial.specularMap.anisotropy = renderer.getMaxAnisotropy() / 2
-				}
-				if (this.config.rendering.normalMaps) {
-					bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(body.textures.normal)
-					bodyMaterial.normalMap.anisotropy = renderer.getMaxAnisotropy() / 2
-				}
-
-				bodyMaterial.needsUpdate = true
-
-				// Update atmosphere appearance on the current body
-				atmosphereMaterial.color.setHex(body.atmosphereColor)
-				atmosphereMaterial.opacity = body.atmosphereOpacity
-				atmosphereMaterial.colorsNeedUpdate = true
-			}
-
-			// Resize atmosphere mesh
-			if (body.atmosphere) {
-				var scale = (body.radius + body.atmosphere) * ratio
-				this.objects.atmosphereMesh.scale.x = scale
-				this.objects.atmosphereMesh.scale.y = scale
-				this.objects.atmosphereMesh.scale.z = scale
-			}
 
 			// Animate vessel and camera positions
 			vesselTweenProperties = {
@@ -389,12 +355,12 @@ export default {
 
 			// Rotate body correctly in relation to Kerbol
 			// This appears to work correctly even without further calculations
-			bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360))
+			this.objects.bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360))
 
 			// Draw orbit ellipse
 			// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
-			var rx = ratio * semimajorAxis
-			var ry = ratio * (semimajorAxis * (sqrt(1 - pow(eccentricity, 2))))
+			var rx = this.displayRatio * semimajorAxis
+			var ry = this.displayRatio * (semimajorAxis * (sqrt(1 - pow(eccentricity, 2))))
 			var cx = sqrt(pow(rx, 2) - pow(ry, 2))
 			var cy = 0
 
@@ -412,8 +378,8 @@ export default {
 
 			vesselTween.onUpdate(() => {
 				// Calculate orbital position
-				var apoapsisPosition = orbitalElements2Cartesian(ratio, 180, eccentricity, semimajorAxis, vesselTweenProperties.inclination, longitudeOfAscendingNode, vesselTweenProperties.argumentOfPeriapsis)
-				var periapsisPosition = orbitalElements2Cartesian(ratio, 0, eccentricity, semimajorAxis, vesselTweenProperties.inclination, longitudeOfAscendingNode, vesselTweenProperties.argumentOfPeriapsis)
+				var apoapsisPosition = orbitalElements2Cartesian(this.displayRatio, 180, eccentricity, semimajorAxis, vesselTweenProperties.inclination, longitudeOfAscendingNode, vesselTweenProperties.argumentOfPeriapsis)
+				var periapsisPosition = orbitalElements2Cartesian(this.displayRatio, 0, eccentricity, semimajorAxis, vesselTweenProperties.inclination, longitudeOfAscendingNode, vesselTweenProperties.argumentOfPeriapsis)
 
 				this.objects.apoapsisMesh.position.x = apoapsisPosition.x
 				this.objects.apoapsisMesh.position.y = apoapsisPosition.z
@@ -425,7 +391,7 @@ export default {
 
 				// Update vessel position
 				var vesselPosition = orbitalElements2Cartesian(
-					ratio,
+					this.displayRatio,
 					vesselTweenProperties.trueAnomaly,
 					eccentricity,
 					semimajorAxis,
@@ -446,6 +412,49 @@ export default {
 		})
 	},
 	methods: {
+		refreshBodyMaterials(force=false) {
+			var bodyMaterial = this.objects.bodyMesh.material
+			var atmosphereMaterial = this.objects.atmosphereMesh.material
+
+			if (!bodyMaterial.map || bodyMaterial.map.sourceFile !== this.body.textures.diffuse || force) {
+				// Update textures based on the current body
+				// Only updates if the current texture source files differs from the current body
+				bodyMaterial.map = THREE.ImageUtils.loadTexture(this.body.textures.diffuse, undefined, () => {
+					this.loading = false
+				})
+				bodyMaterial.map.anisotropy = renderer.getMaxAnisotropy()
+
+				if (this.config.rendering.specularMaps && this.body.textures.specular) {
+					bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(this.body.textures.specular)
+					bodyMaterial.specularMap.anisotropy = renderer.getMaxAnisotropy() / 2
+					bodyMaterial.shininess = this.body.attributes.shininess
+				}
+				else {
+					bodyMaterial.shininess = 0
+				}
+
+				if (this.config.rendering.normalMaps && this.body.textures.normal) {
+					bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(this.body.textures.normal)
+					bodyMaterial.normalMap.anisotropy = renderer.getMaxAnisotropy() / 2
+				}
+
+				bodyMaterial.needsUpdate = true
+
+				// Update atmosphere appearance on the current body
+				atmosphereMaterial.color.setHex(this.body.atmosphereColor)
+				atmosphereMaterial.opacity = this.body.atmosphereOpacity
+				atmosphereMaterial.colorsNeedUpdate = true
+			}
+
+			// Resize atmosphere mesh
+			if (this.body.atmosphere) {
+				var scale = (this.body.radius + this.body.atmosphere) * this.displayRatio
+				this.objects.atmosphereMesh.scale.x = scale
+				this.objects.atmosphereMesh.scale.y = scale
+				this.objects.atmosphereMesh.scale.z = scale
+			}
+
+		},
 		rotateCamera(rho, phi, theta) {
 			var coords = spherical2cartesian(rho || this.cameraRho, phi || this.cameraPhi, theta || this.cameraTheta)
 			camera.position.x = this.focusPosition.x + coords.x
@@ -480,6 +489,26 @@ export default {
 		toggleAtmosphere() {
 			this.showAtmosphere = !this.showAtmosphere
 			this.objects.atmosphereMesh.visible = this.showAtmosphere
+		},
+		toggleBiome() {
+			this.showBiome = !this.showBiome
+			var material = this.objects.bodyMesh.material
+
+			if (this.showBiome) {
+				// Fix texture offset present in all the biome maps
+				var biomeTexture = THREE.ImageUtils.loadTexture(this.body.textures.biome)
+				biomeTexture.offset.x = -0.25
+				biomeTexture.wrapS = THREE.RepeatWrapping
+
+				material.map = biomeTexture
+				material.shininess = 0
+				material.specularMap = undefined
+				material.normalMap = undefined
+				material.needsUpdate = true
+			}
+			else {
+				this.refreshBodyMaterials(true)
+			}
 		},
 	},
 }

@@ -11,6 +11,10 @@ export var bodies = {
 			diffuse: require('../../../assets/img/maps/kerbin-diffuse.jpg'),
 			specular: require('../../../assets/img/maps/kerbin-specular.png'),
 			normal: require('../../../assets/img/maps/kerbin-normal.png'),
+			biome: require('../../../assets/img/maps/kerbin-biome.jpg'),
+		},
+		attributes: {
+			shininess: 30,
 		},
 	},
 }
