@@ -52,7 +52,7 @@ export default {
 		navballTexture.anisotropy = renderer.getMaxAnisotropy()
 		var navballMaterial = new THREE.MeshPhongMaterial({
 			map: navballTexture,
-			bumpMap: this.config.rendering.useNormalMaps ? navballTexture : null,
+			bumpMap: this.config.rendering.normalMaps ? navballTexture : null,
 			bumpScale: -1,
 			shininess: 80,
 		})
