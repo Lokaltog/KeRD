@@ -4,10 +4,14 @@ header {{data['v.body']}}
 		.orbital-display
 		.body-header(v-if='body && config.modules.map.showBodyDetails')
 			.name {{data['v.name']}} orbiting {{body.name}}
-		.body-info(v-if='body && config.modules.map.showBodyDetails')
-			.radius Radius: {{numeral(body.radius).format('0a')}}m
-			.atmosphere Atmosphere: {{numeral(body.atmosphere).format('0a')}}m
-			.daylength Day length: {{numeral(body.rotPeriod).format('00:00')}}
+		.body-info(v-if='body && config.modules.map.showBodyDetails && focus === "body"')
+			div Radius: {{numeral(body.radius).format('0a')}}m
+			div Atmosphere: {{numeral(body.atmosphere).format('0a')}}m
+			div Day length: {{numeral(body.rotPeriod).format('00:00')}}
+		.body-info(v-if='body && config.modules.map.showBodyDetails && focus === "vessel"')
+			div AP: {{numeral(data['o.ApA']).format('0.000 a')}}m
+			div PE: {{numeral(data['o.PeA']).format('0.000 a')}}m
+			div ALT: {{numeral(data['v.altitude']).format('0.000 a')}}m
 		.actions
 			button.dark.focus(v-on='click: toggleFocus', v-text='focus')
 			button.dark.atmosphere(v-on='click: toggleAtmosphere') Atmosphere
