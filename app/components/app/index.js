@@ -83,6 +83,7 @@ export default {
 					fps: 60,
 					useNormalMaps: true,
 					useSpecularMaps: true,
+					useShadowMaps: false,
 					showSkybox: true,
 					showLensFlare: true,
 					postProcessing: true,

@@ -47,81 +47,11 @@ export default {
 		}
 	},
 	ready() {
-		// Init three.js renderer
-		var renderer = new THREE.WebGLRenderer({
-			antialias: true,
-			alpha: true,
-		})
-		renderer.setSize(1, 1)
-		$('.mod-map .orbital-display').append(renderer.domElement)
-
-		// Resize renderer when window is resized
-		function resize() {
-			var $dim = $('.mod-map .orbital-display').width()
-			renderer.setSize($dim, $dim)
-			$('.mod-map .orbital-display').css({
-				width: `${$dim}px`,
-				height: `${$dim}px`,
-			})
-		}
-		$(window).on('resize', debounce(resize))
-		resize()
-
-		// Camera rotation handlers
-		var dragging
-		var dragOffsetX = 0
-		var dragOffsetY = 0
-
-		var dragMultiplier = 0.5 // drag degrees multiplier per px movement
-		var zoomMultiplier = 40 // zoom distance multiplier per mouse scroll
-
-		$(document).on('mouseup', () => {
-			dragging = false
-		})
-		$(renderer.domElement).on('mousedown', (ev) => {
-			ev.preventDefault()
-			dragging = true
-
-			dragOffsetX = ev.pageX
-			dragOffsetY = ev.pageY
-		})
-		$(renderer.domElement).on('mousemove', (ev) => {
-			ev.preventDefault()
-
-			if (!dragging) {
-				return
-			}
-
-			this.cameraPhi += deg2rad((ev.pageX - dragOffsetX) * dragMultiplier)
-			this.cameraTheta -= deg2rad((ev.pageY - dragOffsetY) * dragMultiplier)
-
-			this.rotateCamera()
-
-			dragOffsetX = ev.pageX
-			dragOffsetY = ev.pageY
-		})
-		$(renderer.domElement).on('mousewheel', (ev) => {
-			ev.preventDefault()
-			var delta = ev.originalEvent.wheelDelta / 120
-			delta = delta >= 1 ? 1 : -1
-			var rho = -delta * zoomMultiplier
-
-			this.cameraRho += rho
-			if (this.cameraRho < 20) {
-				this.cameraRho = 20
-			}
-			if (this.cameraRho > 800) {
-				this.cameraRho = 800
-			}
-
-			this.rotateCamera()
-		})
-
 		// Create scene and setup camera and lights
 		scene = new THREE.Scene()
 		camera = new THREE.PerspectiveCamera(this.cameraFov, 1, 0.01, 120000)
 
-		scene.add(new THREE.AmbientLight(0x888888))
+		scene.add(new THREE.AmbientLight(0x777777))
 
 		// Add sun light
 		var sunPosition = new THREE.Vector3(0, 0, -40000)
@@ -129,12 +59,26 @@ export default {
 		light.position.copy(sunPosition)
 		scene.add(light)
 
+		if (this.config.rendering.useShadowMaps) {
+			var shadowLight = new THREE.SpotLight(0xffffff, 1, 1)
+			shadowLight.position.copy(new THREE.Vector3(0, 0, -500))
+			shadowLight.castShadow = true
+			shadowLight.onlyShadow = true
+			shadowLight.exponent = 0
+			shadowLight.shadowDarkness = 0.5
+			shadowLight.shadowCameraFar = 800
+			shadowLight.shadowCameraFov = 40
+			scene.add(shadowLight)
+		}
+
 		// Add celestial body
 		var bodyGeometry = new THREE.SphereGeometry(this.displayRadius, 32, 32)
 		var bodyMaterial = new THREE.MeshPhongMaterial({
 			shininess: 30,
 		})
 		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
+		bodyMesh.castShadow = true
+		bodyMesh.receiveShadow = true
 		scene.add(bodyMesh)
 
 		// Add atmosphere indicator
@@ -149,12 +93,16 @@ export default {
 		var vesselGeometry = new THREE.SphereGeometry(2.5, 16, 16)
 		var vesselMaterial = new THREE.MeshPhongMaterial({ color: 0x770000 })
 		this.objects.vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
+		this.objects.vesselMesh.castShadow = true
+		this.objects.vesselMesh.receiveShadow = true
 		scene.add(this.objects.vesselMesh)
 
 		// Add vessel line (from body center, indicating altitude)
 		var lineGeometry = new THREE.Geometry()
 		var lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 })
 		var lineMesh = new THREE.Line(lineGeometry, lineMaterial)
+		lineMesh.castShadow = true
+		lineMesh.receiveShadow = true
 		lineMesh.frustumCulled = false
 
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
@@ -232,6 +180,78 @@ export default {
 
 			scene.add(skyboxMesh)
 		}
+
+		// Init renderer
+		var renderer = new THREE.WebGLRenderer({
+			alpha: true,
+		})
+		renderer.setSize(1, 1)
+		$('.mod-map .orbital-display').append(renderer.domElement)
+
+		renderer.shadowMapEnabled = true
+		renderer.shadowMapType = THREE.PCFShadowMap
+
+		// Resize renderer when window is resized
+		function resize() {
+			var $dim = $('.mod-map .orbital-display').width()
+			renderer.setSize($dim, $dim)
+			$('.mod-map .orbital-display').css({
+				width: `${$dim}px`,
+				height: `${$dim}px`,
+			})
+		}
+		$(window).on('resize', debounce(resize))
+		resize()
+
+		// Camera rotation handlers
+		var dragging
+		var dragOffsetX = 0
+		var dragOffsetY = 0
+
+		var dragMultiplier = 0.5 // drag degrees multiplier per px movement
+		var zoomMultiplier = 40 // zoom distance multiplier per mouse scroll
+
+		$(document).on('mouseup', () => {
+			dragging = false
+		})
+		$(renderer.domElement).on('mousedown', (ev) => {
+			ev.preventDefault()
+			dragging = true
+
+			dragOffsetX = ev.pageX
+			dragOffsetY = ev.pageY
+		})
+		$(renderer.domElement).on('mousemove', (ev) => {
+			ev.preventDefault()
+
+			if (!dragging) {
+				return
+			}
+
+			this.cameraPhi += deg2rad((ev.pageX - dragOffsetX) * dragMultiplier)
+			this.cameraTheta -= deg2rad((ev.pageY - dragOffsetY) * dragMultiplier)
+
+			this.rotateCamera()
+
+			dragOffsetX = ev.pageX
+			dragOffsetY = ev.pageY
+		})
+		$(renderer.domElement).on('mousewheel', (ev) => {
+			ev.preventDefault()
+			var delta = ev.originalEvent.wheelDelta / 120
+			delta = delta >= 1 ? 1 : -1
+			var rho = -delta * zoomMultiplier
+
+			this.cameraRho += rho
+			if (this.cameraRho < 20) {
+				this.cameraRho = 20
+			}
+			if (this.cameraRho > 800) {
+				this.cameraRho = 800
+			}
+
+			this.rotateCamera()
+		})
 
 		this.rotateCamera()
 

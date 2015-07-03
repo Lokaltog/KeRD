@@ -11,6 +11,17 @@ $shrink-height: 55em
 	min-width: 100%
 	min-height: 100%
 	background: rgba(#fff, .7)
+	.input-row
+		display: flex
+		.input
+			flex: 1 0 auto
+			width: 0
+			margin: $quarter-gutter $half-gutter 0 $half-gutter
+			input
+				display: block
+			label
+				width: auto
+				flex: 0 1 auto
 	.wrap
 		width: 26em
 		padding: $gutter

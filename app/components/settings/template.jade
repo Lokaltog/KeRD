@@ -29,25 +29,32 @@
 					option(value=60) 60
 					option(value=120) 120
 
-			.input.input-checkbox
-				input#config-rendering-usenormalmaps(type='checkbox', v-model='config.rendering.useNormalMaps')
-				label(for='config-rendering-usenormalmaps') Use normal maps
+			.input-row
+				.input.input-checkbox
+					input#config-rendering-usenormalmaps(type='checkbox', v-model='config.rendering.useNormalMaps')
+					label(for='config-rendering-usenormalmaps') Use normal maps
 
-			.input.input-checkbox
-				input#config-rendering-usespecularmaps(type='checkbox', v-model='config.rendering.useSpecularMaps')
-				label(for='config-rendering-usespecularmaps') Use specular maps
+				.input.input-checkbox
+					input#config-rendering-usespecularmaps(type='checkbox', v-model='config.rendering.useSpecularMaps')
+					label(for='config-rendering-usespecularmaps') Use specular maps
 
-			.input.input-checkbox
-				input#config-rendering-showskybox(type='checkbox', v-model='config.rendering.showSkybox')
-				label(for='config-rendering-showskybox') Show skybox
+			.input-row
+				.input.input-checkbox
+					input#config-rendering-useshadowmaps(type='checkbox', v-model='config.rendering.useShadowMaps')
+					label(for='config-rendering-useshadowmaps') Use shadow maps
 
-			.input.input-checkbox
-				input#config-rendering-showlensflare(type='checkbox', v-model='config.rendering.showLensFlare')
-				label(for='config-rendering-showlensflare') Show lens flare
+				.input.input-checkbox
+					input#config-rendering-postprocessing(type='checkbox', v-model='config.rendering.postProcessing')
+					label(for='config-rendering-postprocessing') Post processing
 
-			.input.input-checkbox
-				input#config-rendering-postprocessing(type='checkbox', v-model='config.rendering.postProcessing')
-				label(for='config-rendering-postprocessing') Post processing
+			.input-row
+				.input.input-checkbox
+					input#config-rendering-showskybox(type='checkbox', v-model='config.rendering.showSkybox')
+					label(for='config-rendering-showskybox') Show skybox
+
+				.input.input-checkbox
+					input#config-rendering-showlensflare(type='checkbox', v-model='config.rendering.showLensFlare')
+					label(for='config-rendering-showlensflare') Show lens flare
 
 			.header Modules
 
