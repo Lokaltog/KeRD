@@ -1,41 +1,38 @@
 header Orbit
 .content
-	.row
-		.col
-			.control-block
-				label Apoapsis
-				.display
-					| {{numeral(data['o.ApA']).format('0.000 a')}}m
-					|  T{{data['o.timeToAp'] > 0 ? '-' : '+'}}{{numeral(data['o.timeToAp']).format('00:00:00')}}
-			.control-block
-				label Periapsis
-				.display
-					| {{numeral(data['o.PeA']).format('0.000 a')}}m
-					|  T{{data['o.timeToPe'] > 0 ? '-' : '+'}}{{numeral(data['o.timeToPe']).format('00:00:00')}}
-			.control-block
-				label Eccentricity
-				.display
-					span(v-if='data["o.eccentricity"] <= 1') OBT
-					span(v-if='data["o.eccentricity"] > 1') ESC
-					span  {{numeral(data['o.eccentricity']).format('0.000')}}
-			.control-block
-				label Inclination
-				.display
-					| {{numeral(data['o.inclination']).format('0.000')}}°
-		.col
-			.control-block
-				label.sm Altitude
-				.display.sea.sm
-					| {{numeral(data['v.altitude']).format('0.000 a')}}m
-			.control-block
-				label.sm SURF Vel
-				.display.sm
-					| {{numeral(data['v.surfaceVelocity']).format('0.000 a')}}m/s
-			.control-block
-				label.sm OBT Vel
-				.display.sm
-					| {{numeral(data['v.orbitalVelocity']).format('0.000 a')}}m/s
-			.control-block
-				label.sm TGT Vel
-				.display.sm
-					| {{numeral(data['tar.o.velocity']).format('0.000 a')}}m/s
+	.control-block
+		label Apoapsis
+		.display
+			| {{numeral(data['o.ApA']).format('0.000 a')}}m
+			|  T{{data['o.timeToAp'] > 0 ? '-' : '+'}}{{numeral(data['o.timeToAp']).format('00:00:00')}}
+	.control-block
+		label Periapsis
+		.display
+			| {{numeral(data['o.PeA']).format('0.000 a')}}m
+			|  T{{data['o.timeToPe'] > 0 ? '-' : '+'}}{{numeral(data['o.timeToPe']).format('00:00:00')}}
+	.control-block
+		label Eccentricity
+		.display
+			span(v-if='data["o.eccentricity"] <= 1') OBT
+			span(v-if='data["o.eccentricity"] > 1') ESC
+			span  {{numeral(data['o.eccentricity']).format('0.000')}}
+	.control-block
+		label Inclination
+		.display
+			| {{numeral(data['o.inclination']).format('0.000')}}°
+	.control-block
+		label Altitude
+		.display
+			| {{numeral(data['v.altitude']).format('0.000 a')}}m
+	.control-block
+		label SURF Vel
+		.display
+			| {{numeral(data['v.surfaceVelocity']).format('0.000 a')}}m/s
+	.control-block
+		label OBT Vel
+		.display
+			| {{numeral(data['v.orbitalVelocity']).format('0.000 a')}}m/s
+	.control-block
+		label TGT Vel
+		.display
+			| {{numeral(data['tar.o.velocity']).format('0.000 a')}}m/s

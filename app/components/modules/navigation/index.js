@@ -24,12 +24,8 @@ export default {
 
 		// Resize renderer when window is resized
 		function resize() {
-			var $dim = $('.mod-navigation .content').width()
+			var $dim = $('.mod-navigation .navball').width()
 			renderer.setSize($dim, $dim)
-			$('.mod-navigation .navball').css({
-				width: `${$dim}px`,
-				height: `${$dim}px`,
-			})
 		}
 		$(window).on('resize', debounce(resize))
 		resize()

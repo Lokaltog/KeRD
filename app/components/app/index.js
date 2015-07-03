@@ -104,23 +104,15 @@ export default {
 			data: {},
 
 			layout: [
-				col(
-					row(
-						section(module('map')),
-						section(module('resources')),
-						rowExpand(
-							col(
-								section(
-									row(
-										module('navigation'),
-										module('orbit')
-									)
-								),
-								rowExpand(
-									section(module('vessel'))
-								)
-							)
-						)
+				row(
+					section(module('map')),
+					section(module('resources')),
+					col(
+						sectionExpand(module('vessel')),
+						section(module('navigation'))
+					),
+					col(
+						section(module('orbit'))
 					)
 				)
 			],
