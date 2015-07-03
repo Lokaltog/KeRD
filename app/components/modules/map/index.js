@@ -42,6 +42,7 @@ export default {
 			focusPosition: origo,
 			origo: origo,
 
+			loading: true,
 			body: null,
 		}
 	},
@@ -284,6 +285,11 @@ export default {
 
 		this.toggleFocus('vessel')
 
+		this.$watch(() => this.loading, () => {
+			// Show noise when loading
+			crtEffect.uniforms.noise.value = this.loading ? 1 : 0
+		}, { immediate: true })
+
 		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
 			body = bodies[this.data['v.body']]
 			ratio = (this.displayRadius / body.radius)
@@ -295,7 +301,9 @@ export default {
 			if (!bodyMaterial.map || bodyMaterial.map.sourceFile !== body.textures.diffuse) {
 				// Update textures based on the current body
 				// Only updates if the current texture source files differs from the current body
-				bodyMaterial.map = THREE.ImageUtils.loadTexture(body.textures.diffuse)
+				bodyMaterial.map = THREE.ImageUtils.loadTexture(body.textures.diffuse, undefined, () => {
+					this.loading = false
+				})
 				bodyMaterial.map.anisotropy = renderer.getMaxAnisotropy()
 
 				if (this.config.rendering.useSpecularMaps) {
