@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {wrapDegDelta, debounce, deg2rad, spherical2cartesian} from 'utils'
+import {wrapDegDelta, debounce, deg2rad, spherical2cartesian, orbitalElements2Cartesian, objScreenPosition} from 'utils'
 import {bodies} from 'resources/bodies'
 
 require('imports?THREE=three!three.maskpass')
@@ -13,7 +13,6 @@ require('babel!imports?THREE=three!three.crtshader')
 
 var sin = Math.sin
 var asin = Math.asin
-var cos = Math.cos
 var sqrt = Math.sqrt
 var pow = Math.pow
 
@@ -399,26 +398,24 @@ export default {
 
 			vesselTween.onUpdate(() => {
 				// Calculate orbital position
-				var ta = deg2rad(vesselTweenProperties.trueAnomaly)
-				var i = deg2rad(vesselTweenProperties.inclination)
-				var w = deg2rad(vesselTweenProperties.argumentOfPeriapsis)
-				var omega = deg2rad(longitudeOfAscendingNode)
 
 				// Update vessel position
-				var r = ratio * semimajorAxis * (1 - pow(eccentricity, 2)) / (1 + eccentricity * cos(ta))
-				var ta_w = ta + w
-				var x = r * (cos(omega) * cos(ta_w) - sin(omega) * sin(ta_w) * cos(i))
-				var y = r * (sin(omega) * cos(ta_w) + cos(omega) * sin(ta_w) * cos(i))
-				var z = r * (sin(ta_w) * sin(i))
+				var vesselPosition = orbitalElements2Cartesian(
+					ratio,
+					vesselTweenProperties.trueAnomaly,
+					eccentricity,
+					semimajorAxis,
+					vesselTweenProperties.inclination,
+					longitudeOfAscendingNode,
+					vesselTweenProperties.argumentOfPeriapsis)
 
-				this.objects.vesselMesh.position.x = x
-				this.objects.vesselMesh.position.y = z
-				this.objects.vesselMesh.position.z = -y
+				// NOTE: coordinates are swapped to match the game's coordinate system
+				this.objects.vesselMesh.position.x = vesselPosition.x
+				this.objects.vesselMesh.position.y = vesselPosition.z
+				this.objects.vesselMesh.position.z = -vesselPosition.y
 
-				// Update line from center
-				lineGeometry.vertices[1].x = x
-				lineGeometry.vertices[1].y = z
-				lineGeometry.vertices[1].z = -y
+				// Update indicator line from center to vessel
+				lineGeometry.vertices[1].copy(this.objects.vesselMesh.position)
 				lineGeometry.verticesNeedUpdate = true
 			})
 			vesselTween.start()

@@ -1,7 +1,10 @@
+import THREE from 'three'
+
 var sin = Math.sin
 var cos = Math.cos
 var sqrt = Math.sqrt
 var pi = Math.PI
+var pow = Math.pow
 
 export function deg2rad(degrees) {
 	return degrees * pi / 180
@@ -42,6 +45,29 @@ export function cartesian2spherical(x, y, z) {
 	}
 }
 
+export function orbitalElements2Cartesian(ratio,
+                                          trueAnomaly,
+                                          eccentricity,
+                                          semimajorAxis,
+                                          inclination,
+                                          longitudeOfAscendingNode,
+                                          argumentOfPeriapsis) {
+	// Convert orbital elements to cartesian coordinates
+	// All angles in degrees
+	var ta = deg2rad(trueAnomaly)
+	var i = deg2rad(inclination)
+	var w = deg2rad(argumentOfPeriapsis)
+	var omega = deg2rad(longitudeOfAscendingNode)
+	var r = ratio * semimajorAxis * (1 - pow(eccentricity, 2)) / (1 + eccentricity * cos(ta))
+	var ta_w = ta + w
+
+	return {
+		x: r * (cos(omega) * cos(ta_w) - sin(omega) * sin(ta_w) * cos(i)),
+		y: r * (sin(omega) * cos(ta_w) + cos(omega) * sin(ta_w) * cos(i)),
+		z: r * (sin(ta_w) * sin(i)),
+	}
+}
+
 export function wrapDegDelta(delta) {
 	// Applying this function to a sphere rotation delta ensures that the
 	// rotation of a sphere rotates the shortest distance possible (i.e. when
@@ -72,5 +98,23 @@ export function debounce(func, wait=250, immediate=false) {
 		if (callNow) {
 			func.apply(this, args)
 		}
+	}
+}
+
+export function objScreenPosition(obj, camera, renderer) {
+	var vector = new THREE.Vector3()
+	var widthHalf = 0.5 * renderer.context.canvas.width
+	var heightHalf = 0.5 * renderer.context.canvas.height
+
+	obj.updateMatrixWorld()
+	vector.setFromMatrixPosition(obj.matrixWorld)
+	vector.project(camera)
+
+	vector.x = (vector.x * widthHalf) + widthHalf
+	vector.y = -(vector.y * heightHalf) + heightHalf
+
+	return {
+		x: vector.x,
+		y: vector.y,
 	}
 }
