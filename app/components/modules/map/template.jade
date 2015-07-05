@@ -1,4 +1,4 @@
-header {{body ? body.name : 'Map'}}
+header {{body ? body.data.name : 'Map'}}
 .content
 	.monitor
 		.orbital-display
@@ -7,14 +7,14 @@ header {{body ? body.name : 'Map'}}
 				.periapsis
 
 			.body-header(v-if='body && config.modules.map.showBodyDetails')
-				.name {{data['v.name']}} orbiting {{body.name}}
+				.name {{data['v.name']}} orbiting {{body.data.name}}
 			.body-info(v-if='body && config.modules.map.showBodyDetails && focus === "body"')
-				div Radius: {{numeral(body.radius).format('0a')}}m
-				div Atmosphere: {{numeral(body.atmosphere).format('0a')}}m
-				div Day length: {{numeral(body.rotPeriod).format('00:00')}}
-				div Srf gravity: {{numeral(body.info.surfaceGravity).format('0.00')}}m/s²
-				div Esc velocity: {{numeral(body.info.escapeVelocity).format('0.00a')}}m/s
-				div SOI: {{numeral(body.info.soi / 1000).format('0.0')}}km
+				div Radius: {{numeral(body.data.radius).format('0a')}}m
+				div Atm height: {{numeral(body.data.atmosphereHeight).format('0a')}}m
+				div Day length: {{numeral(Math.ceil(body.data.rotPeriod)).format('00:00')}}
+				div SOI: {{numeral(body.data.soi / 1000).format('0.0')}}km
+				div(v-if='body.data.tidallyLocked') TIDALLY LOCKED
+				div(v-if='body.data.atmosphereContainsOxygen') ATMOSPHERE CONTAINS OXYGEN
 			.body-info(v-if='body && config.modules.map.showBodyDetails && focus === "vessel"')
 				div AP: {{numeral(data['o.ApA']).format('0.000 a')}}m
 				div PE: {{numeral(data['o.PeA']).format('0.000 a')}}m

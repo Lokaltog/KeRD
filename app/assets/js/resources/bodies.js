@@ -1,19 +1,10 @@
-export var bodies = {
+export default {
 	_atmDensity: 1.2230948554874,
 
 	Kerbin: {
-		name: 'Kerbin',
-		radius: 600000,
-		rotPeriod: 21600,
-		atmosphere: 70000,
 		atmosphereScaleHeight: 5600,
 		atmosphereColor: 0x0077cc,
 		atmosphereOpacity: 0.15,
-		info: {
-			surfaceGravity: 9.81,
-			escapeVelocity: 3431.03,
-			soi: 84159286,
-		},
 		textures: {
 			lo: {
 				diffuse: require('../../../assets/img/textures/bodies/kerbin/diffuse-1k.jpg'),
@@ -32,8 +23,4 @@ export var bodies = {
 			shininess: 30,
 		},
 	},
-}
-
-export var bodiesById = {
-	1: bodies.Kerbin,
 }

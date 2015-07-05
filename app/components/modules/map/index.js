@@ -2,7 +2,6 @@ import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
 import {wrapDegDelta, debounce, deg2rad, spherical2cartesian, orbitalElements2Cartesian, objScreenPosition} from 'utils'
-import {bodies} from 'resources/bodies'
 
 require('imports?THREE=three!three.maskpass')
 require('imports?THREE=three!three.copyshader')
@@ -346,14 +345,15 @@ export default {
 			}
 		}, { immediate: true })
 
-		this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
-			body = bodies[this.data['v.body']]
+		// Don't attach watch handlers until we've received celestial body data from Telemachus
+		this.$once('resources.bodies.ready', () => this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
+			body = this.resources.bodies[this.data['v.body']]
 			if (!body) {
-				// Disable if body is missing
+				// Disable if body is missing or we're still waiting for data
 				this.loading = true
 				return
 			}
-			this.displayRatio = (this.displayRadius / body.radius)
+			this.displayRatio = (this.displayRadius / body.data.radius)
 			this.body = body
 
 			this.refreshBodyMaterials()
@@ -382,7 +382,7 @@ export default {
 
 			// Rotate body correctly in relation to Kerbol
 			// This appears to work correctly even without further calculations
-			this.objects.bodyMesh.rotation.y = deg2rad(((epoch / body.rotPeriod) * 360))
+			this.objects.bodyMesh.rotation.y = deg2rad(((epoch / body.data.rotPeriod) * 360))
 
 			// Draw orbit ellipse
 			// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
@@ -434,9 +434,12 @@ export default {
 				// Update indicator line from center to vessel
 				lineGeometry.vertices[1].copy(this.objects.vesselMesh.position)
 				lineGeometry.verticesNeedUpdate = true
+
+				// Update camera position when vessel position has changed
+				this.rotateCamera()
 			})
 			vesselTween.start()
-		})
+		}, { immediate: true }))
 	},
 	methods: {
 		refreshBodyMaterials(force=false) {
@@ -475,8 +478,8 @@ export default {
 			}
 
 			// Resize atmosphere mesh
-			if (this.body.atmosphere) {
-				var scale = (this.body.radius + this.body.atmosphere) * this.displayRatio
+			if (this.body.data.atmosphereHeight) {
+				var scale = (this.body.data.radius + this.body.data.atmosphereHeight) * this.displayRatio
 				this.objects.atmosphereMesh.scale.x = scale
 				this.objects.atmosphereMesh.scale.y = scale
 				this.objects.atmosphereMesh.scale.z = scale
@@ -485,6 +488,9 @@ export default {
 		},
 		rotateCamera(rho, phi, theta) {
 			var coords = spherical2cartesian(rho || this.cameraRho, phi || this.cameraPhi, theta || this.cameraTheta)
+			var apoapsis2DCoords
+			var periapsis2DCoords
+
 			camera.position.x = this.focusPosition.x + coords.x
 			camera.position.y = this.focusPosition.y + coords.y
 			camera.position.z = this.focusPosition.z + coords.z
@@ -496,8 +502,8 @@ export default {
 				periapsis2DCoords = new THREE.Vector2(-100, -100)
 			}
 			else {
-				var apoapsis2DCoords = objScreenPosition(this.objects.apoapsisMesh, camera, renderer)
-				var periapsis2DCoords = objScreenPosition(this.objects.periapsisMesh, camera, renderer)
+				apoapsis2DCoords = objScreenPosition(this.objects.apoapsisMesh, camera, renderer)
+				periapsis2DCoords = objScreenPosition(this.objects.periapsisMesh, camera, renderer)
 			}
 
 			apoapsisNode.css({

@@ -1,5 +1,3 @@
-import {bodies} from 'resources/bodies'
-
 export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
@@ -58,7 +56,7 @@ export default {
 			}
 		})
 		this.$watch(() => this.data['v.atmosphericDensity'], () => {
-			var pressure = this.data['v.atmosphericDensity'] / bodies._atmDensity
+			var pressure = this.data['v.atmosphericDensity'] / this.resources.bodies._atmDensity
 			if (pressure <= 0) {
 				pressure = 0
 			}
