@@ -43,6 +43,7 @@ var config = {
 		'cookie': '/js/lib/cookie',
 		'websocket': '/js/lib/websocket',
 		'utils': '/js/lib/utils',
+		'storage': '/js/lib/storage',
 
 		'resources/bodies': '/js/resources/bodies',
 		'resources/subscriptions': '/js/resources/subscriptions',
