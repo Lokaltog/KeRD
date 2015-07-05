@@ -29,6 +29,12 @@
 					option(value=60) 60
 					option(value=120) 120
 
+			.input.input-select
+				label(for='config-rendering-texturequality') Texture quality
+				select#config-rendering-texturequality(v-model='config.rendering.textureQuality')
+					option(value='lo') Low
+					option(value='hi') High
+
 			.input-row
 				.input.input-checkbox
 					input#config-rendering-normalmaps(type='checkbox', v-model='config.rendering.normalMaps')

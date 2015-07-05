@@ -442,17 +442,18 @@ export default {
 		refreshBodyMaterials(force=false) {
 			var bodyMaterial = this.objects.bodyMesh.material
 			var atmosphereMaterial = this.objects.atmosphereMesh.material
+			var textures = this.body.textures[this.config.rendering.textureQuality]
 
-			if (!bodyMaterial.map || (bodyMaterial.map.sourceFile !== this.body.textures.diffuse && !this.showBiome) || force) {
+			if (!bodyMaterial.map || (bodyMaterial.map.sourceFile !== textures.diffuse && !this.showBiome) || force) {
 				// Update textures based on the current body
 				// Only updates if the current texture source files differs from the current body
-				bodyMaterial.map = THREE.ImageUtils.loadTexture(this.body.textures.diffuse, undefined, () => {
+				bodyMaterial.map = THREE.ImageUtils.loadTexture(textures.diffuse, undefined, () => {
 					this.loading = false
 				})
 				bodyMaterial.map.anisotropy = renderer.getMaxAnisotropy()
 
-				if (this.config.rendering.specularMaps && this.body.textures.specular) {
-					bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(this.body.textures.specular)
+				if (this.config.rendering.specularMaps && textures.specular) {
+					bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(textures.specular)
 					bodyMaterial.specularMap.anisotropy = renderer.getMaxAnisotropy() / 2
 					bodyMaterial.shininess = this.body.attributes.shininess
 				}
@@ -460,8 +461,8 @@ export default {
 					bodyMaterial.shininess = 0
 				}
 
-				if (this.config.rendering.normalMaps && this.body.textures.normal) {
-					bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(this.body.textures.normal)
+				if (this.config.rendering.normalMaps && textures.normal) {
+					bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(textures.normal)
 					bodyMaterial.normalMap.anisotropy = renderer.getMaxAnisotropy() / 2
 				}
 
@@ -529,7 +530,8 @@ export default {
 
 			if (this.showBiome) {
 				// Fix texture offset present in all the biome maps
-				var biomeTexture = THREE.ImageUtils.loadTexture(this.body.textures.biome)
+				var textures = this.body.textures[this.config.rendering.textureQuality]
+				var biomeTexture = THREE.ImageUtils.loadTexture(textures.biome)
 				biomeTexture.offset.x = -0.25
 				biomeTexture.wrapS = THREE.RepeatWrapping
 

@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import numeral from 'numeral'
 import WS from 'websocket'
 import subscriptions from 'resources/subscriptions'
@@ -64,20 +65,13 @@ export default {
 		vessel: require('../modules/vessel'),
 	},
 	data() {
-		var config = storage.get('config')
-		var telemachusRefreshRate = config ? (config.telemachus.refreshRate || 1) : 1
-		var telemachusRefreshInterval = parseInt(1 / telemachusRefreshRate * 1000)
-		if (config) {
-			config.telemachus.refreshInterval = telemachusRefreshInterval
-		}
-
 		return {
-			config: config || {
+			config: $.extend(true, {
 				telemachus: {
 					host: 'localhost',
 					port: 8085,
-					refreshRate: telemachusRefreshRate,
-					refreshInterval: telemachusRefreshInterval,
+					refreshRate: 1,
+					refreshInterval: 1000,
 				},
 				rendering: {
 					fps: 60,
@@ -87,13 +81,14 @@ export default {
 					skybox: true,
 					lensFlare: true,
 					postProcessing: true,
+					textureQuality: 'lo',
 				},
 				modules: {
 					map: {
 						showBodyDetails: true,
 					},
 				},
-			},
+			}, storage.get('config')),
 
 			storage: storage,
 			ws: null,
@@ -119,6 +114,8 @@ export default {
 		}
 	},
 	ready() {
+		this.$watch('config.telemachus.refreshRate', () => this.config.telemachus.refreshInterval = parseInt(1 / this.config.telemachus.refreshRate * 1000), { immediate: true })
+
 		// Connect to Telemachus socket
 		this.ws = new WS(`ws://${this.config.telemachus.host}:${this.config.telemachus.port}/datalink`)
 		this.ws.addOpenHandler(() => {

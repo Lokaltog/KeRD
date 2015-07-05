@@ -21,6 +21,12 @@ export var bodies = {
 				normal: require('../../../assets/img/textures/bodies/kerbin/normal-512.png'),
 				biome: require('../../../assets/img/textures/bodies/kerbin/biome-lo.jpg'),
 			},
+			hi: {
+				diffuse: require('../../../assets/img/textures/bodies/kerbin/diffuse-2k.jpg'),
+				specular: require('../../../assets/img/textures/bodies/kerbin/specular-2k.png'),
+				normal: require('../../../assets/img/textures/bodies/kerbin/normal-1k.png'),
+				biome: require('../../../assets/img/textures/bodies/kerbin/biome-hi.jpg'),
+			},
 		},
 		attributes: {
 			shininess: 30,
