@@ -15,10 +15,12 @@ export var bodies = {
 			soi: 84159286,
 		},
 		textures: {
-			diffuse: require('../../../assets/img/maps/kerbin-diffuse.jpg'),
-			specular: require('../../../assets/img/maps/kerbin-specular.png'),
-			normal: require('../../../assets/img/maps/kerbin-normal.png'),
-			biome: require('../../../assets/img/maps/kerbin-biome.jpg'),
+			lo: {
+				diffuse: require('../../../assets/img/textures/bodies/kerbin/diffuse-1k.jpg'),
+				specular: require('../../../assets/img/textures/bodies/kerbin/specular-1k.png'),
+				normal: require('../../../assets/img/textures/bodies/kerbin/normal-512.png'),
+				biome: require('../../../assets/img/textures/bodies/kerbin/biome-lo.jpg'),
+			},
 		},
 		attributes: {
 			shininess: 30,
