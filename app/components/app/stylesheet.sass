@@ -2,18 +2,6 @@
 @import 'lib/utils'
 
 #wrap
-	background: #333
-	background-size: 20em
-	border-radius: 1em
-	min-height: 100%
-	min-width: 100%
-	position: absolute
-	top: 0
-	left: 0
-	padding: $quarter-gutter 0 0 $quarter-gutter
-	box-sizing: border-box
-	display: flex
-	flex-flow: column nowrap
 	&.blur
 		filter: blur(.3em)
 
@@ -21,27 +9,28 @@ footer
 	flex: 1 1 auto
 	display: flex
 	flex-flow: column nowrap
-	&::before
-		content: ''
-		width: 100%
-		display: block
-		flex: 1 1 auto
+	position: fixed
+	bottom: 0
+	left: 0
+	width: 100%
+	overflow: hidden
 	.contents
-		@extend .section
+		padding: $quarter-gutter
 		background-color: #666
-		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#000, .4), 0 .05em .3em rgba(#000, .8)
 		color: #fff
 		text-shadow: 0 -1px 0 rgba(#000, .4)
 		display: flex
 		flex: 0 1 auto !important
 		flex-flow: row nowrap
 		align-items: stretch
+		transform: translate(0, 100%)
+		transition: transform .3s ease-out
+		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#000, .4), 0 .05em .3em rgba(#000, .8)
 		& > *
 			flex: 1 0 auto
 			width: 0
 		.layouts
 			display: flex
-			padding-left: $quarter-gutter
 			flex-flow: row nowrap
 			button
 				flex: 0 1 auto
@@ -52,10 +41,11 @@ footer
 			display: flex
 			align-items: center
 			justify-content: flex-end
-			padding-right: $quarter-gutter
 		.settings
 			display: flex
-
+	&.visible
+		.contents
+			transform: translate(0, 0)
 
 // Global block styles
 .control-block
@@ -119,14 +109,13 @@ footer
 		background-color: #000
 		text-shadow: 0 0 .5em rgba($color-graph, 1)
 
-button
+.btn
 	white-space: nowrap
 	font: $bold 1em/1.5 $font-theme
-	padding: $quarter-gutter 0
-	background: #eee linear-gradient(to bottom, rgba(#fff, .5), rgba(#fff, 0))
+	padding: $quarter-gutter
 	text-transform: uppercase
 	text-shadow: 0 1px 0 rgba(#fff, .4)
-	box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .3em 0 #777, 0 .6em .3em rgba(#000, .2)
+	background: #eee linear-gradient(to bottom, rgba(#fff, .5), rgba(#fff, 0))
 	cursor: pointer
 	user-select: none
 	outline: none
@@ -136,27 +125,29 @@ button
 	justify-content: center
 	align-items: center
 	position: relative
-	&:active
-		top: .2em
-		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .1em 0 #777, 0 .3em .1em rgba(#000, .2)
-	&.toggle
-		&.on
-			top: .1em
-			box-shadow: inset 0 0 .4em rgba(#fff, 1), inset 0 0 4em rgba(#fff, .5), inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 darken($color-orange, 20), 0 .2em .1em rgba(#fff, .2), 0 .3em 1em lighten($color-orange, 20), 0 .3em 2em $color-orange
-			background-color: $color-orange
-	&.dark
-		background: #555 linear-gradient(to bottom, rgba(#fff, .3), rgba(#fff, 0))
-		color: #fff
-		text-shadow: 0 -1px 0 rgba(#000, .4)
-		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .3em 0 #333, 0 .6em .3em rgba(#000, .2)
+	&.physical
+		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .3em 0 #777, 0 .6em .3em rgba(#000, .2)
 		&:active
-			box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .1em 0 #333, 0 .3em .1em rgba(#000, .2)
+			top: .2em
+			box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .1em 0 #777, 0 .3em .1em rgba(#000, .2)
 		&.toggle
 			&.on
-				box-shadow: inset 0 0 .4em rgba(#fff, 1), inset 0 0 4em rgba(#fff, .5), inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 darken($color-orange, 20), 0 .2em .1em rgba(#fff, .2), 0 .3em 1em $color-orange, 0 .3em 2em $color-orange
-				background-color: darken($color-orange, 15)
-	&.primary
-		background-color: lighten($color-green, 22) !important
+				top: .1em
+				box-shadow: inset 0 0 .4em rgba(#fff, 1), inset 0 0 4em rgba(#fff, .5), inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 darken($color-orange, 20), 0 .2em .1em rgba(#fff, .2), 0 .3em 1em lighten($color-orange, 20), 0 .3em 2em $color-orange
+				background-color: $color-orange
+		&.dark
+			background: #555 linear-gradient(to bottom, rgba(#fff, .3), rgba(#fff, 0))
+			color: #fff
+			text-shadow: 0 -1px 0 rgba(#000, .4)
+			box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .3em 0 #333, 0 .6em .3em rgba(#000, .2)
+			&:active
+				box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .1em 0 #333, 0 .3em .1em rgba(#000, .2)
+			&.toggle
+				&.on
+					box-shadow: inset 0 0 .4em rgba(#fff, 1), inset 0 0 4em rgba(#fff, .5), inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 darken($color-orange, 20), 0 .2em .1em rgba(#fff, .2), 0 .3em 1em $color-orange, 0 .3em 2em $color-orange
+					background-color: darken($color-orange, 15)
+		&.primary
+			background-color: lighten($color-green, 22) !important
 
 form
 	.input

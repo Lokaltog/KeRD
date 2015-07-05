@@ -1,10 +1,10 @@
 #wrap(v-class='blur: settingsVisible')
-	layout(contents='{{layout}}')
+	layout(root='true', editable='{{layoutEditable}}')
 	footer
 		.contents
 			.layouts
-				//button.dark 1
 				button.dark(v-on='click: settingsVisible = !settingsVisible') Settings
+				button.dark(v-on='click: layoutEditable = !layoutEditable') Edit layout
 			.logo
 			.host.connected(v-if='wsConnected') Connected to {{config.telemachus.host}}:{{config.telemachus.port}}
 			.host.disconnected(v-if='!wsConnected') Not connected

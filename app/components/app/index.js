@@ -73,6 +73,7 @@ export default {
 			ws: null,
 			wsConnected: false,
 
+			layoutEditable: false,
 			settingsVisible: false,
 
 			data: {},
@@ -98,6 +99,13 @@ export default {
 		}
 	},
 	ready() {
+		// Show footer when pointer is at bottom X px of page
+		var $footer = $('footer')
+		$(document).on('mousemove', (ev) => {
+			$footer.toggleClass('visible', $(document).height() - ev.pageY < $footer.height())
+		})
+
+		// Update refreshIntevral property based on refresh rate (hz -> ms)
 		this.$watch('config.telemachus.refreshRate', () => this.config.telemachus.refreshInterval = parseInt(1 / this.config.telemachus.refreshRate * 1000), { immediate: true })
 
 		// Connect to Telemachus socket
