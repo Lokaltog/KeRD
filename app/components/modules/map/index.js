@@ -64,9 +64,9 @@ export default {
 
 		// Add sun light
 		var sunPosition = new THREE.Vector3(0, 0, -40000)
-		var light = new THREE.DirectionalLight(0xffffff, 2)
-		light.position.copy(sunPosition)
-		scene.add(light)
+		var sunLight = new THREE.DirectionalLight(0xffffff, 1)
+		sunLight.position.copy(sunPosition)
+		scene.add(sunLight)
 
 		if (this.config.rendering.shadows) {
 			var shadowLight = new THREE.SpotLight(0xffffff, 1, 1)
@@ -151,7 +151,7 @@ export default {
 			lensFlare.add(lensFlareTexture3, 70, 0.7, THREE.AdditiveBlending)
 			lensFlare.add(lensFlareTexture3, 120, 0.9, THREE.AdditiveBlending)
 			lensFlare.add(lensFlareTexture3, 70, 1.0, THREE.AdditiveBlending)
-			lensFlare.position.copy(light.position)
+			lensFlare.position.copy(sunLight.position)
 
 			lensFlare.customUpdateCallback = function(object) {
 				var flare
