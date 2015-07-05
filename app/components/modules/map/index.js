@@ -19,6 +19,7 @@ var composer
 var renderer
 var scene
 var camera
+var crtEffect
 
 var apoapsisNode
 var periapsisNode
@@ -83,32 +84,37 @@ export default {
 		var bodyGeometry = new THREE.SphereGeometry(this.displayRadius, 32, 32)
 		var bodyMaterial = new THREE.MeshPhongMaterial()
 		bodyMaterial.normalScale = new THREE.Vector2(1.5, 1.5)
-		this.objects.bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
-		this.objects.bodyMesh.castShadow = true
-		this.objects.bodyMesh.receiveShadow = true
-		scene.add(this.objects.bodyMesh)
+		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
+		bodyMesh.castShadow = true
+		bodyMesh.receiveShadow = true
+		scene.add(bodyMesh)
+		this.objects.bodyMesh = bodyMesh
 
 		// Add atmosphere indicator
 		var atmosphereGeometry = new THREE.SphereGeometry(1, 32, 32)
 		var atmosphereMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 })
 		atmosphereMaterial.transparent = true
 		atmosphereMaterial.opacity = 0
-		this.objects.atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial)
-		scene.add(this.objects.atmosphereMesh)
+		var atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial)
+		scene.add(atmosphereMesh)
+		this.objects.atmosphereMesh = atmosphereMesh
 
 		// Add vessel geometry
 		var vesselGeometry = new THREE.SphereGeometry(2.5, 16, 16)
 		var vesselMaterial = new THREE.MeshPhongMaterial({ color: 0x770000 })
-		this.objects.vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
-		this.objects.vesselMesh.castShadow = true
-		this.objects.vesselMesh.receiveShadow = true
-		scene.add(this.objects.vesselMesh)
+		var vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
+		vesselMesh.castShadow = true
+		vesselMesh.receiveShadow = true
+		scene.add(vesselMesh)
+		this.objects.vesselMesh = vesselMesh
 
 		// Add apoapsis/periapsis geometry
-		this.objects.apoapsisMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00aa00, visible: false }))
-		this.objects.periapsisMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00aa00, visible: false }))
-		scene.add(this.objects.apoapsisMesh)
-		scene.add(this.objects.periapsisMesh)
+		var apoapsisMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00aa00, visible: false }))
+		var periapsisMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00aa00, visible: false }))
+		scene.add(apoapsisMesh)
+		scene.add(periapsisMesh)
+		this.objects.apoapsisMesh = apoapsisMesh
+		this.objects.periapsisMesh = periapsisMesh
 
 		// Add vessel line (from body center, indicating altitude)
 		var lineGeometry = new THREE.Geometry()
@@ -122,6 +128,7 @@ export default {
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 
 		scene.add(lineMesh)
+		this.objects.lineMesh = lineMesh
 
 		// Add orbit ellipse
 		var orbitLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff })
@@ -134,6 +141,7 @@ export default {
 		orbitLineMesh.rotation.order = 'YXZ'
 
 		scene.add(orbitLineMesh)
+		this.objects.orbitLineMesh = orbitLineMesh
 
 		// Add optional lens flare
 		if (this.config.rendering.lensFlare) {
@@ -296,12 +304,14 @@ export default {
 			var copyPass = new THREE.ShaderPass(THREE.CopyShader)
 			composer.addPass(new THREE.RenderPass(scene, camera))
 
-			var crtEffect = new THREE.ShaderPass(THREE.CRTShader)
+			crtEffect = new THREE.ShaderPass(THREE.CRTShader)
 			composer.addPass(crtEffect)
 			crtEffect.uniforms.iResolution.value = new THREE.Vector3(500, 500, 0)
 
 			composer.addPass(copyPass)
 			copyPass.renderToScreen = true
+
+			this.setLoading(true)
 		}
 
 		// Animate callback
@@ -338,19 +348,12 @@ export default {
 
 		this.toggleFocus('vessel')
 
-		this.$watch(() => this.loading, () => {
-			// Show noise when loading
-			if (this.config.rendering.postProcessing) {
-				crtEffect.uniforms.noise.value = this.loading ? 1 : 0
-			}
-		}, { immediate: true })
-
 		// Don't attach watch handlers until we've received celestial body data from Telemachus
 		this.$once('resources.bodies.ready', () => this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
 			body = this.resources.bodies[this.data['v.body']]
 			if (!body) {
 				// Disable if body is missing or we're still waiting for data
-				this.loading = true
+				this.setLoading(true)
 				return
 			}
 			this.displayRatio = (this.displayRadius / body.data.radius)
@@ -448,25 +451,35 @@ export default {
 			var textures = this.body.textures[this.config.rendering.textureQuality]
 
 			if (!bodyMaterial.map || (bodyMaterial.map.sourceFile !== textures.diffuse && !this.showBiome) || force) {
+				// Show noise while loading diffuse map
+				this.setLoading(true)
+
 				// Update textures based on the current body
 				// Only updates if the current texture source files differs from the current body
 				bodyMaterial.map = THREE.ImageUtils.loadTexture(textures.diffuse, undefined, () => {
-					this.loading = false
+					this.setLoading(false)
 				})
 				bodyMaterial.map.anisotropy = renderer.getMaxAnisotropy()
 
 				if (this.config.rendering.specularMaps && textures.specular) {
 					bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(textures.specular)
 					bodyMaterial.specularMap.anisotropy = renderer.getMaxAnisotropy() / 2
-					bodyMaterial.shininess = this.body.attributes.shininess
+					try {
+						bodyMaterial.shininess = this.body.attributes.shininess
+					}
+					catch (e) {}
 				}
 				else {
+					bodyMaterial.specularMap = undefined
 					bodyMaterial.shininess = 0
 				}
 
 				if (this.config.rendering.normalMaps && textures.normal) {
 					bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(textures.normal)
 					bodyMaterial.normalMap.anisotropy = renderer.getMaxAnisotropy() / 2
+				}
+				else {
+					bodyMaterial.normalMap = undefined
 				}
 
 				bodyMaterial.needsUpdate = true
@@ -479,12 +492,11 @@ export default {
 
 			// Resize atmosphere mesh
 			if (this.body.data.atmosphereHeight) {
-				var scale = (this.body.data.radius + this.body.data.atmosphereHeight) * this.displayRatio
+				var scale = (this.body.data.radius + this.body.data.atmosphereHeight) * (this.displayRadius / this.body.data.radius)
 				this.objects.atmosphereMesh.scale.x = scale
 				this.objects.atmosphereMesh.scale.y = scale
 				this.objects.atmosphereMesh.scale.z = scale
 			}
-
 		},
 		rotateCamera(rho, phi, theta) {
 			var coords = spherical2cartesian(rho || this.cameraRho, phi || this.cameraPhi, theta || this.cameraTheta)
@@ -515,12 +527,12 @@ export default {
 				top: `${periapsis2DCoords.y}px`,
 			})
 		},
-		toggleFocus() {
-			if (this.focus === 'vessel') {
+		toggleFocus(focus) {
+			if (this.focus === 'vessel' || focus === 'body') {
 				this.focus = 'body'
 				this.focusPosition = this.origo
 			}
-			else {
+			else if (this.focus === 'body' || focus === 'vessel') {
 				this.focus = 'vessel'
 				this.focusPosition = this.objects.vesselMesh.position
 			}
@@ -550,6 +562,45 @@ export default {
 			else {
 				this.refreshBodyMaterials(true)
 			}
+		},
+		setLoading(loading) {
+			if (this.config.rendering.postProcessing) {
+				crtEffect.uniforms.noise.value = loading
+			}
+		},
+		setVesselVisible(visible) {
+			this.objects.vesselMesh.visible = visible
+			this.objects.lineMesh.visible = visible
+			this.objects.orbitLineMesh.visible = visible
+
+			this.toggleFocus(visible ? 'vessel' : 'body')
+		},
+		changeBody(dir) {
+			var bodiesSorted = Object.keys(this.resources.bodies).sort((a, b) => {
+				a = this.resources.bodies[a]
+				b = this.resources.bodies[b]
+				if (a.data.index > b.data.index) {
+					return 1
+				}
+				if (a.data.index < b.data.index) {
+					return -1
+				}
+				return 0
+			})
+
+			var newIdx = this.body.data.index + dir - 1
+			var totalBodies = Object.keys(this.resources.bodies).length
+
+			if (newIdx < 0) {
+				newIdx = totalBodies - 1
+			}
+			if (newIdx > totalBodies - 1) {
+				newIdx = 0
+			}
+
+			this.body = this.resources.bodies[bodiesSorted[newIdx]]
+			this.setVesselVisible(this.data['v.body'] === this.body.data.name)
+			this.refreshBodyMaterials()
 		},
 	},
 }
