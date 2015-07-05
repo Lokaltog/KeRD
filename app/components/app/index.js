@@ -113,6 +113,7 @@ export default {
 			],
 
 			resources: {
+				_atmDensity: 1.2230948554874,
 				bodies: require('../../assets/js/resources/bodies'),
 			},
 		}

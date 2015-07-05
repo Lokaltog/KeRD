@@ -56,7 +56,7 @@ export default {
 			}
 		})
 		this.$watch(() => this.data['v.atmosphericDensity'], () => {
-			var pressure = this.data['v.atmosphericDensity'] / this.resources.bodies._atmDensity
+			var pressure = this.data['v.atmosphericDensity'] / this.resources._atmDensity
 			if (pressure <= 0) {
 				pressure = 0
 			}
