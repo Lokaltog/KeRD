@@ -4,30 +4,6 @@ import WS from 'websocket'
 import subscriptions from 'resources/subscriptions'
 import LocalStorage from 'storage'
 
-// Layout wrapper functions
-function wrapper(type, cls='') {
-	return function(...contents) {
-		return {
-			type: type,
-			contents: contents,
-			cls: cls,
-		}
-	}
-}
-var row = wrapper('row')
-var rowExpand = wrapper('row', 'expand')
-var col = wrapper('col')
-var colExpand = wrapper('col', 'expand')
-var section = wrapper('section')
-var sectionExpand = wrapper('section', 'expand')
-var module = function(id, config={}) {
-	return {
-		type: 'module',
-		id: id,
-		'module-config': config,
-	}
-}
-
 var storage = new LocalStorage()
 
 export default {
@@ -77,20 +53,6 @@ export default {
 			settingsVisible: false,
 
 			data: {},
-
-			layout: [
-				row(
-					section(module('map')),
-					section(module('resources')),
-					col(
-						sectionExpand(module('vessel')),
-						section(module('navigation'))
-					),
-					col(
-						section(module('orbit'))
-					)
-				)
-			],
 
 			resources: {
 				_atmDensity: 1.2230948554874,
