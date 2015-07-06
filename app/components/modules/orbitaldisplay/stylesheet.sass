@@ -1,17 +1,8 @@
 @import 'lib/settings'
 
-.mod-map
-	$dim: 30vw
+.mod-orbitaldisplay
 	display: flex
-	flex-flow: column nowrap
-	flex: 1 0 auto
 	.monitor
-		background: #555
-		border-radius: .5em
-		padding: $half-gutter
-		box-shadow: 0 -1px 0 rgba(#fff, .5), 0 1px rgba(#000, 1), 0 .3em .4em rgba(#000, .3)
-		position: relative
-		overflow: hidden
 		flex: 1 0 auto
 		display: flex
 		flex-flow: column nowrap
@@ -25,12 +16,13 @@
 					margin: 0 $quarter-gutter 0 0
 	.orbital-display
 		background: #000
+		flex: 1 1 auto
+		height: 0
 		position: relative
 		border-radius: .5em
 		position: relative
 		overflow: hidden
 		box-shadow: 0 1px 0 rgba(#fff, .5), 0 -1px rgba(#000, 1)
-		flex: 1 0 auto
 	.nodes
 		.apoapsis,
 		.periapsis

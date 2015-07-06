@@ -234,21 +234,8 @@ class CelestialView {
 		}
 
 		// Resize renderer when window is resized
-		var resize = () => {
-			var container = $('.orbital-display', this.$el)
-			var w = container.width()
-			var h = container.height()
-
-			this.camera.aspect = w / h
-			this.camera.updateProjectionMatrix()
-
-			if (this.composer) {
-				this.composer.setSize(w, h)
-			}
-			this.renderer.setSize(w, h)
-		}
-		$(window).on('resize', debounce(resize))
-		resize()
+		$(window).on('resize', debounce(() => this.resizeContainer()))
+		this.resizeContainer()
 
 		// Camera rotation handlers
 		var dragging
@@ -304,7 +291,6 @@ class CelestialView {
 			this.rotateCamera()
 		})
 
-		this.toggleFocus('vessel')
 		this.rotateCamera()
 
 		// Animate callback
@@ -407,26 +393,22 @@ class CelestialView {
 			top: `${periapsis2DCoords.y}px`,
 		})
 	}
-	toggleFocus(focus) {
-		if (this.focus === 'vessel' || focus === 'body') {
-			this.focus = 'body'
+	setFocus(focus) {
+		if (focus === 'body') {
 			this.focusPosition = this.origo
 		}
-		else if (this.focus === 'body' || focus === 'vessel') {
-			this.focus = 'vessel'
+		else if (focus === 'vessel') {
 			this.focusPosition = this.objects.vesselMesh.position
 		}
 		this.rotateCamera()
 	}
-	toggleAtmosphere() {
-		this.showAtmosphere = !this.showAtmosphere
-		this.objects.atmosphereMesh.visible = this.showAtmosphere
+	setAtmosphereVisible(visible) {
+		this.objects.atmosphereMesh.visible = visible
 	}
-	toggleBiome() {
-		this.showBiome = !this.showBiome
+	setBiomeVisible(visible) {
 		var material = this.objects.bodyMesh.material
 
-		if (this.showBiome) {
+		if (visible) {
 			// Fix texture offset present in all the biome maps
 			var textures = this.body.textures[this.config.rendering.textureQuality]
 			var biomeTexture = THREE.ImageUtils.loadTexture(textures.biome)
@@ -453,33 +435,20 @@ class CelestialView {
 		this.objects.lineMesh.visible = visible
 		this.objects.orbitLineMesh.visible = visible
 
-		this.toggleFocus(visible ? 'vessel' : 'body')
+		// Hide ap/pe nodes
+		if (visible) {
+			this.apoapsisNode.show()
+			this.periapsisNode.show()
+		}
+		else {
+			this.apoapsisNode.hide()
+			this.periapsisNode.hide()
+		}
+
+		this.setFocus(visible ? 'vessel' : 'body')
 	}
-	changeBody(dir) {
-		var bodiesSorted = Object.keys(this.resources.bodies).sort((a, b) => {
-			a = this.resources.bodies[a]
-			b = this.resources.bodies[b]
-			if (a.data.index > b.data.index) {
-				return 1
-			}
-			if (a.data.index < b.data.index) {
-				return -1
-			}
-			return 0
-		})
-
-		var newIdx = this.body.data.index + dir - 1
-		var totalBodies = Object.keys(this.resources.bodies).length
-
-		if (newIdx < 0) {
-			newIdx = totalBodies - 1
-		}
-		if (newIdx > totalBodies - 1) {
-			newIdx = 0
-		}
-
-		this.body = this.resources.bodies[bodiesSorted[newIdx]]
-		this.setVesselVisible(this.data['v.body'] === this.body.data.name)
+	setBody(body) {
+		this.body = body
 		this.refreshBodyMaterials()
 	}
 	tween(body, trueAnomaly, inclination, argumentOfPeriapsis, eccentricity, epoch, longitudeOfAscendingNode, semimajorAxis) {
@@ -491,11 +460,11 @@ class CelestialView {
 
 		if (!this.body) {
 			this.body = body
+			this.refreshBodyMaterials()
 		}
 
 		this.displayRatio = (this.displayRadius / body.data.radius)
 
-		this.refreshBodyMaterials()
 		this.rotateCamera()
 
 		// Animate vessel and camera positions
@@ -579,6 +548,27 @@ class CelestialView {
 		})
 		this.vesselTween.start()
 	}
+	resizeContainer() {
+		var container = this.el
+		var w = container.width()
+		var h = container.height()
+
+		this.camera.aspect = w / h
+		this.camera.updateProjectionMatrix()
+
+		if (this.composer) {
+			this.composer.setSize(w, h)
+		}
+		this.renderer.setSize(w, h)
+	}
+	setEnabled(enabled) {
+		if (enabled) {
+            $(this.renderer.domElement).show()
+		}
+		else {
+            $(this.renderer.domElement).hide()
+		}
+	}
 }
 
 export default {
@@ -587,20 +577,29 @@ export default {
 	props: ['module-config'],
 	data() {
 		return {
-			focus: null,
-			showAtmosphere: true,
-			showBiome: false,
+			focus: 'vessel',
+			atmosphereVisible: true,
+			biomeVisible: false,
 
 			loading: true,
 			body: null,
 		}
 	},
 	ready() {
-		var celestialView = new CelestialView($('.orbital-display', this.$el), this.config)
+		this.cv = new CelestialView($('.orbital-display', this.$el), this.config)
+		this.cv.setFocus(this.focus)
+
+		this.$watch('layoutEditable', () => {
+			this.cv.setEnabled(!this.layoutEditable)
+		})
 
 		// Don't attach watch handlers until we've received celestial body data from Telemachus
 		this.$once('resources.bodies.ready', () => this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['v.body'], () => {
-			celestialView.tween(
+			if (!this.body) {
+				this.body = this.resources.bodies[this.data['v.body']]
+			}
+
+			this.cv.tween(
 				this.resources.bodies[this.data['v.body']],
 				this.data['o.trueAnomaly'],
 				this.data['o.inclination'],
@@ -611,5 +610,49 @@ export default {
 				this.data['o.sma']
 			)
 		}, { immediate: true }))
+	},
+	methods: {
+		setFocus(focus) {
+			this.focus = focus
+			this.cv.setFocus(this.focus)
+		},
+		toggleAtmosphere() {
+			this.atmosphereVisible = !this.atmosphereVisible
+			this.cv.setAtmosphereVisible(this.atmosphereVisible)
+		},
+		toggleBiome() {
+			this.biomeVisible = !this.biomeVisible
+			this.cv.setBiomeVisible(this.biomeVisible)
+		},
+		changeBody(dir) {
+			var bodiesSorted = Object.keys(this.resources.bodies).sort((a, b) => {
+				a = this.resources.bodies[a]
+				b = this.resources.bodies[b]
+				if (a.data.index > b.data.index) {
+					return 1
+				}
+				if (a.data.index < b.data.index) {
+					return -1
+				}
+				return 0
+			})
+
+			var newIdx = this.body.data.index + dir - 1
+			var totalBodies = Object.keys(this.resources.bodies).length
+
+			if (newIdx < 0) {
+				newIdx = totalBodies - 1
+			}
+			if (newIdx > totalBodies - 1) {
+				newIdx = 0
+			}
+
+			this.body = this.resources.bodies[bodiesSorted[newIdx]]
+			this.setFocus(this.data['v.body'] === this.body.data.name ? 'vessel' : 'body')
+
+			this.cv.setVesselVisible(this.data['v.body'] === this.body.data.name)
+			this.cv.setBody(this.body)
+			this.cv.setBiomeVisible(this.biomeVisible)
+		},
 	},
 }

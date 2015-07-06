@@ -13,9 +13,10 @@ export default {
 		settings: require('../settings'),
 
 		actiongroups: require('../modules/actiongroups'),
-		map: require('../modules/map'),
+		history: require('../modules/history'),
 		navigation: require('../modules/navigation'),
-		orbit: require('../modules/orbit'),
+		orbitaldisplay: require('../modules/orbitaldisplay'),
+		orbitalinfo: require('../modules/orbitalinfo'),
 		resources: require('../modules/resources'),
 		vessel: require('../modules/vessel'),
 	},

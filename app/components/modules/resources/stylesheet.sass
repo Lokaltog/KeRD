@@ -1,27 +1,27 @@
 @import 'lib/settings'
 
 .mod-resources
-	.row
-		flex: 1 0 auto
-		height: 0
-		width: 10em
-		margin: $quarter-gutter 0
+	display: flex
+	flex-flow: row nowrap
 	.resource
 		flex: 1 0 auto
-		width: 0
 		display: flex
+		flex-flow: column nowrap
 		align-items: center
+		width: 0
+		min-width: 2.8em
 	.label
 		order: 2
 	.bar-display
 		$width: 2em
-		flex: 1 1 auto
+		flex: 1 0 auto
 		background: linear-gradient(to bottom, transparent 50%, rgba(#fff, .04) 50%), #222
 		background-size: 100% 4px
 		border-radius: $double-border-radius
 		box-shadow: inset 0 .1em .7em rgba(#000, 1), inset 0 .2em .5em rgba(#000, 1), 0 1px 0 rgba(#fff, 1)
 		position: relative
 		width: $width
+		height: 0
 		.overlay
 			position: absolute
 			z-index: 2
@@ -36,11 +36,11 @@
 				font-size: .8em
 			.current
 				bottom: 0
-				transform: rotate(-90deg) translate(($width / 2), 1.4em)
+				transform: translate(1em, -($width / 2)) rotate(-90deg)
 			.max
 				top: 0
 				text-align: right
-				transform: rotate(-90deg) translate(-($width / 2), 1.4em)
+				transform: translate(1em, ($width / 2)) rotate(-90deg)
 		.bar
 			$color: #cdf
 			position: absolute

@@ -27,9 +27,13 @@ template(v-repeat='item: contents')
 			li(v-if='!root')
 				select(v-model='item.module')
 					option(value='') -- no module --
-					option(value='map') Orbital display
-					option(value='vessel') Vessel properties
+					option(value='actiongroups') Action groups
+					option(value='history') History
 					option(value='navigation') Navigation
+					option(value='orbitaldisplay') Orbital display
+					option(value='orbitalinfo') Orbital info
+					option(value='resources') Resources
+					option(value='vessel') Vessel
 			li(v-if='!root')
 				input(type='text', v-model='item.title', placeholder='Section header')
 			li.spacer
@@ -37,8 +41,7 @@ template(v-repeat='item: contents')
 				button.btn(v-if='!root', v-on='click: contents.$remove(item)')
 					i.icon-cancel
 
-
 		div(v-attr='class: "container container-style-" + (item.style || "plain")')
 			header(v-if='item.title') {{item.title}}
 			layout(v-if='!item.module', contents='{{item.contents}}', parent-flow='{{item.flow}}', v-class='row: item.flow === "row", column: item.flow === "column"')
-			component(v-if='item.module', is='{{item.module}}', module-config='{{item.moduleConfig}}', v-attr='class: "mod-" + item.module')
+			component(v-if='componentExists(item.module) && item.module', is='{{item.module}}', module-config='{{item.moduleConfig}}', v-attr='class: "mod-" + item.module')

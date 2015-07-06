@@ -64,5 +64,8 @@ export default {
 			this.contents.splice(index, 1)
 			this.contents.splice(newPos, 0, item)
 		},
+		componentExists(component) {
+			return component in this.$root.$options.components
+		},
 	},
 }

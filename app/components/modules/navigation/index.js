@@ -20,7 +20,7 @@ export default {
 			antialias: true,
 		})
 		renderer.setSize(1, 1)
-		$('.navball').append(renderer.domElement)
+		$('.navball', this.$el).append(renderer.domElement)
 
 		// Resize renderer when window is resized
 		function resize() {
@@ -33,7 +33,7 @@ export default {
 		// Create scene and setup camera and lights
 		var scene = new THREE.Scene()
 		var camera = new THREE.PerspectiveCamera(32, 1, 0.01, 1000)
-		camera.position.z = 200
+		camera.position.z = 190
 
 		scene.add(new THREE.AmbientLight(0xaaaaaa))
 

@@ -1,4 +1,3 @@
-header {{body ? data['v.body'] : 'Map'}}
 .monitor
 	.orbital-display
 		.body-header(v-if='body && config.modules.map.showBodyDetails')
@@ -16,8 +15,8 @@ header {{body ? data['v.body'] : 'Map'}}
 			div PE: {{numeral(data['o.PeA']).format('0.000 a')}}m
 			div ALT: {{numeral(data['v.altitude']).format('0.000 a')}}m
 	.actions
-		button.dark.focus(v-on='click: toggleFocus', v-text='focus')
-		button.dark.atmosphere(v-on='click: toggleAtmosphere') Atmosphere
-		button.dark.biome.toggle(v-on='click: toggleBiome', v-class='on: showBiome') Biome
-		button.dark.prev(v-on='click: changeBody(-1)') ▲
-		button.dark.next(v-on='click: changeBody(1)') ▼
+		button.btn.physical.focus(v-on='click: setFocus(focus === "vessel" ? "body" : "vessel")', v-text='focus')
+		button.btn.physical.atmosphere(v-on='click: toggleAtmosphere') Atm
+		button.btn.physical.biome.toggle(v-on='click: toggleBiome', v-class='on: biomeVisible') Biome
+		button.btn.physical.prev(v-on='click: changeBody(-1)') ▲
+		button.btn.physical.next(v-on='click: changeBody(1)') ▼
