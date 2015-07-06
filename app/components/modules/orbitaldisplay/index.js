@@ -198,13 +198,17 @@ class CelestialView {
 		// Add optional skybox
 		if (this.config.rendering.skybox) {
 			var skyboxGeometry = new THREE.SphereGeometry(100000, 32, 32)
+			var skyboxTextureRes = {
+				hi: '1k',
+				lo: '512',
+			}[this.config.rendering.textureQuality]
 			var skyboxMap = THREE.ImageUtils.loadTextureCube([
-				require('../../../assets/img/textures/skybox/posx.jpg'),
-				require('../../../assets/img/textures/skybox/negx.jpg'),
-				require('../../../assets/img/textures/skybox/posy.jpg'),
-				require('../../../assets/img/textures/skybox/negy.jpg'),
-				require('../../../assets/img/textures/skybox/posz.jpg'),
-				require('../../../assets/img/textures/skybox/negz.jpg'),
+				require(`../../../assets/img/textures/skybox/posx-${skyboxTextureRes}.jpg`),
+				require(`../../../assets/img/textures/skybox/negx-${skyboxTextureRes}.jpg`),
+				require(`../../../assets/img/textures/skybox/negy-${skyboxTextureRes}.jpg`),
+				require(`../../../assets/img/textures/skybox/posy-${skyboxTextureRes}.jpg`),
+				require(`../../../assets/img/textures/skybox/posz-${skyboxTextureRes}.jpg`),
+				require(`../../../assets/img/textures/skybox/negz-${skyboxTextureRes}.jpg`),
 			])
 			skyboxMap.format = THREE.RGBFormat
 			var skyboxMaterial = new THREE.MeshBasicMaterial({

@@ -16,6 +16,6 @@ Credits
 -------
 
 * Celestial Body Revamped textures by `Tingle <http://forum.kerbalspaceprogram.com/threads/44135-0-22-Universe-Replacer-v4-0?p=588163&viewfull=1#post588163>`_.
-* Rareden's Real 8k Skybox texture from `the KSP forums <http://forum.kerbalspaceprogram.com/threads/87311-Rareden-s-Real-8k-Skybox-for-Texture-Replacer>`_.
+* Custom Rendered Volumetric Dust Galaxy by `Paul Smith <https://drive.google.com/folderview?id=0BxtVn_bTrSAtfkM5dmYyS3lfLUo4MFZxeVZNUUtDWEdNTllMeW5MTXp3T2JfWUI3Q1d2ckk&usp=drive_web>`_.
 * Biome maps from the KSP wiki.
 * Lens flare sprites from THREE.js base distribution.
