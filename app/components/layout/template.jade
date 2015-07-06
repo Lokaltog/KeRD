@@ -1,5 +1,5 @@
 template(v-repeat='item: contents')
-	section(v-style='background-color: item.color', v-class='editable: editable, expand: item.expand')
+	section(v-class='editable: editable, expand: item.expand')
 		ul.controls
 			li(v-if='item.flow === "column"')
 				button.btn(v-on='click: item.flow = "row"')

@@ -1,3 +1,5 @@
+var defaultLayout = JSON.parse('[{"flow":"row","style":"plain","module":null,"moduleConfig":{},"title":null,"expand":true,"contents":[{"flow":"row","style":"plain","module":null,"moduleConfig":{},"title":null,"expand":true,"contents":[{"flow":"row","style":"panel-dark","module":"orbitaldisplay","moduleConfig":{},"title":null,"expand":true,"contents":[]},{"flow":"row","style":"panel","module":"resources","moduleConfig":{},"title":"Resources","expand":false,"contents":[]},{"flow":"column","style":"plain","module":null,"moduleConfig":{},"title":null,"expand":false,"contents":[{"flow":"row","style":"panel","module":"vessel","moduleConfig":{},"title":"Vessel","expand":true,"contents":[]},{"flow":"row","style":"panel","module":"navigation","moduleConfig":{},"title":null,"expand":false,"contents":[]}]},{"flow":"column","style":"plain","module":"","moduleConfig":{},"title":null,"expand":true,"contents":[{"flow":"row","style":"panel","module":"orbitalinfo","moduleConfig":{},"title":"Orbit","expand":false,"contents":[]}]}]}]}]')
+
 export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
@@ -18,6 +20,9 @@ export default {
 			if (existingLayout) {
 				this.contents = existingLayout
 			}
+			else {
+				this.contents = defaultLayout
+			}
 			this.$watch('contents', () => {
 				this.storage.set('layout', this.contents)
 			}, { deep: true })
@@ -28,7 +33,6 @@ export default {
 			container.push({
 				flow: 'row',
 				style: 'plain',
-				color: 'transparent',
 				module: null,
 				moduleConfig: {},
 				title: null,
