@@ -29,23 +29,6 @@ export default [
 	'o.timeToTransition2',
 	'o.trueAnomaly',
 	'p.paused',
-	'r.resourceCurrent[ElectricCharge]',
-	'r.resourceCurrent[IntakeAir]',
-	'r.resourceCurrent[LiquidFuel]',
-	'r.resourceCurrent[MonoPropellant]',
-	'r.resourceCurrent[Oxidizer]',
-	'r.resourceCurrent[XenonGas]',
-	'r.resourceMax[ElectricCharge]',
-	'r.resourceMax[IntakeAir]',
-	'r.resourceMax[LiquidFuel]',
-	'r.resourceMax[Oxidizer]',
-	'r.resourceMax[XenonGas]',
-	'r.resource[ElectricCharge]',
-	'r.resource[IntakeAir]',
-	'r.resource[LiquidFuel]',
-	'r.resource[MonoPropellant]',
-	'r.resource[Oxidizer]',
-	'r.resource[XenonGas]',
 	's.sensor.acc',
 	's.sensor.grav',
 	's.sensor.pres',
@@ -93,4 +76,20 @@ export default [
 	'v.surfaceVelocityy',
 	'v.surfaceVelocityz',
 	'v.terrainHeight',
-]
+].concat((() => {
+	// Subscribe to resources
+	var subscriptions = [];
+	[
+		'ElectricCharge',
+		'IntakeAir',
+		'LiquidFuel',
+		'MonoPropellant',
+		'Oxidizer',
+		'XenonGas',
+	].forEach((v) => subscriptions = subscriptions.concat([
+		`r.resourceCurrent[${v}]`,
+		`r.resourceMax[${v}]`,
+		`r.resource[${v}]`,
+	]))
+	return subscriptions
+})())
