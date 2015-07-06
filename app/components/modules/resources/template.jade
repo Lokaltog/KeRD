@@ -1,42 +1,7 @@
-.resource
-	.label ELEC
+.resource(v-repeat='resources', v-show='max !== null')
+	.label {{label}}
 	.bar-display
 		.overlay
-			.current {{numeral(electricCharge.current).format('0.0')}}
-			.max {{numeral(electricCharge.max).format('0.0')}}
-		.bar.green(v-class='orange: electricCharge.percent <= orangeThreshold, red: electricCharge.percent <= redThreshold', data-percentage='electricCharge.percent', v-style='height: electricCharge.percent + "%"')
-.resource
-	.label MONO
-	.bar-display
-		.overlay
-			.current {{numeral(monoPropellant.current).format('0.0')}}
-			.max {{numeral(monoPropellant.max).format('0.0')}}
-		.bar.green(v-class='orange: monoPropellant.percent <= orangeThreshold, red: monoPropellant.percent <= redThreshold', data-percentage='monoPropellant.percent', v-style='height: monoPropellant.percent + "%"')
-.resource
-	.label AIR
-	.bar-display
-		.overlay
-			.current {{numeral(intakeAir.current).format('0.0')}}
-			.max {{numeral(intakeAir.max).format('0.0')}}
-		.bar.green(v-class='orange: intakeAir.percent <= orangeThreshold, red: intakeAir.percent <= redThreshold', data-percentage='intakeAir.percent', v-style='height: intakeAir.percent + "%"')
-.resource
-	.label LIQF
-	.bar-display
-		.overlay
-			.current {{numeral(liquidFuel.current).format('0.0')}}
-			.max {{numeral(liquidFuel.max).format('0.0')}}
-		.bar.green(v-class='orange: liquidFuel.percent <= orangeThreshold, red: liquidFuel.percent <= redThreshold', data-percentage='liquidFuel.percent', v-style='height: liquidFuel.percent + "%"')
-.resource
-	.label OXID
-	.bar-display
-		.overlay
-			.current {{numeral(oxidizer.current).format('0.0')}}
-			.max {{numeral(oxidizer.max).format('0.0')}}
-		.bar.green(v-class='orange: oxidizer.percent <= orangeThreshold, red: oxidizer.percent <= redThreshold', data-percentage='oxidizer.percent', v-style='height: oxidizer.percent + "%"')
-.resource
-	.label XENON
-	.bar-display
-		.overlay
-			.current {{numeral(xenonGas.current).format('0.0')}}
-			.max {{numeral(xenonGas.max).format('0.0')}}
-		.bar.green(v-class='orange: xenonGas.percent <= orangeThreshold, red: xenonGas.percent <= redThreshold', data-percentage='xenonGas.percent', v-style='height: xenonGas.percent + "%"')
+			.current {{numeral(current).format('0.0')}}
+			.max {{numeral(max).format('0.0')}}
+		.bar.green(v-class='orange: percent <= orangeThreshold, red: percent <= redThreshold', v-style='height: percent + "%"')
