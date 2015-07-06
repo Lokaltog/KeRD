@@ -15,58 +15,69 @@ var asin = Math.asin
 var sqrt = Math.sqrt
 var pow = Math.pow
 
-var composer
-var renderer
-var scene
-var camera
-var crtEffect
+class CelestialView {
+	constructor(el, config) {
+		this.el = el
+		this.config = config
+		this.objects = {}
 
-var apoapsisNode
-var periapsisNode
-
-export default {
-	inherit: true,
-	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
-	props: ['module-config'],
-	data() {
 		var origo = new THREE.Vector3(0, 0, 0)
-		return {
-			// Camera properties
-			displayRadius: 50,
-			displayRatio: 0,
-			cameraRho: 200, // distance
-			cameraPhi: 0, // initial horizontal angle
-			cameraTheta: 90, // initial vertical angle
-			cameraFov: 50,
-			cameraMargin: 220,
+		this.focusPosition = origo
+		this.origo = origo
 
-			focus: null,
-			showAtmosphere: true,
-			showBiome: false,
+		// Set camera properties
+		this.displayRadius = 50
+		this.displayRatio = 0
+		this.cameraRho = 200 // distance
+		this.cameraPhi = 0 // initial horizontal angle
+		this.cameraTheta = 90 // initial vertical angle
+		this.cameraFov = 50
+		this.cameraMargin = 220
 
-			objects: {},
-			focusPosition: origo,
-			origo: origo,
+		// Global tweening data
+		this.argumentOfPeriapsis = 0
+		this.eccentricity = 0
+		this.epoch = 0
+		this.inclination = 0
+		this.longitudeOfAscendingNode = 0
+		this.semimajorAxis = 0
+		this.trueAnomaly = 0
+		this.body = null
+		this.vesselTweenProperties = null
+		this.vesselTween = null
 
-			loading: true,
-			body: null,
-		}
-	},
-	ready() {
-		apoapsisNode = $('.nodes .apoapsis')
-		periapsisNode = $('.nodes .periapsis')
+		// Add ap/pe arrow nodes
+		this.apoapsisNode = $('<div>').addClass('apoapsis')
+		this.periapsisNode = $('<div>').addClass('periapsis')
+		this.el.append(
+			$('<div>').addClass('nodes').append(
+				this.apoapsisNode,
+				this.periapsisNode
+			)
+		)
 
-		// Create scene and setup camera and lights
-		scene = new THREE.Scene()
-		camera = new THREE.PerspectiveCamera(this.cameraFov, 1, 0.01, 120000)
+		// Setup scene
+		this.scene = new THREE.Scene()
+		this.camera = new THREE.PerspectiveCamera(this.cameraFov, 1, 0.01, 120000)
 
-		scene.add(new THREE.AmbientLight(0x777777))
+		this.scene.add(new THREE.AmbientLight(0x777777))
+
+		// Init renderer
+		this.renderer = new THREE.WebGLRenderer({
+			alpha: true,
+		})
+		this.renderer.setSize(1, 1)
+		this.el.append(this.renderer.domElement)
+
+		this.renderer.shadowMapEnabled = true
+		this.renderer.shadowMapType = THREE.PCFShadowMap
+		this.renderer.setPixelRatio(window.devicePixelRatio)
 
 		// Add sun light
 		var sunPosition = new THREE.Vector3(0, 0, -40000)
 		var sunLight = new THREE.DirectionalLight(0xffffff, 1)
 		sunLight.position.copy(sunPosition)
-		scene.add(sunLight)
+		this.scene.add(sunLight)
 
 		if (this.config.rendering.shadows) {
 			var shadowLight = new THREE.SpotLight(0xffffff, 1, 1)
@@ -77,7 +88,7 @@ export default {
 			shadowLight.shadowDarkness = 0.5
 			shadowLight.shadowCameraFar = 800
 			shadowLight.shadowCameraFov = 40
-			scene.add(shadowLight)
+			this.scene.add(shadowLight)
 		}
 
 		// Add celestial body
@@ -87,7 +98,7 @@ export default {
 		var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial)
 		bodyMesh.castShadow = true
 		bodyMesh.receiveShadow = true
-		scene.add(bodyMesh)
+		this.scene.add(bodyMesh)
 		this.objects.bodyMesh = bodyMesh
 
 		// Add atmosphere indicator
@@ -96,7 +107,7 @@ export default {
 		atmosphereMaterial.transparent = true
 		atmosphereMaterial.opacity = 0
 		var atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial)
-		scene.add(atmosphereMesh)
+		this.scene.add(atmosphereMesh)
 		this.objects.atmosphereMesh = atmosphereMesh
 
 		// Add vessel geometry
@@ -105,14 +116,14 @@ export default {
 		var vesselMesh = new THREE.Mesh(vesselGeometry, vesselMaterial)
 		vesselMesh.castShadow = true
 		vesselMesh.receiveShadow = true
-		scene.add(vesselMesh)
+		this.scene.add(vesselMesh)
 		this.objects.vesselMesh = vesselMesh
 
 		// Add apoapsis/periapsis geometry
 		var apoapsisMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00aa00, visible: false }))
 		var periapsisMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00aa00, visible: false }))
-		scene.add(apoapsisMesh)
-		scene.add(periapsisMesh)
+		this.scene.add(apoapsisMesh)
+		this.scene.add(periapsisMesh)
 		this.objects.apoapsisMesh = apoapsisMesh
 		this.objects.periapsisMesh = periapsisMesh
 
@@ -127,8 +138,9 @@ export default {
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 		lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0))
 
-		scene.add(lineMesh)
+		this.scene.add(lineMesh)
 		this.objects.lineMesh = lineMesh
+		this.objects.lineGeometry = lineGeometry
 
 		// Add orbit ellipse
 		var orbitLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff })
@@ -140,8 +152,10 @@ export default {
 		orbitLineMesh.frustumCulled = false
 		orbitLineMesh.rotation.order = 'YXZ'
 
-		scene.add(orbitLineMesh)
+		this.scene.add(orbitLineMesh)
 		this.objects.orbitLineMesh = orbitLineMesh
+		this.objects.orbitLinePath = orbitLinePath
+		this.objects.orbitLineGeometry = orbitLineGeometry
 
 		// Add optional lens flare
 		if (this.config.rendering.lensFlare) {
@@ -178,7 +192,7 @@ export default {
 				object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 )
 			}
 
-			scene.add(lensFlare)
+			this.scene.add(lensFlare)
 		}
 
 		// Add optional skybox
@@ -199,45 +213,39 @@ export default {
 			skyboxMaterial.side = THREE.BackSide
 			var skyboxMesh = new THREE.Mesh(skyboxGeometry, skyboxMaterial)
 
-			scene.add(skyboxMesh)
+			this.scene.add(skyboxMesh)
 		}
 
-		// Init renderer
-		renderer = new THREE.WebGLRenderer({
-			alpha: true,
-		})
-		renderer.setSize(1, 1)
-		$('.mod-map .orbital-display').append(renderer.domElement)
+		// Optional post-processing
+		if (this.config.rendering.postProcessing) {
+			var postprocessClock = new THREE.Clock()
+			this.composer = new THREE.EffectComposer(this.renderer)
+			var copyPass = new THREE.ShaderPass(THREE.CopyShader)
+			this.composer.addPass(new THREE.RenderPass(this.scene, this.camera))
 
-		renderer.shadowMapEnabled = true
-		renderer.shadowMapType = THREE.PCFShadowMap
-		renderer.setPixelRatio(window.devicePixelRatio)
+			this.crtEffect = new THREE.ShaderPass(THREE.CRTShader)
+			this.composer.addPass(this.crtEffect)
+			this.crtEffect.uniforms.iResolution.value = new THREE.Vector3(500, 500, 0)
+
+			this.composer.addPass(copyPass)
+			copyPass.renderToScreen = true
+
+			this.setLoading(true)
+		}
 
 		// Resize renderer when window is resized
-		function resize() {
-			var $displayWidth = $('.mod-map .orbital-display').width()
-			var $displayHeight = $('.mod-map .orbital-display').height()
-			var $contentHeight = $('.mod-map .content').height()
-			var $monitorHeight = $('.mod-map .monitor').outerHeight()
+		var resize = () => {
+			var container = $('.orbital-display', this.$el)
+			var w = container.width()
+			var h = container.height()
 
-			var overflow = $('#wrap').outerHeight(true) - $('body').outerHeight(true)
-			var footerRemainingSpace = $('footer').height() - $('footer .contents').outerHeight(true)
-			var remainingSpace = $contentHeight - $monitorHeight
+			this.camera.aspect = w / h
+			this.camera.updateProjectionMatrix()
 
-			// This calculates the max height the map view can have based on the remaining space in the container and above the footer
-			var newHeight = $displayHeight + remainingSpace + footerRemainingSpace - overflow
-
-			camera.aspect = $displayWidth / newHeight
-			camera.updateProjectionMatrix()
-
-			if (composer) {
-				composer.setSize($displayWidth, newHeight)
+			if (this.composer) {
+				this.composer.setSize(w, h)
 			}
-			renderer.setSize($displayWidth, newHeight)
-
-			$('.mod-map .orbital-display').css({
-				height: `${newHeight}px`,
-			})
+			this.renderer.setSize(w, h)
 		}
 		$(window).on('resize', debounce(resize))
 		resize()
@@ -253,14 +261,14 @@ export default {
 		$(document).on('mouseup touchend', () => {
 			dragging = false
 		})
-		$(renderer.domElement).on('mousedown touchstart', (ev) => {
+		$(this.renderer.domElement).on('mousedown touchstart', (ev) => {
 			ev.preventDefault()
 			dragging = true
 
 			dragOffsetX = ev.pageX || ev.originalEvent.touches[0].pageX
 			dragOffsetY = ev.pageY || ev.originalEvent.touches[0].pageY
 		})
-		$(renderer.domElement).on('mousemove touchmove', (ev) => {
+		$(this.renderer.domElement).on('mousemove touchmove', (ev) => {
 			ev.preventDefault()
 
 			if (!dragging) {
@@ -278,7 +286,8 @@ export default {
 			dragOffsetX = offsetX
 			dragOffsetY = offsetY
 		})
-		$(renderer.domElement).on('mousewheel', (ev) => {
+		$(this.renderer.domElement).on('mousewheel', (ev) => {
+			// TODO add pinch zoom handler
 			ev.preventDefault()
 			var delta = ev.originalEvent.wheelDelta / 120
 			delta = delta >= 1 ? 1 : -1
@@ -295,24 +304,8 @@ export default {
 			this.rotateCamera()
 		})
 
+		this.toggleFocus('vessel')
 		this.rotateCamera()
-
-		// Optional post-processing
-		if (this.config.rendering.postProcessing) {
-			var postprocessClock = new THREE.Clock()
-			composer = new THREE.EffectComposer(renderer)
-			var copyPass = new THREE.ShaderPass(THREE.CopyShader)
-			composer.addPass(new THREE.RenderPass(scene, camera))
-
-			crtEffect = new THREE.ShaderPass(THREE.CRTShader)
-			composer.addPass(crtEffect)
-			crtEffect.uniforms.iResolution.value = new THREE.Vector3(500, 500, 0)
-
-			composer.addPass(copyPass)
-			copyPass.renderToScreen = true
-
-			this.setLoading(true)
-		}
 
 		// Animate callback
 		var animate = () => {
@@ -323,284 +316,300 @@ export default {
 			TWEEN.update()
 
 			if (this.config.rendering.postProcessing) {
-				crtEffect.uniforms.iGlobalTime.value += postprocessClock.getDelta()
-				composer.render()
+				this.crtEffect.uniforms.iGlobalTime.value += postprocessClock.getDelta()
+				this.composer.render()
 			}
 			else {
-				renderer.render(scene, camera)
+				this.renderer.render(this.scene, this.camera)
 			}
 		}
 		requestAnimationFrame(animate)
+	}
+	refreshBodyMaterials(force=false) {
+		var bodyMaterial = this.objects.bodyMesh.material
+		var atmosphereMaterial = this.objects.atmosphereMesh.material
+		var textures = this.body.textures[this.config.rendering.textureQuality]
 
-		// Tweening
-		var argumentOfPeriapsis = 0
-		var eccentricity = 0
-		var epoch = 0
-		var inclination = 0
-		var longitudeOfAscendingNode = 0
-		var semimajorAxis = 0
-		var trueAnomaly = 0
+		if (!bodyMaterial.map || (bodyMaterial.map.sourceFile !== textures.diffuse && !this.showBiome) || force) {
+			// Show noise while loading diffuse map
+			this.setLoading(true)
 
-		var body = {}
+			// Update textures based on the current body
+			// Only updates if the current texture source files differs from the current body
+			bodyMaterial.map = THREE.ImageUtils.loadTexture(textures.diffuse, undefined, () => {
+				this.setLoading(false)
+			})
+			bodyMaterial.map.anisotropy = this.renderer.getMaxAnisotropy()
 
-		var vesselTweenProperties
-		var vesselTween
+			if (this.config.rendering.specularMaps && textures.specular) {
+				bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(textures.specular)
+				bodyMaterial.specularMap.anisotropy = this.renderer.getMaxAnisotropy() / 2
+				try {
+					bodyMaterial.shininess = this.body.attributes.shininess
+				}
+				catch (e) {}
+			}
+			else {
+				bodyMaterial.specularMap = undefined
+				bodyMaterial.shininess = 0
+			}
 
-		this.toggleFocus('vessel')
+			if (this.config.rendering.normalMaps && textures.normal) {
+				bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(textures.normal)
+				bodyMaterial.normalMap.anisotropy = this.renderer.getMaxAnisotropy() / 2
+			}
+			else {
+				bodyMaterial.normalMap = undefined
+			}
+
+			bodyMaterial.needsUpdate = true
+
+			// Update atmosphere appearance on the current body
+			atmosphereMaterial.color.setHex(this.body.atmosphereColor)
+			atmosphereMaterial.opacity = this.body.atmosphereOpacity
+			atmosphereMaterial.colorsNeedUpdate = true
+		}
+
+		// Resize atmosphere mesh
+		if (this.body.data.atmosphereHeight) {
+			var scale = (this.body.data.radius + this.body.data.atmosphereHeight) * (this.displayRadius / this.body.data.radius)
+			this.objects.atmosphereMesh.scale.x = scale
+			this.objects.atmosphereMesh.scale.y = scale
+			this.objects.atmosphereMesh.scale.z = scale
+		}
+	}
+	rotateCamera(rho, phi, theta) {
+		var coords = spherical2cartesian(rho || this.cameraRho, phi || this.cameraPhi, theta || this.cameraTheta)
+		var apoapsis2DCoords
+		var periapsis2DCoords
+
+		this.camera.position.x = this.focusPosition.x + coords.x
+		this.camera.position.y = this.focusPosition.y + coords.y
+		this.camera.position.z = this.focusPosition.z + coords.z
+		this.camera.lookAt(this.focusPosition)
+		this.camera.updateMatrixWorld()
+
+		if (this.loading) {
+			apoapsis2DCoords = new THREE.Vector2(-100, -100)
+			periapsis2DCoords = new THREE.Vector2(-100, -100)
+		}
+		else {
+			apoapsis2DCoords = objScreenPosition(this.objects.apoapsisMesh, this.camera, this.renderer)
+			periapsis2DCoords = objScreenPosition(this.objects.periapsisMesh, this.camera, this.renderer)
+		}
+
+		this.apoapsisNode.css({
+			left: `${apoapsis2DCoords.x}px`,
+			top: `${apoapsis2DCoords.y}px`,
+		})
+		this.periapsisNode.css({
+			left: `${periapsis2DCoords.x}px`,
+			top: `${periapsis2DCoords.y}px`,
+		})
+	}
+	toggleFocus(focus) {
+		if (this.focus === 'vessel' || focus === 'body') {
+			this.focus = 'body'
+			this.focusPosition = this.origo
+		}
+		else if (this.focus === 'body' || focus === 'vessel') {
+			this.focus = 'vessel'
+			this.focusPosition = this.objects.vesselMesh.position
+		}
+		this.rotateCamera()
+	}
+	toggleAtmosphere() {
+		this.showAtmosphere = !this.showAtmosphere
+		this.objects.atmosphereMesh.visible = this.showAtmosphere
+	}
+	toggleBiome() {
+		this.showBiome = !this.showBiome
+		var material = this.objects.bodyMesh.material
+
+		if (this.showBiome) {
+			// Fix texture offset present in all the biome maps
+			var textures = this.body.textures[this.config.rendering.textureQuality]
+			var biomeTexture = THREE.ImageUtils.loadTexture(textures.biome)
+			biomeTexture.offset.x = -0.25
+			biomeTexture.wrapS = THREE.RepeatWrapping
+
+			material.map = biomeTexture
+			material.shininess = 0
+			material.specularMap = undefined
+			material.normalMap = undefined
+			material.needsUpdate = true
+		}
+		else {
+			this.refreshBodyMaterials(true)
+		}
+	}
+	setLoading(loading) {
+		if (this.config.rendering.postProcessing) {
+			this.crtEffect.uniforms.noise.value = loading
+		}
+	}
+	setVesselVisible(visible) {
+		this.objects.vesselMesh.visible = visible
+		this.objects.lineMesh.visible = visible
+		this.objects.orbitLineMesh.visible = visible
+
+		this.toggleFocus(visible ? 'vessel' : 'body')
+	}
+	changeBody(dir) {
+		var bodiesSorted = Object.keys(this.resources.bodies).sort((a, b) => {
+			a = this.resources.bodies[a]
+			b = this.resources.bodies[b]
+			if (a.data.index > b.data.index) {
+				return 1
+			}
+			if (a.data.index < b.data.index) {
+				return -1
+			}
+			return 0
+		})
+
+		var newIdx = this.body.data.index + dir - 1
+		var totalBodies = Object.keys(this.resources.bodies).length
+
+		if (newIdx < 0) {
+			newIdx = totalBodies - 1
+		}
+		if (newIdx > totalBodies - 1) {
+			newIdx = 0
+		}
+
+		this.body = this.resources.bodies[bodiesSorted[newIdx]]
+		this.setVesselVisible(this.data['v.body'] === this.body.data.name)
+		this.refreshBodyMaterials()
+	}
+	tween(body, trueAnomaly, inclination, argumentOfPeriapsis, eccentricity, epoch, longitudeOfAscendingNode, semimajorAxis) {
+		if (!body) {
+			// Disable if body is missing or we're still waiting for data
+			this.setLoading(true)
+			return
+		}
+
+		if (!this.body) {
+			this.body = body
+		}
+
+		this.displayRatio = (this.displayRadius / body.data.radius)
+
+		this.refreshBodyMaterials()
+		this.rotateCamera()
+
+		// Animate vessel and camera positions
+		this.vesselTweenProperties = {
+			trueAnomaly: this.trueAnomaly,
+			inclination: this.inclination,
+			argumentOfPeriapsis: this.argumentOfPeriapsis,
+		}
+		this.vesselTween = new TWEEN.Tween(this.vesselTweenProperties).to({
+			// Add normalized delta values to current values
+			trueAnomaly: this.trueAnomaly + wrapDegDelta(trueAnomaly - this.trueAnomaly),
+			inclination: this.inclination + wrapDegDelta(inclination - this.inclination),
+			argumentOfPeriapsis: this.argumentOfPeriapsis + wrapDegDelta(argumentOfPeriapsis - this.argumentOfPeriapsis),
+		}, this.config.telemachus.refreshInterval)
+
+		this.argumentOfPeriapsis = argumentOfPeriapsis
+		this.eccentricity = eccentricity
+		this.epoch = epoch
+		this.inclination = inclination
+		this.longitudeOfAscendingNode = longitudeOfAscendingNode
+		this.semimajorAxis = semimajorAxis
+		this.trueAnomaly = trueAnomaly
+
+		// Rotate body correctly in relation to Kerbol
+		// This appears to work correctly even without further calculations
+		this.objects.bodyMesh.rotation.y = deg2rad(((epoch / body.data.rotPeriod) * 360))
+
+		// Draw orbit ellipse
+		// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
+		var rx = this.displayRatio * semimajorAxis
+		var ry = this.displayRatio * (semimajorAxis * (sqrt(1 - pow(eccentricity, 2))))
+		var cx = sqrt(pow(rx, 2) - pow(ry, 2))
+		var cy = 0
+
+		this.objects.orbitLinePath = new THREE.CurvePath()
+		this.objects.orbitLinePath.add(new THREE.EllipseCurve(cx, cy, rx, ry, 0, 2 * Math.PI, false))
+		this.objects.orbitLineGeometry = this.objects.orbitLinePath.createPointsGeometry(256)
+		this.objects.orbitLineGeometry.computeTangents()
+
+		this.objects.orbitLineMesh.geometry.vertices = this.objects.orbitLineGeometry.vertices
+		this.objects.orbitLineMesh.geometry.verticesNeedUpdate = true
+
+		this.objects.orbitLineMesh.rotation.y = deg2rad(longitudeOfAscendingNode)
+		this.objects.orbitLineMesh.rotation.x = -deg2rad(90 - inclination)
+		this.objects.orbitLineMesh.rotation.z = -asin(sin(deg2rad(argumentOfPeriapsis)))
+
+		this.vesselTween.onUpdate(() => {
+			// Calculate orbital position
+			var apoapsisPosition = orbitalElements2Cartesian(this.displayRatio, 180, eccentricity, semimajorAxis, this.vesselTweenProperties.inclination, longitudeOfAscendingNode, this.vesselTweenProperties.argumentOfPeriapsis)
+			var periapsisPosition = orbitalElements2Cartesian(this.displayRatio, 0, eccentricity, semimajorAxis, this.vesselTweenProperties.inclination, longitudeOfAscendingNode, this.vesselTweenProperties.argumentOfPeriapsis)
+
+			this.objects.apoapsisMesh.position.x = apoapsisPosition.x
+			this.objects.apoapsisMesh.position.y = apoapsisPosition.z
+			this.objects.apoapsisMesh.position.z = -apoapsisPosition.y
+
+			this.objects.periapsisMesh.position.x = periapsisPosition.x
+			this.objects.periapsisMesh.position.y = periapsisPosition.z
+			this.objects.periapsisMesh.position.z = -periapsisPosition.y
+
+			// Update vessel position
+			var vesselPosition = orbitalElements2Cartesian(
+				this.displayRatio,
+				this.vesselTweenProperties.trueAnomaly,
+				eccentricity,
+				semimajorAxis,
+				this.vesselTweenProperties.inclination,
+				longitudeOfAscendingNode,
+				this.vesselTweenProperties.argumentOfPeriapsis)
+
+			// NOTE: coordinates are swapped to match the game's coordinate system
+			this.objects.vesselMesh.position.x = vesselPosition.x
+			this.objects.vesselMesh.position.y = vesselPosition.z
+			this.objects.vesselMesh.position.z = -vesselPosition.y
+
+			// Update indicator line from center to vessel
+			this.objects.lineGeometry.vertices[1].copy(this.objects.vesselMesh.position)
+			this.objects.lineGeometry.verticesNeedUpdate = true
+
+			// Update camera position when vessel position has changed
+			this.rotateCamera()
+		})
+		this.vesselTween.start()
+	}
+}
+
+export default {
+	inherit: true,
+	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
+	props: ['module-config'],
+	data() {
+		return {
+			focus: null,
+			showAtmosphere: true,
+			showBiome: false,
+
+			loading: true,
+			body: null,
+		}
+	},
+	ready() {
+		var celestialView = new CelestialView($('.orbital-display', this.$el), this.config)
 
 		// Don't attach watch handlers until we've received celestial body data from Telemachus
-		this.$once('resources.bodies.ready', () => this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['o.ApA'] + this.data['v.body'], () => {
-			body = this.resources.bodies[this.data['v.body']]
-			if (!body) {
-				// Disable if body is missing or we're still waiting for data
-				this.setLoading(true)
-				return
-			}
-			this.displayRatio = (this.displayRadius / body.data.radius)
-			this.body = body
-
-			this.refreshBodyMaterials()
-			this.rotateCamera()
-
-			// Animate vessel and camera positions
-			vesselTweenProperties = {
-				trueAnomaly: trueAnomaly,
-				inclination: inclination,
-				argumentOfPeriapsis: argumentOfPeriapsis,
-			}
-			vesselTween = new TWEEN.Tween(vesselTweenProperties).to({
-				// Add normalized delta values to current values
-				trueAnomaly: trueAnomaly + wrapDegDelta(this.data['o.trueAnomaly'] - trueAnomaly),
-				inclination: inclination + wrapDegDelta(this.data['o.inclination'] - inclination),
-				argumentOfPeriapsis: argumentOfPeriapsis + wrapDegDelta(this.data['o.argumentOfPeriapsis'] - argumentOfPeriapsis),
-			}, this.config.telemachus.refreshInterval)
-
-			argumentOfPeriapsis = this.data['o.argumentOfPeriapsis']
-			eccentricity = this.data['o.eccentricity']
-			epoch = this.data['o.epoch']
-			inclination = this.data['o.inclination']
-			longitudeOfAscendingNode = this.data['o.lan']
-			semimajorAxis = this.data['o.sma']
-			trueAnomaly = this.data['o.trueAnomaly']
-
-			// Rotate body correctly in relation to Kerbol
-			// This appears to work correctly even without further calculations
-			this.objects.bodyMesh.rotation.y = deg2rad(((epoch / body.data.rotPeriod) * 360))
-
-			// Draw orbit ellipse
-			// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
-			var rx = this.displayRatio * semimajorAxis
-			var ry = this.displayRatio * (semimajorAxis * (sqrt(1 - pow(eccentricity, 2))))
-			var cx = sqrt(pow(rx, 2) - pow(ry, 2))
-			var cy = 0
-
-			orbitLinePath = new THREE.CurvePath()
-			orbitLinePath.add(new THREE.EllipseCurve(cx, cy, rx, ry, 0, 2 * Math.PI, false))
-			orbitLineGeometry = orbitLinePath.createPointsGeometry(256)
-			orbitLineGeometry.computeTangents()
-
-			orbitLineMesh.geometry.vertices = orbitLineGeometry.vertices
-			orbitLineMesh.geometry.verticesNeedUpdate = true
-
-			orbitLineMesh.rotation.y = deg2rad(longitudeOfAscendingNode)
-			orbitLineMesh.rotation.x = -deg2rad(90 - inclination)
-			orbitLineMesh.rotation.z = -asin(sin(deg2rad(argumentOfPeriapsis)))
-
-			vesselTween.onUpdate(() => {
-				// Calculate orbital position
-				var apoapsisPosition = orbitalElements2Cartesian(this.displayRatio, 180, eccentricity, semimajorAxis, vesselTweenProperties.inclination, longitudeOfAscendingNode, vesselTweenProperties.argumentOfPeriapsis)
-				var periapsisPosition = orbitalElements2Cartesian(this.displayRatio, 0, eccentricity, semimajorAxis, vesselTweenProperties.inclination, longitudeOfAscendingNode, vesselTweenProperties.argumentOfPeriapsis)
-
-				this.objects.apoapsisMesh.position.x = apoapsisPosition.x
-				this.objects.apoapsisMesh.position.y = apoapsisPosition.z
-				this.objects.apoapsisMesh.position.z = -apoapsisPosition.y
-
-				this.objects.periapsisMesh.position.x = periapsisPosition.x
-				this.objects.periapsisMesh.position.y = periapsisPosition.z
-				this.objects.periapsisMesh.position.z = -periapsisPosition.y
-
-				// Update vessel position
-				var vesselPosition = orbitalElements2Cartesian(
-					this.displayRatio,
-					vesselTweenProperties.trueAnomaly,
-					eccentricity,
-					semimajorAxis,
-					vesselTweenProperties.inclination,
-					longitudeOfAscendingNode,
-					vesselTweenProperties.argumentOfPeriapsis)
-
-				// NOTE: coordinates are swapped to match the game's coordinate system
-				this.objects.vesselMesh.position.x = vesselPosition.x
-				this.objects.vesselMesh.position.y = vesselPosition.z
-				this.objects.vesselMesh.position.z = -vesselPosition.y
-
-				// Update indicator line from center to vessel
-				lineGeometry.vertices[1].copy(this.objects.vesselMesh.position)
-				lineGeometry.verticesNeedUpdate = true
-
-				// Update camera position when vessel position has changed
-				this.rotateCamera()
-			})
-			vesselTween.start()
+		this.$once('resources.bodies.ready', () => this.$watch(() => this.data['v.long'] + this.data['v.lat'] + this.data['v.body'], () => {
+			celestialView.tween(
+				this.resources.bodies[this.data['v.body']],
+				this.data['o.trueAnomaly'],
+				this.data['o.inclination'],
+				this.data['o.argumentOfPeriapsis'],
+				this.data['o.eccentricity'],
+				this.data['o.epoch'],
+				this.data['o.lan'],
+				this.data['o.sma']
+			)
 		}, { immediate: true }))
-	},
-	methods: {
-		refreshBodyMaterials(force=false) {
-			var bodyMaterial = this.objects.bodyMesh.material
-			var atmosphereMaterial = this.objects.atmosphereMesh.material
-			var textures = this.body.textures[this.config.rendering.textureQuality]
-
-			if (!bodyMaterial.map || (bodyMaterial.map.sourceFile !== textures.diffuse && !this.showBiome) || force) {
-				// Show noise while loading diffuse map
-				this.setLoading(true)
-
-				// Update textures based on the current body
-				// Only updates if the current texture source files differs from the current body
-				bodyMaterial.map = THREE.ImageUtils.loadTexture(textures.diffuse, undefined, () => {
-					this.setLoading(false)
-				})
-				bodyMaterial.map.anisotropy = renderer.getMaxAnisotropy()
-
-				if (this.config.rendering.specularMaps && textures.specular) {
-					bodyMaterial.specularMap = THREE.ImageUtils.loadTexture(textures.specular)
-					bodyMaterial.specularMap.anisotropy = renderer.getMaxAnisotropy() / 2
-					try {
-						bodyMaterial.shininess = this.body.attributes.shininess
-					}
-					catch (e) {}
-				}
-				else {
-					bodyMaterial.specularMap = undefined
-					bodyMaterial.shininess = 0
-				}
-
-				if (this.config.rendering.normalMaps && textures.normal) {
-					bodyMaterial.normalMap = THREE.ImageUtils.loadTexture(textures.normal)
-					bodyMaterial.normalMap.anisotropy = renderer.getMaxAnisotropy() / 2
-				}
-				else {
-					bodyMaterial.normalMap = undefined
-				}
-
-				bodyMaterial.needsUpdate = true
-
-				// Update atmosphere appearance on the current body
-				atmosphereMaterial.color.setHex(this.body.atmosphereColor)
-				atmosphereMaterial.opacity = this.body.atmosphereOpacity
-				atmosphereMaterial.colorsNeedUpdate = true
-			}
-
-			// Resize atmosphere mesh
-			if (this.body.data.atmosphereHeight) {
-				var scale = (this.body.data.radius + this.body.data.atmosphereHeight) * (this.displayRadius / this.body.data.radius)
-				this.objects.atmosphereMesh.scale.x = scale
-				this.objects.atmosphereMesh.scale.y = scale
-				this.objects.atmosphereMesh.scale.z = scale
-			}
-		},
-		rotateCamera(rho, phi, theta) {
-			var coords = spherical2cartesian(rho || this.cameraRho, phi || this.cameraPhi, theta || this.cameraTheta)
-			var apoapsis2DCoords
-			var periapsis2DCoords
-
-			camera.position.x = this.focusPosition.x + coords.x
-			camera.position.y = this.focusPosition.y + coords.y
-			camera.position.z = this.focusPosition.z + coords.z
-			camera.lookAt(this.focusPosition)
-			camera.updateMatrixWorld()
-
-			if (this.loading) {
-				apoapsis2DCoords = new THREE.Vector2(-100, -100)
-				periapsis2DCoords = new THREE.Vector2(-100, -100)
-			}
-			else {
-				apoapsis2DCoords = objScreenPosition(this.objects.apoapsisMesh, camera, renderer)
-				periapsis2DCoords = objScreenPosition(this.objects.periapsisMesh, camera, renderer)
-			}
-
-			apoapsisNode.css({
-				left: `${apoapsis2DCoords.x}px`,
-				top: `${apoapsis2DCoords.y}px`,
-			})
-			periapsisNode.css({
-				left: `${periapsis2DCoords.x}px`,
-				top: `${periapsis2DCoords.y}px`,
-			})
-		},
-		toggleFocus(focus) {
-			if (this.focus === 'vessel' || focus === 'body') {
-				this.focus = 'body'
-				this.focusPosition = this.origo
-			}
-			else if (this.focus === 'body' || focus === 'vessel') {
-				this.focus = 'vessel'
-				this.focusPosition = this.objects.vesselMesh.position
-			}
-			this.rotateCamera()
-		},
-		toggleAtmosphere() {
-			this.showAtmosphere = !this.showAtmosphere
-			this.objects.atmosphereMesh.visible = this.showAtmosphere
-		},
-		toggleBiome() {
-			this.showBiome = !this.showBiome
-			var material = this.objects.bodyMesh.material
-
-			if (this.showBiome) {
-				// Fix texture offset present in all the biome maps
-				var textures = this.body.textures[this.config.rendering.textureQuality]
-				var biomeTexture = THREE.ImageUtils.loadTexture(textures.biome)
-				biomeTexture.offset.x = -0.25
-				biomeTexture.wrapS = THREE.RepeatWrapping
-
-				material.map = biomeTexture
-				material.shininess = 0
-				material.specularMap = undefined
-				material.normalMap = undefined
-				material.needsUpdate = true
-			}
-			else {
-				this.refreshBodyMaterials(true)
-			}
-		},
-		setLoading(loading) {
-			if (this.config.rendering.postProcessing) {
-				crtEffect.uniforms.noise.value = loading
-			}
-		},
-		setVesselVisible(visible) {
-			this.objects.vesselMesh.visible = visible
-			this.objects.lineMesh.visible = visible
-			this.objects.orbitLineMesh.visible = visible
-
-			this.toggleFocus(visible ? 'vessel' : 'body')
-		},
-		changeBody(dir) {
-			var bodiesSorted = Object.keys(this.resources.bodies).sort((a, b) => {
-				a = this.resources.bodies[a]
-				b = this.resources.bodies[b]
-				if (a.data.index > b.data.index) {
-					return 1
-				}
-				if (a.data.index < b.data.index) {
-					return -1
-				}
-				return 0
-			})
-
-			var newIdx = this.body.data.index + dir - 1
-			var totalBodies = Object.keys(this.resources.bodies).length
-
-			if (newIdx < 0) {
-				newIdx = totalBodies - 1
-			}
-			if (newIdx > totalBodies - 1) {
-				newIdx = 0
-			}
-
-			this.body = this.resources.bodies[bodiesSorted[newIdx]]
-			this.setVesselVisible(this.data['v.body'] === this.body.data.name)
-			this.refreshBodyMaterials()
-		},
 	},
 }
