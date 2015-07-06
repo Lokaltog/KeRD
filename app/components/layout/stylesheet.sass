@@ -1,82 +1,174 @@
 @import 'lib/settings'
 @import 'lib/utils'
 
-.row, .col,
-.node-row, .node-col
+$btn-bevel-height: .3em
+$btn-bevel-offset: .2em
+
+.btn
+	white-space: nowrap
+	font: $bold 1em/1.5 $font-theme
+	padding: $quarter-gutter
+	text-transform: uppercase
+	text-shadow: 0 1px 0 rgba(#fff, .4)
+	background: #eee linear-gradient(to bottom, rgba(#fff, .5), rgba(#fff, 0))
+	cursor: pointer
+	user-select: none
+	outline: none
+	border-radius: .4em
+	border: none
 	display: flex
-	& > *
+	justify-content: center
+	align-items: center
+	position: relative
+	&.physical
+		box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 $btn-bevel-height 0 #888, 0 .6em .3em rgba(#000, .2)
+		margin-bottom: $btn-bevel-height !important
+		&:active
+			top: $btn-bevel-offset
+			box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 ($btn-bevel-height - $btn-bevel-offset) 0 #777, 0 .3em .1em rgba(#000, .2)
+		&.toggle
+			&.on
+				top: .1em
+				box-shadow: inset 0 0 .4em rgba(#fff, 1), inset 0 0 4em rgba(#fff, .5), inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 darken($color-orange, 20), 0 .2em .1em rgba(#fff, .2), 0 .3em 1em lighten($color-orange, 20), 0 .3em 2em $color-orange
+				background-color: $color-orange
+		&.primary
+			background-color: lighten($color-green, 22) !important
+
+.component-header
+	$border-radius: .3em
+	display: flex
+	align-items: flex-end
+	height: 1em
+	text-transform: uppercase
+	flex: 0 0 auto
+	font-size: 1.2em
+	font-weight: $bold
+	user-select: none
+	cursor: default
+	&::before, &::after
+		flex: 1 0 0
+		height: .8em
+		display: block
+		content: ''
+		border-color: rgba(#000, .8)
+		border-width: 1px
+	&::before
+		border-style: solid none none solid
+		border-top-left-radius: $border-radius
+		margin-right: $quarter-gutter
+		padding-right: $quarter-gutter
+	&::after
+		border-style: solid solid none none
+		border-top-right-radius: $border-radius
+		margin-left: $quarter-gutter
+		padding-left: $quarter-gutter
+
+layout
+	flex: 1 1 auto
+	display: flex
+	position: relative
+	&.row, &[root="true"]
+		flex-flow: row nowrap
+		& > section.expand
+			flex: 1 0 auto
+			width: 0
+	&.column
+		flex-flow: column nowrap
+		& > section.expand
+			flex: 1 0 auto
+			height: 0
+	.controls
+		display: none
+		align-items: center
+		background: rgba(#fff, .5)
+		padding: ($quarter-gutter / 2)
+		border-radius: $border-radius
+		li
+			cursor: pointer
+			user-select: none
+			&:not(:last-child)
+				margin: 0 $quarter-gutter 0 0
+			.btn
+				font-size: .8em
+				background: #eee
+				padding: $quarter-gutter
+				width: auto
+				height: auto
+		.spacer
+			flex: 1 1 auto
+		.remove
+			button
+				background-color: $color-red
+	section
 		display: flex
 		flex-flow: column nowrap
 		flex: 0 1 auto
+		position: relative
+		&.editable
+			.controls
+				display: flex
+	&[root="true"]
+		background: #333
+		background-size: 20em
+		border-radius: 1em
+		min-height: 100%
+		min-width: 100%
+		position: absolute
+		top: 0
+		left: 0
+		padding: $quarter-gutter 0 0 $quarter-gutter
+		box-sizing: border-box
+	.container
+		$screw-margin: .15em
+		$screw-size: .9em
 
-.row,
-.node-row
-	flex-flow: row nowrap
-	flex: 1 1 auto
-	&.distribute > *
-		width: 0
-		flex: 1 1 auto
+		flex: 1 0 auto
+		display: flex
+		flex-flow: column nowrap
+		position: relative
+		& > header
+			@extend .component-header
 
-.row
-	& > *:not(:last-child)
-		margin: 0 $half-gutter 0 0
+		&.container-style-panel
+			padding: $half-gutter
+			margin: 0 $quarter-gutter $quarter-gutter 0
+			border-radius: .5em
+			background: no-repeat url('/img/screw.svg') $screw-margin $screw-margin, no-repeat url('/img/screw.svg') $screw-margin calc(100% - #{$screw-margin}), no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) $screw-margin, no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) calc(100% - #{$screw-margin}), #d4d3d1 url('/img/noise.png')
+			background-size: $screw-size, $screw-size, $screw-size, $screw-size, auto
+			box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #000, 0 .05em .3em rgba(#000, .8)
+			text-shadow: 0 1px 0 rgba(#fff, .4)
+			flex: 1 1 auto
+			display: flex
+			flex-flow: column nowrap
 
-.col,
-.node-col
+		&.container-style-panel-dark
+			@extend .container-style-panel
+			background-color: #666
+			box-shadow: inset 0 1px 0 rgba(#fff, .5), inset 0 -1px 0 rgba(#000, .5), 0 .1em .4em rgba(#000, .8)
+			.btn
+				background: #444 linear-gradient(to bottom, rgba(#fff, .3), rgba(#fff, 0))
+				color: #fff
+				text-shadow: 0 -1px 0 rgba(#000, .4)
+				box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .3em 0 #333, 0 .6em .3em rgba(#000, .2)
+				&:active
+					box-shadow: inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .1em 0 #333, 0 .3em .1em rgba(#000, .2)
+				&.toggle
+					&.on
+						box-shadow: inset 0 0 .4em rgba(#fff, 1), inset 0 0 4em rgba(#fff, .5), inset 0 1px 0 rgba(#fff, .4), inset 0 -1px 0 rgba(#fff, .4), 0 .2em 0 darken($color-orange, 20), 0 .2em .1em rgba(#fff, .2), 0 .3em 1em $color-orange, 0 .3em 2em $color-orange
+						background-color: darken($color-orange, 15)
+			& header
+				$color: #ddd
+				color: $color
+				text-shadow: 0 1px 0 rgba(#000, .7)
+				&::before,
+				&::after
+					border-color: $color
+
+component
 	flex-flow: column nowrap
-	flex: 1 1 auto
-
-.col
-	& > *:not(:last-child)
-		margin: 0 0 $half-gutter 0
-
-layout
-	component
-		flex: 1 1 auto
-		display: flex
-		flex-flow: column nowrap
-		margin: 0 $half-gutter $half-gutter 0
-
-section
-	@extend .section
-	padding-right: 0
-	padding-bottom: 0
-	&.expand
-		flex: 1 1 auto !important
-	header
-		$border-radius: .3em
-		display: flex
-		align-items: flex-end
-		height: 1em
-		text-transform: uppercase
-		flex: 0 0 auto
-		font-size: 1.2em
-		font-weight: $bold
-		&::before, &::after
-			flex: 1 0 0
-			height: .8em
-			display: block
-			content: ''
-			border-color: rgba(#000, .8)
-			border-width: 1px
-		&::before
-			border-style: solid none none solid
-			border-top-left-radius: $border-radius
-			margin-right: $quarter-gutter
-			padding-right: $quarter-gutter
-		&::after
-			border-style: solid solid none none
-			border-top-right-radius: $border-radius
-			margin-left: $quarter-gutter
-			padding-left: $quarter-gutter
-	& > *
-		flex: 1 1 auto
-		display: flex
-		flex-flow: column nowrap
+	flex: 1 0 auto
 	.content
-		flex: 1 1 auto
-		white-space: nowrap
-		padding: $quarter-gutter $half-gutter
-		display: flex
 		flex-flow: column nowrap
-		justify-content: space-around
+		flex: 1 0 auto
+	& > header
+		@extend .component-header

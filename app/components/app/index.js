@@ -4,30 +4,6 @@ import WS from 'websocket'
 import subscriptions from 'resources/subscriptions'
 import LocalStorage from 'storage'
 
-// Layout wrapper functions
-function wrapper(type, cls='') {
-	return function(...contents) {
-		return {
-			type: type,
-			contents: contents,
-			cls: cls,
-		}
-	}
-}
-var row = wrapper('row')
-var rowExpand = wrapper('row', 'expand')
-var col = wrapper('col')
-var colExpand = wrapper('col', 'expand')
-var section = wrapper('section')
-var sectionExpand = wrapper('section', 'expand')
-var module = function(id, config={}) {
-	return {
-		type: 'module',
-		id: id,
-		'module-config': config,
-	}
-}
-
 var storage = new LocalStorage()
 
 export default {
@@ -37,9 +13,10 @@ export default {
 		settings: require('../settings'),
 
 		actiongroups: require('../modules/actiongroups'),
-		map: require('../modules/map'),
+		history: require('../modules/history'),
 		navigation: require('../modules/navigation'),
-		orbit: require('../modules/orbit'),
+		orbitaldisplay: require('../modules/orbitaldisplay'),
+		orbitalinfo: require('../modules/orbitalinfo'),
 		resources: require('../modules/resources'),
 		vessel: require('../modules/vessel'),
 	},
@@ -73,23 +50,10 @@ export default {
 			ws: null,
 			wsConnected: false,
 
+			layoutEditable: false,
 			settingsVisible: false,
 
 			data: {},
-
-			layout: [
-				row(
-					section(module('map')),
-					section(module('resources')),
-					col(
-						sectionExpand(module('vessel')),
-						section(module('navigation'))
-					),
-					col(
-						section(module('orbit'))
-					)
-				)
-			],
 
 			resources: {
 				_atmDensity: 1.2230948554874,
@@ -98,6 +62,13 @@ export default {
 		}
 	},
 	ready() {
+		// Show footer when pointer is at bottom X px of page
+		var $footer = $('footer')
+		$(document).on('mousemove', (ev) => {
+			$footer.toggleClass('visible', $(document).height() - ev.pageY < $footer.height())
+		})
+
+		// Update refreshIntevral property based on refresh rate (hz -> ms)
 		this.$watch('config.telemachus.refreshRate', () => this.config.telemachus.refreshInterval = parseInt(1 / this.config.telemachus.refreshRate * 1000), { immediate: true })
 
 		// Connect to Telemachus socket

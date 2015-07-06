@@ -74,8 +74,8 @@
 			box-shadow: 0 0 .3em rgba(#000, .2)
 	.lamps
 		flex: 1 1 auto
-		.row
-			margin: $half-gutter 0 0 0
+		.flex-row
+			margin: $quarter-gutter 0 0 0
 		.lamp
 			font-weight: $bold
 			border-radius: $border-radius
@@ -83,7 +83,6 @@
 			background-image: linear-gradient(to bottom, rgba(#000, 0), rgba(#000, .2)), radial-gradient(ellipse at 50% 50%, rgba(#fff, .4), rgba(#fff, .1))
 			box-shadow: inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(#000, .8), 0 3px 0 #666, 0 .2em .3em rgba(#000, .5)
 			flex: 1 0 auto
-			width: 0
 			text-transform: uppercase
 			text-align: center
 			padding: $quarter-gutter
@@ -91,23 +90,34 @@
 			color: #888
 			&.on
 				color: #fff
-				&.gears
-					$color: $color-green
-					background-color: $color
-					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
-				&.lights
-					$color: $color-orange
-					background-color: $color
-					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
-				&.brakes
+				&.red
 					$color: #d00
 					background-color: $color
-					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
+					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 1px rgba(darken($color, 20), .5), 0 3px 0 lighten($color, 15), 0 .2em .3em rgba(#000, .5)
+				&.orange
+					$color: $color-orange
+					background-color: $color
+					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 1px rgba(darken($color, 20), .5), 0 3px 0 lighten($color, 15), 0 .2em .3em rgba(#000, .5)
+				&.green
+					$color: $color-green
+					background-color: $color
+					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 1px rgba(darken($color, 20), .5), 0 3px 0 lighten($color, 15), 0 .2em .3em rgba(#000, .5)
+				&.white
+					$color: #eee
+					background-color: $color
+					box-shadow: 0 0 1em #fff, 0 0 1em #fff, inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 1px rgba(darken($color, 20), .5), 0 3px 0 #fff, 0 .2em .3em rgba(#000, .5)
+
+				&.gears
+					@extend &.green
+				&.lights
+					@extend &.green
+				&.brakes
+					@extend &.red
 				&.rcs
-					$color: #4fa
-					background-color: $color
-					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
+					@extend &.white
 				&.sas
-					$color: #7cf
-					background-color: $color
-					box-shadow: 0 0 1em lighten($color, 10), inset 0 1px 1px rgba(#fff, .5), inset 0 -1px 2px rgba(darken($color, 20), .5), 0 3px 0 $color, 0 .2em .3em rgba(#000, .5)
+					@extend &.white
+	.mission-time
+		.display
+			margin: $quarter-gutter 0 0 0
+			text-align: left

@@ -1,29 +1,32 @@
-header {{data['v.name']}}
-.content
-	.row.gauges
-		.gauge-wrap
-			.label Throttle
-			.gauge.throttle
-				.needle(v-style='transform: "rotate(" + throttleRotation + "deg)"')
+.row.gauges
+	.gauge-wrap
+		.label Throttle
+		.gauge.throttle
+			.needle(v-style='transform: "rotate(" + throttleRotation + "deg)"')
 
-		.gauge-wrap
-			.label G-Force
-			.gauge.gforce
-				.needle(v-style='transform: "rotate(" + gForceRotation + "deg)"')
+	.gauge-wrap
+		.label G-Force
+		.gauge.gforce
+			.needle(v-style='transform: "rotate(" + gForceRotation + "deg)"')
 
-	.pressure
-		.label Atmosphere
-		.needle(v-style='left: pressurePosition + "%"')
+.pressure
+	.label Atmosphere
+	.needle(v-style='left: pressurePosition + "%"')
 
-	.lamps
-		.row
-			.lamp.gears(v-class='on: gears') Gears
-			.lamp.lights(v-class='on: lights') Lights
-			.lamp.brakes(v-class='on: brakes') Brakes
-		.row
-			.lamp.rcs(v-class='on: rcs') RCS
-			.lamp.sas(v-class='on: sas') SAS
+.lamps
+	.flex-row
+		.lamp.gears(v-class='on: gears')
+			i.icon-dot-circled
+		.lamp.lights(v-class='on: lights')
+			i.icon-lightbulb
+		.lamp.brakes(v-class='on: brakes')
+			i.icon-attention
+	.flex-row
+		.lamp.rcs(v-class='on: rcs')
+			i.icon-fire-station
+		.lamp.sas(v-class='on: sas')
+			i.icon-steering-wheel
 
-	.control-block
-		.display
-			| {{missionTime || 'NO CONNECTION'}}
+.mission-time.control-block
+	.display
+		| {{missionTime || 'NO CONNECTION'}}

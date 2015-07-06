@@ -1,11 +1,23 @@
 @import 'lib/settings'
 
-.mod-map
-	$dim: 30vw
+.mod-orbitaldisplay
+	display: flex
+	.monitor
+		flex: 1 0 auto
+		display: flex
+		flex-flow: column nowrap
+		.actions
+			display: flex
+			padding: $quarter-gutter 0 0 0
+			button
+				flex: 1 0 auto
+				width: 0
+				&:not(:last-child)
+					margin: 0 $quarter-gutter 0 0
 	.orbital-display
 		background: #000
-		width: $dim
-		height: $dim
+		flex: 1 1 auto
+		height: 0
 		position: relative
 		border-radius: .5em
 		position: relative
@@ -26,23 +38,6 @@
 			background-image: url('/img/arrow-ap.svg')
 		.periapsis
 			background-image: url('/img/arrow-pe.svg')
-
-	.monitor
-		background: #555
-		border-radius: .5em
-		width: $dim
-		padding: $half-gutter
-		box-shadow: 0 -1px 0 rgba(#fff, .5), 0 1px rgba(#000, 1), 0 .3em .4em rgba(#000, .3)
-		position: relative
-		overflow: hidden
-		.actions
-			display: flex
-			padding: $quarter-gutter 0 0 0
-			button
-				flex: 1 0 auto
-				width: 0
-				&:not(:last-child)
-					margin: 0 $quarter-gutter 0 0
 	.body-header,
 	.body-info
 		background: transparent
