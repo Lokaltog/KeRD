@@ -1,6 +1,6 @@
 template(v-repeat='item: contents')
 	section(v-class='editable: editable, expand: item.expand')
-		.controls-wrap
+		.controls-wrap(v-on='click: showControls')
 			i.icon-cog
 			.controls.form
 				.row

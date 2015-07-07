@@ -67,7 +67,7 @@ export default {
 		var $footer = $('footer')
 		var $footerHeight = $footer.height()
 		var $footerHandle = $('.footer-handle')
-		$(document).on('mousemove touchstart', (ev) => {
+		$(document).on('mousemove click', (ev) => {
 			var loc = $(document).height() - ev.pageY
 			if (loc < $footerHeight) {
                 ev.preventDefault()

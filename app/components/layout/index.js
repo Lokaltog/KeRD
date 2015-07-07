@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 var defaultLayout = JSON.parse('[{"flow":"row","style":"plain","module":null,"moduleConfig":{},"title":null,"expand":true,"contents":[{"flow":"row","style":"plain","module":null,"moduleConfig":{},"title":null,"expand":true,"contents":[{"flow":"row","style":"panel-dark","module":"orbitaldisplay","moduleConfig":{},"title":null,"expand":true,"contents":[]},{"flow":"row","style":"panel","module":"resources","moduleConfig":{},"title":"Resources","expand":false,"contents":[]},{"flow":"column","style":"plain","module":null,"moduleConfig":{},"title":null,"expand":false,"contents":[{"flow":"row","style":"panel","module":"vessel","moduleConfig":{},"title":"Vessel","expand":true,"contents":[]},{"flow":"row","style":"panel","module":"navigation","moduleConfig":{},"title":null,"expand":false,"contents":[]}]},{"flow":"column","style":"plain","module":"","moduleConfig":{},"title":null,"expand":true,"contents":[{"flow":"row","style":"panel","module":"orbitalinfo","moduleConfig":{},"title":"Orbit","expand":false,"contents":[]}]}]}]}]')
 
 export default {
@@ -70,6 +72,16 @@ export default {
 		},
 		componentExists(component) {
 			return component in this.$root.$options.components
+		},
+		showControls(ev) {
+			var target = $(ev.target)
+			target.toggleClass('hover', true)
+			$(document).on('click mousemove touchstart', (ev) => {
+				if (!$(ev.target).closest('.controls-wrap').length) {
+					target.toggleClass('hover', false)
+					$(this).off(ev)
+				}
+			})
 		},
 	},
 }
