@@ -141,6 +141,11 @@ layout
 			display: flex
 			flex-flow: column nowrap
 
+		&.container-style-panel-brushed
+			@extend .container-style-panel
+			background: no-repeat url('/img/screw.svg') $screw-margin $screw-margin, no-repeat url('/img/screw.svg') $screw-margin calc(100% - #{$screw-margin}), no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) $screw-margin, no-repeat url('/img/screw.svg') calc(100% - #{$screw-margin}) calc(100% - #{$screw-margin}), url('/img/brushed-silver.jpg')
+			background-size: $screw-size, $screw-size, $screw-size, $screw-size, auto
+
 		&.container-style-panel-dark
 			@extend .container-style-panel
 			background-color: #666
