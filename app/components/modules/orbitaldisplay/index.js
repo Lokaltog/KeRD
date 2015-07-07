@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import THREE from 'three'
 import TWEEN from 'tween'
-import {wrapDegDelta, debounce, deg2rad, spherical2cartesian, orbitalElements2Cartesian, objScreenPosition} from 'utils'
+import {wrapDegDelta, debounce, deg2rad, spherical2cartesian, orbitalElements2Cartesian, objScreenPosition, angleZero2Pi} from 'utils'
 
 require('imports?THREE=three!three.maskpass')
 require('imports?THREE=three!three.copyshader')
@@ -455,7 +455,7 @@ class CelestialView {
 		this.body = body
 		this.refreshBodyMaterials()
 	}
-	tween(body, trueAnomaly, inclination, argumentOfPeriapsis, eccentricity, epoch, longitudeOfAscendingNode, semimajorAxis) {
+	tween(body, trueAnomaly, inclination, argumentOfPeriapsis, eccentricity, epoch, longitudeOfAscendingNode, semimajorAxis, universalTime, initialRotation=0) {
 		if (!body) {
 			// Disable if body is missing or we're still waiting for data
 			this.setLoading(true)
@@ -494,7 +494,10 @@ class CelestialView {
 
 		// Rotate body correctly in relation to Kerbol
 		// This appears to work correctly even without further calculations
-		this.objects.bodyMesh.rotation.y = deg2rad(((epoch / body.data.rotPeriod) * 360))
+		var bodySpinRate = 2 * Math.PI / body.data.rotPeriod
+		var rotInit = deg2rad(initialRotation)
+		var spinAngle = angleZero2Pi(rotInit + bodySpinRate * universalTime)
+		this.objects.bodyMesh.rotation.y = spinAngle
 
 		// Draw orbit ellipse
 		// http://stackoverflow.com/questions/19432633/how-do-i-draw-an-ellipse-with-svg-based-around-a-focal-point-instead-of-the-cen
@@ -611,7 +614,9 @@ export default {
 				this.data['o.eccentricity'],
 				this.data['o.epoch'],
 				this.data['o.lan'],
-				this.data['o.sma']
+				this.data['o.sma'],
+				this.data['t.universalTime'],
+				this.body.initialRotation
 			)
 		}, { immediate: true }))
 	},

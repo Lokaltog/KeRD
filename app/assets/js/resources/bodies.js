@@ -14,6 +14,7 @@ export default {
 		},
 	},
 	Dres: {
+		initialRotation: 10.02,
 		textures: {
 			lo: {
 				diffuse: require('../../../assets/img/textures/bodies/dres/diffuse-1k.jpg'),
@@ -28,6 +29,7 @@ export default {
 		},
 	},
 	Duna: {
+		initialRotation: 135.51,
 		atmosphereColor: 0xbd341e,
 		atmosphereOpacity: 0.25,
 		textures: {
@@ -44,6 +46,7 @@ export default {
 		},
 	},
 	Eeloo: {
+		initialRotation: 309.98,
 		textures: {
 			lo: {
 				diffuse: require('../../../assets/img/textures/bodies/eeloo/diffuse-1k.jpg'),
@@ -58,6 +61,7 @@ export default {
 		},
 	},
 	Eve: {
+		initialRotation: 15.00,
 		atmosphereColor: 0xa17ec4,
 		atmosphereOpacity: 0.15,
 		textures: {
@@ -107,6 +111,7 @@ export default {
 		},
 	},
 	Jool: {
+		initialRotation: 238.43,
 		atmosphereColor: 0xb9e02f,
 		atmosphereOpacity: 0.25,
 		textures: {
@@ -176,6 +181,7 @@ export default {
 		},
 	},
 	Moho: {
+		initialRotation: 84.92,
 		textures: {
 			lo: {
 				diffuse: require('../../../assets/img/textures/bodies/moho/diffuse-1k.jpg'),

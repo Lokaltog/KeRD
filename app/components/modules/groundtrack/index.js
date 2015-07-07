@@ -15,7 +15,7 @@ class GroundTrack {
 		this.maxDeltaTime = maxDeltaTime
 	}
 
-	getTrack(universalTime, gravParameter, semimajorAxis, eccentricity, inclination, longitudeOfAscendingNode, argumentOfPeriapsis, trueAnomaly, period, rotPeriod, epoch, radius) {
+	getTrack(universalTime, gravParameter, semimajorAxis, eccentricity, inclination, longitudeOfAscendingNode, argumentOfPeriapsis, trueAnomaly, period, rotPeriod, epoch, radius, initialRotation=0) {
 		inclination = deg2rad(inclination)
 		longitudeOfAscendingNode = deg2rad(longitudeOfAscendingNode)
 		argumentOfPeriapsis = deg2rad(argumentOfPeriapsis)
@@ -139,8 +139,7 @@ class GroundTrack {
 
 			// Compute body spin angle
 			var bodySpinRate = 2 * Math.PI / rotPeriod
-			// FIXME set the correct rotInit field if available? (body rotation at t=0)
-			var rotInit = deg2rad(0)
+			var rotInit = deg2rad(initialRotation)
 			var spinAngle = angleZero2Pi(rotInit + bodySpinRate * currentTime)
 
 			// Get fixed frame vectors from inertial vectors
@@ -238,7 +237,8 @@ export default {
 				this.data['o.period'],
 				bodyData.rotPeriod,
 				this.data['t.universalTime'],
-				bodyData.radius
+				bodyData.radius,
+				body.initialRotation
 			)
 
 			var lineData = []
