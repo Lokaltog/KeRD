@@ -1,7 +1,7 @@
-.resource(v-repeat='resources', v-show='max !== null')
-	.label {{label}}
-	.bar-display
+.resource(v-repeat='res: resources', v-show='res.max !== null')
+	.label {{res.label}}
+	.bar-display(v-class='getBarColor(res)')
 		.overlay
-			.current {{numeral(current).format('0.0')}}
-			.max {{numeral(max).format('0.0')}}
-		.bar.green(v-class='orange: percent <= orangeThreshold, red: percent <= redThreshold', v-style='height: percent + "%"')
+			.current {{numeral(res.current).format('0.0')}}
+			.max {{numeral(res.max).format('0.0')}}
+		.bar(v-style='height: res.percent + "%"')

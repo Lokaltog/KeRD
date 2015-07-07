@@ -1,5 +1,18 @@
 @import 'lib/settings'
 
+@keyframes resource-critical
+	$color: #a10
+	0%
+		background-color: #000
+	35%
+		background-color: #000
+	40%
+		background-color: $color
+	60%
+		background-color: $color
+	100%
+		background-color: #000
+
 .mod-resources
 	display: flex
 	flex-flow: row nowrap
@@ -52,18 +65,21 @@
 			width: calc(100% - #{$half-gutter})
 			max-height: calc(100% - #{$half-gutter})
 			box-shadow: inset 0 0 2em rgba($color, .5), 0 0 1em rgba($color, .5)
-			&.green
-				$color: $color-graph-green
-				background: linear-gradient(to bottom, rgba($color, 0) 50%, rgba($color, .75) 50%) 0 100%
-				background-size: 100% 4px
-				box-shadow: inset 0 0 2em rgba($color, .5), 0 0 1em rgba($color, .5)
-			&.orange
-				$color: $color-graph-orange
-				background: linear-gradient(to bottom, rgba($color, 0) 50%, rgba($color, .95) 50%) 0 100%
-				background-size: 100% 4px
-				box-shadow: inset 0 0 2em rgba($color, .5), 0 0 1em rgba($color, .5)
-			&.red
-				$color: $color-graph-red
-				background: linear-gradient(to bottom, rgba($color, 0) 50%, rgba($color, 1) 50%) 0 100%
-				background-size: 100% 4px
-				box-shadow: inset 0 0 2em rgba($color, .5), 0 0 1em rgba($color, .5)
+		&.green .bar
+			$color: $color-graph-green
+			background: linear-gradient(to bottom, rgba($color, 0) 50%, rgba($color, .75) 50%) 0 100%
+			background-size: 100% 4px
+			box-shadow: inset 0 0 2em rgba($color, .5), 0 0 1em rgba($color, .5)
+		&.orange .bar
+			$color: $color-graph-orange
+			background: linear-gradient(to bottom, rgba($color, 0) 50%, rgba($color, .95) 50%) 0 100%
+			background-size: 100% 4px
+			box-shadow: inset 0 0 2em rgba($color, .5), 0 0 1em rgba($color, .5)
+		&.red .bar,
+		&.red-critical .bar
+			$color: $color-graph-red
+			background: linear-gradient(to bottom, rgba($color, 0) 50%, rgba($color, 1) 50%) 0 100%
+			background-size: 100% 4px
+			box-shadow: inset 0 0 2em rgba($color, .5), 0 0 1em rgba($color, .5)
+		&.red-critical
+			animation: resource-critical 1s infinite linear

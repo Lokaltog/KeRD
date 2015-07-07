@@ -80,12 +80,22 @@ export default [
 	// Subscribe to resources
 	var subscriptions = [];
 	[
+		'Ablator',
 		'ElectricCharge',
 		'IntakeAir',
 		'LiquidFuel',
 		'MonoPropellant',
 		'Oxidizer',
 		'XenonGas',
+
+		// TAC Life Support resources
+		'Food',
+		'Water',
+		'Oxygen',
+		'CarbonDioxide',
+		'Waste',
+		'WasteWater',
+		'Nonexistent',
 	].forEach((v) => subscriptions = subscriptions.concat([
 		`r.resourceCurrent[${v}]`,
 		`r.resourceMax[${v}]`,
