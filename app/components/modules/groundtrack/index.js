@@ -182,6 +182,11 @@ export default {
 	inherit: true,
 	template: require('./template.jade')({styles: require('./stylesheet.sass')}),
 	props: ['module-config'],
+	data() {
+		return {
+			backgroundImage: null,
+		}
+	},
 	ready() {
 		var gt = new GroundTrack()
 		var $el = $('.groundtrack', this.$el)
@@ -223,7 +228,13 @@ export default {
 			var h = $el.height()
 			var halfH = h / 2
 
-			$('.groundtrack', this.$el).css('background-image', `url(${body.textures.lo.diffuse})`).css('background-size', 'contain')
+			if (this.backgroundImage !== body.textures.lo.diffuse) {
+				this.backgroundImage = body.textures.lo.diffuse
+				$('.groundtrack', this.$el).css({
+					'background-image': `url(${this.backgroundImage})`,
+					'background-size': 'contain',
+				})
+			}
 
 			var latLong = gt.getTrack(
 				this.data['t.universalTime'],
