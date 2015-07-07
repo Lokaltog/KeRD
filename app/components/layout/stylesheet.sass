@@ -77,36 +77,73 @@ layout
 		& > section.expand
 			flex: 1 0 auto
 			height: 0
+	.controls-wrap
+		display: none
 	.controls
+		flex-flow: row wrap
 		display: none
 		align-items: center
-		background: rgba(#fff, .5)
-		padding: ($quarter-gutter / 2)
+		background: rgba(#fff, .9)
+		box-shadow: 0 .5em 2em rgba(#000, .7)
+		padding: $half-gutter
 		border-radius: $border-radius
-		li
+		position: absolute
+		top: 0
+		left: 0
+		z-index: 10
+		max-width: 16em
+		.row,
+			display: flex
+			width: 100%
+		select,
+		input[type='text']
+			width: 100%
+			margin: $quarter-gutter 0 0 0
+		.btn-wrap
 			cursor: pointer
 			user-select: none
 			&:not(:last-child)
 				margin: 0 $quarter-gutter 0 0
 			.btn
 				font-size: .8em
-				background: #eee
+				background: rgba(#000, .2)
+				box-shadow: none !important
+				color: #000 !important
+				text-shadow: none !important
 				padding: $quarter-gutter
 				width: auto
 				height: auto
+				&:hover
+					background: rgba(#000, .3) !important
 		.spacer
 			flex: 1 1 auto
 		.remove
 			button
-				background-color: $color-red
+				background-color: $color-red !important
 	section
 		display: flex
 		flex-flow: column nowrap
 		flex: 0 1 auto
 		position: relative
 		&.editable
-			.controls
-				display: flex
+			border-radius: $border-radius
+			border: 2px dotted #aaa
+			padding: $quarter-gutter $quarter-gutter 0 $quarter-gutter
+			.controls-wrap
+				$wrap-height: 1.4em
+				display: block
+				position: relative
+				height: $wrap-height
+				line-height: $wrap-height
+				margin: 0 0 $quarter-gutter 0
+				background: rgba(#fff, .2)
+				border-radius: $border-radius
+				text-shadow: 0 1px 0 rgba(#fff, .5)
+				cursor: pointer
+				&:hover
+					background: rgba(#fff, .3)
+					& > .controls
+						display: flex
 	&[root="true"]
 		background: #333
 		background-size: 20em

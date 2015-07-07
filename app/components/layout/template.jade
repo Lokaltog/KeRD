@@ -1,47 +1,48 @@
 template(v-repeat='item: contents')
 	section(v-class='editable: editable, expand: item.expand')
-		ul.controls
-			li(v-if='item.flow === "column"')
-				button.btn(v-on='click: item.flow = "row"')
-					i.icon-ellipsis-vert
-			li(v-if='item.flow === "row"')
-				button.btn(v-on='click: item.flow = "column"')
-					i.icon-ellipsis
-			li(v-if='!item.module')
-				button.btn(v-on='click: addContents(item.contents)')
-					i.icon-plus
-			li
-				button.btn(v-if='!root', v-on='click: moveUp(item)')
-					i(v-class='icon-left: parentFlow === "row", icon-up: parentFlow === "column"')
-			li
-				button.btn(v-if='!root', v-on='click: moveDown(item)')
-					i(v-class='icon-right: parentFlow === "row", icon-down: parentFlow === "column"')
-			li(v-if='!root')
-				button.btn(v-on='click: item.expand = !item.expand')
-					i(v-class='icon-resize-full: item.expand, icon-resize-small: !item.expand')
-			li(v-if='!root')
-				select(v-model='item.style')
-					option(value='plain') Plain
-					option(value='panel') Panel
-					option(value='panel-dark') Dark panel
-					option(value='panel-brushed') Brushed steel panel
-			li(v-if='!root')
-				select(v-model='item.module')
-					option(value='') -- no module --
-					option(value='actiongroups') Action groups
-					option(value='groundtrack') Ground track
-					option(value='history') History
-					option(value='navigation') Navigation
-					option(value='orbitaldisplay') Orbital display
-					option(value='orbitalinfo') Orbital info
-					option(value='resources') Resources
-					option(value='vessel') Vessel
-			li(v-if='!root')
-				input(type='text', v-model='item.title', placeholder='Section header')
-			li.spacer
-			li.remove
-				button.btn(v-if='!root', v-on='click: contents.$remove(item)')
-					i.icon-cancel
+		.controls-wrap
+			i.icon-cog
+			.controls.form
+				.row
+					.btn-wrap(v-if='item.flow === "column"')
+						button.btn(v-on='click: item.flow = "row"')
+							i.icon-ellipsis-vert
+					.btn-wrap(v-if='item.flow === "row"')
+						button.btn(v-on='click: item.flow = "column"')
+							i.icon-ellipsis
+					.btn-wrap(v-if='!item.module')
+						button.btn(v-on='click: addContents(item.contents)')
+							i.icon-plus
+					.btn-wrap(v-if='!root')
+						button.btn(v-on='click: moveUp(item)')
+							i(v-class='icon-left: parentFlow === "row", icon-up: parentFlow === "column"')
+					.btn-wrap(v-if='!root')
+						button.btn(v-on='click: moveDown(item)')
+							i(v-class='icon-right: parentFlow === "row", icon-down: parentFlow === "column"')
+					.btn-wrap(v-if='!root')
+						button.btn(v-on='click: item.expand = !item.expand')
+							i(v-class='icon-resize-full: item.expand, icon-resize-small: !item.expand')
+					.spacer(v-if='!root')
+					.btn-wrap.remove(v-if='!root')
+						button.btn(v-on='click: contents.$remove(item)')
+							i.icon-cancel
+				.col(v-if='!root')
+					select(v-model='item.style')
+						option(value='plain') Plain
+						option(value='panel') Panel
+						option(value='panel-dark') Dark panel
+						option(value='panel-brushed') Brushed steel panel
+					select(v-model='item.module')
+						option(value='') -- no module --
+						option(value='actiongroups') Action groups
+						option(value='groundtrack') Ground track
+						option(value='history') History
+						option(value='navigation') Navigation
+						option(value='orbitaldisplay') Orbital display
+						option(value='orbitalinfo') Orbital info
+						option(value='resources') Resources
+						option(value='vessel') Vessel
+					input(type='text', v-model='item.title', placeholder='Section header')
 
 		div(v-attr='class: "container container-style-" + (item.style || "plain")')
 			header(v-if='item.title') {{item.title}}
