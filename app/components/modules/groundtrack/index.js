@@ -1,15 +1,7 @@
 import $ from 'jquery'
 import d3 from 'd3'
 import sylvester from 'exports?$V&$M!sylvester'
-import {debounce, deg2rad, rad2deg} from 'utils'
-
-Math.sinh = Math.sinh || function(x) {
-	return (Math.exp(x) - Math.exp(-x)) / 2
-}
-
-Math.atanh = Math.atanh || function(x) {
-	return Math.log((1 + x) / (1 - x)) / 2
-}
+import {debounce, deg2rad, rad2deg, angleZero2Pi} from 'utils'
 
 class GroundTrack {
 	// Class to plot ground tracks on a equirectangular map
@@ -21,10 +13,6 @@ class GroundTrack {
 		this.maxOrbits = maxOrbits
 		this.pointDeltaTime = pointDeltaTime
 		this.maxDeltaTime = maxDeltaTime
-	}
-
-	angleZero2Pi(a) {
-		return Math.abs(a - (2 * Math.PI) * Math.floor(a / (2 * Math.PI)))
 	}
 
 	getTrack(universalTime, gravParameter, semimajorAxis, eccentricity, inclination, longitudeOfAscendingNode, argumentOfPeriapsis, trueAnomaly, period, rotPeriod, epoch, radius) {
@@ -39,10 +27,10 @@ class GroundTrack {
 		if (eccentricity < 1) {
 			eccentricAnomaly = (Math.atan2(Math.sqrt(1 - Math.pow(eccentricity, 2)) * Math.sin(trueAnomaly), eccentricity + Math.cos(trueAnomaly)))
 			if (trueAnomaly < 2 * Math.PI) {
-				eccentricAnomaly = this.angleZero2Pi(eccentricAnomaly)
+				eccentricAnomaly = angleZero2Pi(eccentricAnomaly)
 			}
 			meanAnomaly = eccentricAnomaly - eccentricity * Math.sin(eccentricAnomaly)
-			meanAnomaly = this.angleZero2Pi(meanAnomaly)
+			meanAnomaly = angleZero2Pi(meanAnomaly)
 		}
 		else {
 			var num = Math.tan(trueAnomaly / 2)
@@ -72,7 +60,7 @@ class GroundTrack {
 			// Compute eccentric anomaly
 			eccentricAnomaly = -1
 			if (newMeanAnomaly < 0 || newMeanAnomaly > 2 * Math.PI) {
-				newMeanAnomaly = this.angleZero2Pi(newMeanAnomaly)
+				newMeanAnomaly = angleZero2Pi(newMeanAnomaly)
 			}
 
 			if (Math.abs(newMeanAnomaly) < 1e-8) {
@@ -96,7 +84,7 @@ class GroundTrack {
 			var upper = Math.sqrt(1 + eccentricity) * Math.tan(eccentricAnomaly / 2)
 			var lower = Math.sqrt(1 - eccentricity)
 
-			trueAnomaly = this.angleZero2Pi((Math.atan2(upper, lower) * 2 ))
+			trueAnomaly = angleZero2Pi((Math.atan2(upper, lower) * 2 ))
 
 			// Special case: Circular equatorial
 			if (eccentricity < 1e-10 && (inclination < 1e-10 || Math.abs(inclination - Math.PI) < 1e-10)) {
@@ -153,7 +141,7 @@ class GroundTrack {
 			var bodySpinRate = 2 * Math.PI / rotPeriod
 			// FIXME set the correct rotInit field if available? (body rotation at t=0)
 			var rotInit = deg2rad(0)
-			var spinAngle = this.angleZero2Pi(rotInit + bodySpinRate * currentTime)
+			var spinAngle = angleZero2Pi(rotInit + bodySpinRate * currentTime)
 
 			// Get fixed frame vectors from inertial vectors
 			var R = sylvester.$M([
@@ -168,7 +156,7 @@ class GroundTrack {
 			// 2-norm or Euclidean norm of vector
 			var rNorm = Math.sqrt(Math.pow(rVectECEF.e(1), 2) + Math.pow(rVectECEF.e(2), 2) + Math.pow(rVectECEF.e(3), 2))
 
-			var lon = rad2deg(this.angleZero2Pi(Math.atan2(rVectECEF.e(2), rVectECEF.e(1))))
+			var lon = rad2deg(angleZero2Pi(Math.atan2(rVectECEF.e(2), rVectECEF.e(1))))
 			var lat = rad2deg(Math.PI / 2 - Math.acos(rVectECEF.e(3) / rNorm))
 			//var alt = rNorm - radius
 			//var vel = Math.sqrt(gravParameter * (2 / rNorm - 1 / semimajorAxis))

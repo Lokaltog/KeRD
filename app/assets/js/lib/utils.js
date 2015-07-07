@@ -1,10 +1,23 @@
 import THREE from 'three'
 
-var sin = Math.sin
+var abs = Math.abs
 var cos = Math.cos
-var sqrt = Math.sqrt
 var pi = Math.PI
 var pow = Math.pow
+var sin = Math.sin
+var sqrt = Math.sqrt
+
+Math.sinh = Math.sinh || function(x) {
+	return (Math.exp(x) - Math.exp(-x)) / 2
+}
+
+Math.atanh = Math.atanh || function(x) {
+	return Math.log((1 + x) / (1 - x)) / 2
+}
+
+export function angleZero2Pi(a) {
+	return abs(a - (2 * pi) * Math.floor(a / (2 * pi)))
+}
 
 export function deg2rad(degrees) {
 	return degrees * pi / 180
