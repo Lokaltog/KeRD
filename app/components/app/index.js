@@ -65,8 +65,21 @@ export default {
 	ready() {
 		// Show footer when pointer is at bottom X px of page
 		var $footer = $('footer')
-		$(document).on('mousemove', (ev) => {
-			$footer.toggleClass('visible', $(document).height() - ev.pageY < $footer.height())
+		var $footerHeight = $footer.height()
+		var $footerHandle = $('.footer-handle')
+		$(document).on('mousemove touchstart', (ev) => {
+			var loc = $(document).height() - ev.pageY
+			if (loc < $footerHeight) {
+                ev.preventDefault()
+				$footerHandle.toggleClass('visible', loc < $footerHeight)
+			}
+			else {
+				$footerHandle.toggleClass('visible', false)
+				$footer.toggleClass('visible', false)
+			}
+		})
+		$footerHandle.on('click', () => {
+			$footer.toggleClass('visible', true)
 		})
 
 		// Update refreshIntevral property based on refresh rate (hz -> ms)
