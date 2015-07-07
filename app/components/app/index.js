@@ -13,6 +13,7 @@ export default {
 		settings: require('../settings'),
 
 		actiongroups: require('../modules/actiongroups'),
+		groundtrack: require('../modules/groundtrack'),
 		history: require('../modules/history'),
 		navigation: require('../modules/navigation'),
 		orbitaldisplay: require('../modules/orbitaldisplay'),
