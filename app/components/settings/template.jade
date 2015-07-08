@@ -72,4 +72,5 @@
 			p.disclaimer The page will be reloaded when you save your configuration.
 			.row
 				button.btn.physical.primary(type='submit', v-on='click: submit') Save configuration
+				button.btn.physical#settings-reset(v-on='click: resetLayout') Reset layout
 				button.btn.physical#settings-close(v-on='click: close') Close without saving

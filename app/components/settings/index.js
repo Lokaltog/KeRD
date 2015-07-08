@@ -9,9 +9,9 @@ export default {
 			this.saveConfig()
 			window.location.reload()
 		},
-		reset(ev) {
+		resetLayout(ev) {
 			ev.preventDefault()
-			this.storage.remove('config')
+			this.storage.remove('layout')
 			window.location.reload()
 		},
 		close() {
