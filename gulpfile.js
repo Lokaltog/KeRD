@@ -18,6 +18,9 @@ var __assets_dest = __dirname + '/static/assets/'
 
 // common config
 var config = {
+	babel: {
+		presets: ['es2015'],
+	},
 	jade: {
 		pretty: false,
 	},
@@ -162,7 +165,7 @@ gulp.task('set-env-dev', function() {
 				{ test: /img\/.*\.(jpg|png|gif|svg|ico)$/, loader: 'file?name=img/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
 				{ test: /defs\/.*\.json$/, loader: 'file?name=defs/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
 				{ test: /font\/.*\.(eot|woff2?|ttf|svg)[?#]?.*$/, loader: 'file?name=font/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
-				{ test: /\.js$/, exclude: [/node_modules/, /lib\/ext/], loader: 'babel' },
+				{ test: /\.js$/, exclude: [/node_modules/, /lib\/ext/], loader: 'babel?' + JSON.stringify(config.babel) },
 			],
 		},
 	}
@@ -220,7 +223,7 @@ gulp.task('set-env-prod', function() {
 				{ test: /img\/.*\.(jpg|png|gif|svg|ico)$/, loader: 'file?name=img/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
 				{ test: /defs\/.*\.json$/, loader: 'file?name=defs/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
 				{ test: /font\/.*\.(eot|woff2?|ttf|svg)[?#]?.*$/, loader: 'file?name=font/[sha512:hash:base64:6].[ext]?v=[hash:6]' },
-				{ test: /\.js$/, exclude: [/node_modules/, /lib\/ext/], loader: 'babel' },
+				{ test: /\.js$/, exclude: [/node_modules/, /lib\/ext/], loader: 'babel?' + JSON.stringify(config.babel) },
 			],
 		},
 	}
